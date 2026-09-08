@@ -6,10 +6,14 @@ import { IconGlobe } from "@/components/icons";
 
 /* Public site — the project's front door. Arabic-first; English mirrors. */
 const AR = {
-  nav: ["الفكرة", "الوحدات", "سلامة القرآن", "لمن", "مفتوح المصدر"],
+  nav: ["الفكرة", "الوحدات", "سلامة القرآن", "التطبيق", "لمن", "مفتوح المصدر"],
   h1: "نظام تشغيل مفتوح المصدر لتعليم القرآن",
   lede: "ليس برنامج إدارة مركز. تَلَقِّي يتابع رحلة الطالب مع القرآن آيةً آية: ما حُفظ، وما ثبت، وما يُراجَع اليوم — ويربط الطالب والمعلم وولي الأمر والمشرف والمركز حول هذه الرحلة.",
-  cta1: "جرّب العرض التجريبي", cta2: "الكود على GitHub",
+  cta1: "جرّب العرض التجريبي", cta2: "الكود على GitHub", cta3: "حمّل تطبيق Android",
+  appTitle: "التطبيق في جيب الطالب والمعلم وولي الأمر",
+  appLede: "تطبيق واحد بثلاث واجهات: المعلم يسجّل الحضور ويسمّع من المصحف، والطالب يرى خطة اليوم ويتدرّب باسترجاع النص الموثّق، وولي الأمر يرى الإجابات الست الأسبوعية. النسخة الحالية تجريبية لأندرويد؛ iOS قريبًا.",
+  appNote: "ملف APK مباشر (٥١ م.ب) — عند التثبيت اسمح بالتثبيت من مصدر خارجي. الدخول بحسابات العرض التجريبي نفسها.",
+  appAndroid: "تحميل مباشر · APK", appIos: "قريبًا", appGet: "حمّل لـ", appTest: "نسخة تجريبية",
   loop: ["يحفظ الطالب", "يتدرّب", "يسمّع للمعلم", "يسجّل النظام", "يتغيّر الثبات", "تُجدوَل المراجعة", "يراجع المعلم", "يرى ولي الأمر تقدمًا حقيقيًا", "يرى المشرف صحة المؤسسة"],
   pillarsTitle: "أربعة أشياء لا يفعلها غيرنا معًا",
   pillars: [
@@ -36,10 +40,14 @@ const AR = {
   footer: "tallaqi.com · نص القرآن: مشروع تنزيل — tanzil.net · تَلَقِّي مشروع مفتوح المصدر برخصة AGPL-3.0",
 };
 const EN: typeof AR = {
-  nav: ["Idea", "Modules", "Quran safety", "For whom", "Open source"],
+  nav: ["Idea", "Modules", "Quran safety", "The app", "For whom", "Open source"],
   h1: "An open-source operating system for Quran education",
   lede: "Not a center management program. Talaqqi follows the student's Quran journey Ayah by Ayah: what was memorized, what stays strong, what to revise today — and connects student, teacher, parent, supervisor, and center around it.",
-  cta1: "Try the demo", cta2: "Code on GitHub",
+  cta1: "Try the demo", cta2: "Code on GitHub", cta3: "Get the Android app",
+  appTitle: "The app in the pocket of student, teacher, and parent",
+  appLede: "One app, three faces: the teacher marks attendance and runs Tasmee' from the Mushaf, the student sees today's plan and practices recall on verified text, the parent gets the six weekly answers. The current build is an Android beta; iOS is coming.",
+  appNote: "Direct APK (51 MB). Allow installation from an external source when prompted. Sign in with the same demo accounts.",
+  appAndroid: "Direct download · APK", appIos: "Coming soon", appGet: "Get it for", appTest: "Beta",
   loop: ["Student learns", "practices", "recites to the teacher", "system records", "retention changes", "revision is scheduled", "teacher reviews", "parent sees real progress", "supervisor sees institutional health"],
   pillarsTitle: "Four things nobody else does together",
   pillars: [
@@ -69,14 +77,14 @@ const EN: typeof AR = {
 export default function Site() {
   const { locale, setLocale } = useI18n();
   const s = locale === "ar" ? AR : EN;
-  const ids = ["idea", "modules", "safety", "who", "oss"];
+  const ids = ["idea", "modules", "safety", "app", "who", "oss"];
   return (
     <div className="site">
       <nav className="site-nav">
         <Link href="/" className="wordmark" style={{ flexDirection: "row", alignItems: "baseline", gap: 10 }}><span className="ar" style={{ fontSize: 30 }}>تَلَقِّي</span><span className="latin">Talaqqi</span></Link>
         <div className="links">{s.nav.map((n, i) => <a key={i} href={`#${ids[i]}`}>{n}</a>)}</div>
         <div className="actions">
-          <button className="lang" onClick={() => setLocale(locale === "ar" ? "en" : "ar")}><IconGlobe />{locale === "ar" ? "English" : "العربية"}</button>
+          <button className="lang" onClick={() => setLocale(locale === "ar" ? "en" : "ar")} aria-label="language"><IconGlobe /><span>{locale === "ar" ? "English" : "العربية"}</span></button>
           <Link href="/login" className="pill-cta">{s.cta1}</Link>
         </div>
       </nav>
@@ -91,6 +99,7 @@ export default function Site() {
             <p className="lede">{s.lede}</p>
             <div className="row" style={{ gap: 14 }}>
               <Link href="/login" className="pill-cta lg">{s.cta1}</Link>
+              <a href={APK_URL} className="pill-cta lg ghost"><IconAndroid />{s.cta3}</a>
               <a href="https://github.com/Osama-BanyHamad/tallaqi" className="pill-cta lg ghost">{s.cta2}</a>
             </div>
           </div>
@@ -133,7 +142,25 @@ export default function Site() {
         <div className="audience">{s.modules.map((m, i) => <span key={i}>{m}</span>)}</div>
       </section>
 
-      <section className="section alt" id="who">
+      <section className="section alt" id="app">
+        <div className="app-section">
+          <div>
+            <div className="section-head" style={{ marginBottom: 0 }}>
+              <span className="eyebrow">{locale === "ar" ? "التطبيق" : "The app"} · {s.appTest}</span>
+              <h2>{s.appTitle}</h2>
+              <p>{s.appLede}</p>
+            </div>
+            <div className="stores">
+              <a className="store-btn" href={APK_URL} download><IconAndroid /><span><small>{s.appGet} Android</small><b>{s.appAndroid}</b></span></a>
+              <span className="store-btn soon" aria-disabled><IconApple /><span><small>{s.appGet} iOS</small><b>{s.appIos}</b></span></span>
+            </div>
+            <p className="muted" style={{ fontSize: 13, marginTop: 14 }}>{s.appNote}</p>
+          </div>
+          <PhoneMock locale={locale} />
+        </div>
+      </section>
+
+      <section className="section alt" id="who" style={{ background: "var(--ground)" }}>
         <div className="section-head"><span className="eyebrow">{s.audienceTitle}</span><h2>{locale === "ar" ? "من مسجدٍ بحلقة واحدة إلى مؤسسة في عدة دول" : "From a mosque with one Halaqah to an institution in several countries"}</h2></div>
         <div className="audience">{s.audience.map((m, i) => <span key={i}>{m}</span>)}</div>
       </section>
@@ -144,6 +171,36 @@ export default function Site() {
       </section>
 
       <footer className="site-footer"><span>{s.footer}</span><span className="num">v0.1</span></footer>
+    </div>
+  );
+}
+
+const APK_URL = "/downloads/talaqqi-android.apk";
+
+function IconAndroid() {
+  return (<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M17.6 9.5l1.5-2.6a.35.35 0 0 0-.6-.35l-1.5 2.6A8.9 8.9 0 0 0 12 8.2c-1.8 0-3.5.4-5 1L5.5 6.6a.35.35 0 0 0-.6.35l1.5 2.6A8.5 8.5 0 0 0 2 16h20a8.5 8.5 0 0 0-4.4-6.5zM7.5 13.6a.9.9 0 1 1 0-1.8.9.9 0 0 1 0 1.8zm9 0a.9.9 0 1 1 0-1.8.9.9 0 0 1 0 1.8z" /></svg>);
+}
+function IconApple() {
+  return (<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M16.4 12.6c0-2.4 2-3.5 2-3.6-1.1-1.6-2.8-1.8-3.4-1.8-1.5-.2-2.8.8-3.6.8-.7 0-1.8-.8-3-.8-1.6 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.3.9-1.3 1.3-2.6 1.3-2.6s-2.4-1-2.4-3.6zM14.1 5.6c.6-.8 1.1-1.9 1-3-.9 0-2 .6-2.7 1.4-.6.7-1.1 1.8-1 2.9 1 .1 2.1-.5 2.7-1.3z" /></svg>);
+}
+/** A CSS phone showing the student's "today" screen: plan segments and the Juz strip. Pure markup, no screenshot to go stale. */
+function PhoneMock({ locale }: { locale: string }) {
+  const ar = locale === "ar";
+  const segs = ar ? [["حفظ جديد", "النبأ ١ → ١٥"], ["مراجعة قريبة", "النازعات ١ → ٢٦"], ["مراجعة بعيدة", "الملك ١ → ٣٠"]] : [["New", "An-Naba 1 → 15"], ["Near", "An-Nazi'at 1 → 26"], ["Far", "Al-Mulk 1 → 30"]];
+  return (
+    <div className="phone" aria-hidden>
+      <div className="screen">
+        <div className="top">
+          <span className="ar">تَلَقِّي</span>
+          <div className="k">{ar ? "اليوم · يوسف" : "Today · Yusuf"}</div>
+          <div className="big">{ar ? "٤٠ صفحة" : "40 pages"}</div>
+          <div className="k" style={{ color: "var(--night-muted)" }}>{ar ? "الثبات ٧٩٪ · لا آيات حرجة" : "Retention 79% · no critical Ayat"}</div>
+        </div>
+        <div className="body">
+          <div className="card"><b>{ar ? "خطة اليوم" : "Today's plan"}</b>{segs.map(([k, v]) => <div key={k} className="row-seg"><span style={{ color: "var(--lapis)", fontWeight: 600 }}>{k}</span><span className="num">{v}</span></div>)}</div>
+          <div className="card"><b>{ar ? "خريطة الحفظ" : "Memory map"}</b><SampleMap rows={[28, 29, 30]} compact /></div>
+        </div>
+      </div>
     </div>
   );
 }
