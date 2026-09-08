@@ -1,8 +1,30 @@
-# تَلَقِّي — Talaqqi · tallaqi.com
+# تَلَقِّي — Talaqqi · [tallaqi.com](https://tallaqi.com)
 
 **Open-source infrastructure for Quran education.** A multi-tenant operating system for the student's Quran learning journey: Memory Map, retention engine, adaptive planner, Tasmee' workflow, live classroom, parent and supervisor loops, administration and finance. Arabic-first (RTL), English supported.
 
 > Quran accuracy beats convenience. The Quran text ships as an immutable, checksummed release; no service, admin, or AI can write to it. See `docs/design/07-religious-ai-safety.md`.
+
+## Live demo
+
+| | |
+|---|---|
+| Public site | https://tallaqi.com |
+| Web app (sign in) | https://tallaqi.com/login |
+| API docs (OpenAPI) | https://tallaqi.com/api/docs/ |
+| Android app (beta APK, 51 MB) | https://tallaqi.com/downloads/talaqqi-android.apk |
+
+All demo accounts use the password **`Talaqqi@2026`** on the tenant **`demo`** (مركز النور لتحفيظ القرآن الكريم). Data is seeded and may be reset at any time.
+
+| Role | Email | What you see |
+|---|---|---|
+| Owner | `owner@demo.talaqqi` | Everything: supervisor dashboard, students, Halaqat, staff, finance, reports, settings, audit |
+| Quran supervisor | `supervisor@demo.talaqqi` | Dashboard and Halaqat of the main branch |
+| Teacher | `teacher1@demo.talaqqi` … `teacher4@demo.talaqqi` | Own Halaqah: today's roster, attendance, Tasmee' from the Mushaf |
+| Parent | `parent1@demo.talaqqi`, `parent2@demo.talaqqi` | Parent portal: the six weekly answers per child |
+| Student | `student1@demo.talaqqi`, `student2@demo.talaqqi` | Today's plan, Memory Map, self-practice |
+| Finance | `finance@demo.talaqqi` | Fee plans, invoices, payments |
+
+The same accounts work in the Android app (teacher, student, and parent shells).
 
 ## Status
 
@@ -31,7 +53,7 @@ cd apps/admin-web && pnpm install && pnpm dev           # http://localhost:3000
 cd apps/mobile && flutter pub get && flutter run          # phone/emulator; web: flutter run -d web-server --web-port 3100 --dart-define=API_URL=http://localhost:8000
 ```
 
-Demo logins (`/demo` tenant, password `Talaqqi@2026`): `owner@demo.talaqqi`, `supervisor@demo.talaqqi`, `teacher1@demo.talaqqi` … `teacher4@`, `parent1@`, `finance@`.
+Demo logins: see **Live demo** above (same accounts locally after `seed_demo`; add `ensure_demo_students` and `ensure_demo_finance` for student logins and finance data).
 
 ## Tests
 
@@ -51,6 +73,24 @@ packages/*        pure Python: quran_core, hifz_engine, permissions (no Django, 
 docs/design       design package · docs/research sourced research
 infra/            docker, compose profiles, caddy, garage
 ```
+
+## Contributing
+
+`main` is protected: nobody pushes to it directly, including maintainers. All changes land through a pull request that the repository owner merges.
+
+1. Fork (or branch, for collaborators): `git checkout -b feat/short-name`
+2. Keep the Quran Core untouched. Any change under `packages/quran_core/data` needs the `quran-core-release` label and a maintainer review; the checksum tests will fail otherwise.
+3. Run the checks before opening the PR:
+
+```bash
+python -m pytest -q
+ruff check .
+cd apps/admin-web && npx tsc --noEmit
+```
+
+4. Open the PR against `main` with a short description of what changed and why. CI runs the same checks; the owner reviews and merges (squash).
+
+Security issues: please do not open a public issue; email the maintainer instead (see the GitHub profile).
 
 ## License
 
