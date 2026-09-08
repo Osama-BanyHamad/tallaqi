@@ -100,6 +100,8 @@ SIMPLE_JWT = {
     "USER_ID_CLAIM": "sub",
 }
 
+TEMPLATES = [{"BACKEND": "django.template.backends.django.DjangoTemplates", "APP_DIRS": True, "OPTIONS": {}}]  # drf-spectacular Redoc page
+
 SPECTACULAR_SETTINGS = {
     "TITLE": "Talaqqi API",
     "DESCRIPTION": "Open-source operating system for Quran education. Arabic-first, multi-tenant, capability-enforced.",
