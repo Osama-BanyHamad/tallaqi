@@ -64,7 +64,7 @@ class T {
       textTheme: GoogleFonts.ibmPlexSansArabicTextTheme(base.textTheme).apply(bodyColor: ink, displayColor: ink),
       appBarTheme: AppBarTheme(backgroundColor: night, foregroundColor: nightInk, elevation: 0, centerTitle: false,
           titleTextStyle: GoogleFonts.notoKufiArabic(fontSize: 18, fontWeight: FontWeight.w700, color: nightInk)),
-      cardTheme: CardTheme(color: surface, elevation: 0, margin: EdgeInsets.zero,
+      cardTheme: CardThemeData(color: surface, elevation: 0, margin: EdgeInsets.zero,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: const BorderSide(color: rule))),
       filledButtonTheme: FilledButtonThemeData(style: FilledButton.styleFrom(backgroundColor: lapis, foregroundColor: Colors.white,
           minimumSize: const Size.fromHeight(48), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

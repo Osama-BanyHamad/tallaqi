@@ -1,4 +1,4 @@
-# تَلَقِّي — Talaqqi
+# تَلَقِّي — Talaqqi · tallaqi.com
 
 **Open-source infrastructure for Quran education.** A multi-tenant operating system for the student's Quran learning journey: Memory Map, retention engine, adaptive planner, Tasmee' workflow, live classroom, parent and supervisor loops, administration and finance. Arabic-first (RTL), English supported.
 
@@ -12,7 +12,8 @@ Phase 9 bootstrap + first vertical slice of the core loop:
 - Multi-tenancy with PostgreSQL row-level security + scoped repositories, capability system, RBAC with scopes, audit log
 - Students, guardians, staff, Halaqat, enrollment, attendance
 - Quran Journey, per-Ayah Memory Map with history, `retention/v1`, Learning Policy templates, `planner/v1`, Tasmee' API, supervisor dashboard
-- Admin web (Next.js, Arabic-first) — see `apps/admin-web`
+- Admin web + public site (Next.js, Arabic-first) — `apps/admin-web` (site at `/`, app at `/login`)
+- Mobile app (Flutter, one codebase, role shells: teacher · student · parent) — `apps/mobile`
 
 ## Run locally (Windows/macOS/Linux)
 
@@ -27,6 +28,7 @@ python apps/api/manage.py load_quran_core               # verifies checksums, lo
 python apps/api/manage.py seed_demo                     # demo tenant "demo" with Arabic data + simulated history
 python apps/api/manage.py runserver                     # http://localhost:8000/api/docs/
 cd apps/admin-web && pnpm install && pnpm dev           # http://localhost:3000
+cd apps/mobile && flutter pub get && flutter run          # phone/emulator; web: flutter run -d web-server --web-port 3100 --dart-define=API_URL=http://localhost:8000
 ```
 
 Demo logins (`/demo` tenant, password `Talaqqi@2026`): `owner@demo.talaqqi`, `supervisor@demo.talaqqi`, `teacher1@demo.talaqqi` … `teacher4@`, `parent1@`, `finance@`.

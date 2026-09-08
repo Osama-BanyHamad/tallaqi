@@ -175,24 +175,24 @@ class ErrorBox extends StatelessWidget {
 }
 
 /// Async data helper: keeps screens small.
-class Fetch<T> extends StatefulWidget {
+class Fetch<D> extends StatefulWidget {
   const Fetch({super.key, required this.future, required this.builder});
-  final Future<T> Function() future;
-  final Widget Function(BuildContext, T, VoidCallback refresh) builder;
+  final Future<D> Function() future;
+  final Widget Function(BuildContext, D, VoidCallback refresh) builder;
   @override
-  State<Fetch<T>> createState() => _FetchState<T>();
+  State<Fetch<D>> createState() => _FetchState<D>();
 }
 
-class _FetchState<T> extends State<Fetch<T>> {
-  late Future<T> _f = widget.future();
+class _FetchState<D> extends State<Fetch<D>> {
+  late Future<D> _f = widget.future();
   void _refresh() => setState(() => _f = widget.future());
   @override
-  Widget build(BuildContext context) => FutureBuilder<T>(
+  Widget build(BuildContext context) => FutureBuilder<D>(
         future: _f,
         builder: (c, s) {
           if (s.hasError) return ErrorBox(s.error!, onRetry: _refresh);
           if (!s.hasData) return const LoadingBox();
-          return widget.builder(c, s.data as T, _refresh);
+          return widget.builder(c, s.data as D, _refresh);
         },
       );
 }
