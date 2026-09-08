@@ -78,8 +78,8 @@ h3 { font-size: 16.5px; font-weight: 600; }
 .spine { position: sticky; top: 0; height: 100dvh; background: linear-gradient(170deg, var(--night-2), var(--night) 60%); color: var(--night-ink); padding: 30px 22px 24px; display: flex; flex-direction: column; gap: 26px; overflow: hidden; }
 .spine::after { content: ""; position: absolute; inset-block: 0; inset-inline-end: 0; width: 1px; background: linear-gradient(180deg, transparent, var(--gold) 25%, var(--gold) 75%, transparent); opacity: .8; }
 .wordmark { display: flex; flex-direction: column; gap: 0; position: relative; align-items: flex-start; }
-.wordmark .ar { font-family: var(--font-quran); font-size: 46px; line-height: 1.55; color: var(--night-ink); display: block; }
-.wordmark .latin { font-family: var(--font-display); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold-2); margin-top: 6px; padding-inline-start: 2px; }
+.wordmark .ar { font-family: var(--font-quran); font-size: 46px; line-height: 1.2; padding-bottom: .55em; color: var(--night-ink); display: block; }
+.wordmark .latin { font-family: var(--font-display); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--gold-2); margin-top: 0; padding-inline-start: 2px; }
 .tenant-chip { position: relative; padding: 14px 14px; border: 1px solid rgba(255,255,255,.08); border-radius: var(--r-sm); background: rgba(255,255,255,.04); font-size: 13px; color: var(--night-muted); line-height: 1.5; }
 .tenant-chip b { display: block; color: var(--night-ink); font-weight: 600; font-size: 14px; margin-bottom: 2px; }
 .spine nav { position: relative; display: flex; flex-direction: column; gap: 3px; }
