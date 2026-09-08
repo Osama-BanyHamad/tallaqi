@@ -108,6 +108,18 @@ SPECTACULAR_SETTINGS = {
 }
 
 CORS_ALLOWED_ORIGINS = env("CORS_ALLOWED_ORIGINS")
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[o for o in CORS_ALLOWED_ORIGINS if o.startswith("https://")])
+
+# Behind Caddy (TLS terminated at the proxy)
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 60 * 60 * 24 * 30
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = "DENY"
 CORS_ALLOW_HEADERS = ["authorization", "content-type", "x-tenant", "x-request-id", "idempotency-key", "accept-language"]
 
 CELERY_BROKER_URL = env("REDIS_URL")

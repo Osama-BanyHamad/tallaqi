@@ -4,26 +4,31 @@ x-api: &api
   build: { context: ., dockerfile: infra/docker/Dockerfile.api }
   env_file: .env
   environment:
-    DATABASE_URL: postgres://talaqqi_app:talaqqi_dev@postgres:5432/talaqqi
+    DATABASE_URL: postgres://talaqqi_app:${DB_PASSWORD:-talaqqi_dev}@postgres:5432/talaqqi
     REDIS_URL: redis://valkey:6379/0
-  depends_on: [postgres, valkey]
-  volumes: ["./:/app"]
+  depends_on:
+    postgres: { condition: service_healthy }
+    valkey: { condition: service_started }
+  restart: unless-stopped
 
 services:
   postgres:
     image: postgres:16-alpine
-    profiles: [dev, single-vps]
+    profiles: [dev, prod]
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    volumes: ["pgdata:/var/lib/postgresql/data", "./infra/scripts/init-db.sql:/docker-entrypoint-initdb.d/10-init.sql:ro"]
-    ports: ["5432:5432"]
-    healthcheck: { test: ["CMD-SHELL", "pg_isready -U postgres"], interval: 5s, retries: 10 }
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      APP_DB_PASSWORD: ${DB_PASSWORD:-talaqqi_dev}
+    volumes: ["pgdata:/var/lib/postgresql/data", "./infra/scripts/init-db.sh:/docker-entrypoint-initdb.d/10-init.sh:ro"]
+    ports: ["127.0.0.1:5432:5432"]
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U postgres"], interval: 5s, retries: 20 }
+    restart: unless-stopped
 
   valkey:
     image: valkey/valkey:8-alpine
-    profiles: [dev, single-vps]
-    ports: ["6379:6379"]
+    profiles: [dev, prod]
+    ports: ["127.0.0.1:6379:6379"]
+    restart: unless-stopped
 
   garage:
     image: dxflrs/garage:v1.0.1
@@ -38,25 +43,38 @@ services:
 
   api:
     <<: *api
-    profiles: [single-vps]
-    command: sh -c "python apps/api/manage.py migrate && python apps/api/manage.py load_quran_core && gunicorn -c infra/docker/gunicorn.conf.py talaqqi.wsgi:application"
-    working_dir: /app/apps/api
-    ports: ["8000:8000"]
+    profiles: [prod]
+    command: sh -c "python apps/api/manage.py migrate --noinput && python apps/api/manage.py load_quran_core && gunicorn -c infra/docker/gunicorn.conf.py --chdir apps/api talaqqi.wsgi:application"
+    expose: ["8000"]
 
   worker:
     <<: *api
-    profiles: [single-vps]
-    command: sh -c "cd /app && celery -A talaqqi worker -B -l info"
+    profiles: [prod]
+    command: sh -c "python apps/api/manage.py run_decay_all"
+    restart: "no"
+
+  web:
+    build: { context: ., dockerfile: infra/docker/Dockerfile.web }
+    profiles: [prod]
+    environment:
+      API_ORIGIN: http://api:8000
+    depends_on: [api]
+    expose: ["3000"]
+    restart: unless-stopped
 
   caddy:
     image: caddy:2-alpine
-    profiles: [single-vps]
-    ports: ["80:80", "443:443"]
-    volumes: ["./infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro", "caddy-data:/data"]
-    depends_on: [api]
+    profiles: [prod]
+    environment:
+      DOMAIN: ${DOMAIN:-tallaqi.com}
+    ports: ["80:80", "443:443", "443:443/udp"]
+    volumes: ["./infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro", "caddy-data:/data", "caddy-config:/config"]
+    depends_on: [web, api]
+    restart: unless-stopped
 
 volumes:
   pgdata: {}
   garage-meta: {}
   garage-data: {}
   caddy-data: {}
+  caddy-config: {}

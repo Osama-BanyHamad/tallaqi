@@ -1,14 +1,18 @@
-{$DOMAIN:tallaqi.com} {
+{$DOMAIN:tallaqi.com}, www.{$DOMAIN:tallaqi.com} {
 	encode zstd gzip
-	handle /api/* {
+
+	@api path /api/* /healthz /readyz
+	handle @api {
 		reverse_proxy api:8000
 	}
-	handle /healthz {
-		reverse_proxy api:8000
-	}
+
 	handle {
-		root * /srv/admin-web
-		try_files {path} /index.html
-		file_server
+		reverse_proxy web:3000
+	}
+
+	header {
+		Strict-Transport-Security "max-age=2592000"
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
 	}
 }

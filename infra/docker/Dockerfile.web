@@ -1,0 +1,18 @@
+# Next.js (admin web + public site) — standalone output
+FROM node:22-alpine AS build
+WORKDIR /app
+RUN corepack enable
+COPY apps/admin-web/package.json apps/admin-web/pnpm-lock.yaml* ./
+RUN pnpm install --frozen-lockfile || pnpm install
+COPY apps/admin-web/ ./
+ENV NEXT_TELEMETRY_DISABLED=1 API_ORIGIN=http://api:8000
+RUN pnpm build
+
+FROM node:22-alpine
+WORKDIR /app
+ENV NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0 API_ORIGIN=http://api:8000
+COPY --from=build /app/.next/standalone ./
+COPY --from=build /app/.next/static ./.next/static
+COPY --from=build /app/public ./public
+EXPOSE 3000
+CMD ["node", "server.js"]
