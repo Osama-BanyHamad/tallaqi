@@ -40,8 +40,8 @@ class _LoginScreenState extends State<LoginScreen> {
             padding: const EdgeInsets.fromLTRB(28, 60, 28, 28),
             decoration: const BoxDecoration(gradient: RadialGradient(center: Alignment(0.9, -0.9), radius: 1.6, colors: [T.night2, T.night])),
             child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.end, children: [
-              Text('تَلَقِّي', style: T.quran(size: 64, color: T.nightInk).copyWith(height: 1.3)),
-              const SizedBox(height: 2),
+              Text('تَلَقِّي', style: T.quran(size: 64, color: T.nightInk).copyWith(height: 1.25)),
+              const SizedBox(height: 22),
               Text('TALAQQI', style: T.display(size: 11, color: T.gold2).copyWith(letterSpacing: 3)),
               const SizedBox(height: 18),
               Text('رحلة الطالب مع القرآن: ما حُفظ، وما ثبت، وما يُراجَع اليوم.', style: T.body(size: 16, color: T.nightInk)),
