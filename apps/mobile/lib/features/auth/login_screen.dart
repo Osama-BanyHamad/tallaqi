@@ -32,45 +32,39 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(children: [
-        Expanded(
-          flex: 5,
-          child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(28, 60, 28, 28),
-            decoration: const BoxDecoration(gradient: RadialGradient(center: Alignment(0.9, -0.9), radius: 1.6, colors: [T.night2, T.night])),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.end, children: [
-              Text('تَلَقِّي', style: T.quran(size: 64, color: T.nightInk).copyWith(height: 1.25)),
-              const SizedBox(height: 22),
-              Text('TALAQQI', style: T.display(size: 11, color: T.gold2).copyWith(letterSpacing: 3)),
-              const SizedBox(height: 18),
-              Text('رحلة الطالب مع القرآن: ما حُفظ، وما ثبت، وما يُراجَع اليوم.', style: T.body(size: 16, color: T.nightInk)),
-              const SizedBox(height: 22),
-              _SampleStrip(),
-            ]),
-          ),
+      body: ListView(padding: EdgeInsets.zero, children: [
+        Container(
+          width: double.infinity,
+          padding: EdgeInsets.fromLTRB(28, MediaQuery.paddingOf(context).top + 48, 28, 28),
+          decoration: const BoxDecoration(gradient: RadialGradient(center: Alignment(0.9, -0.9), radius: 1.6, colors: [T.night2, T.night])),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text('تَلَقِّي', style: T.quran(size: 64, color: T.nightInk).copyWith(height: 1.25)),
+            const SizedBox(height: 22),
+            Text('TALAQQI', style: T.display(size: 11, color: T.gold2).copyWith(letterSpacing: 3)),
+            const SizedBox(height: 18),
+            Text('رحلة الطالب مع القرآن: ما حُفظ، وما ثبت، وما يُراجَع اليوم.', style: T.body(size: 16, color: T.nightInk)),
+            const SizedBox(height: 22),
+            _SampleStrip(),
+          ]),
         ),
-        Expanded(
-          flex: 6,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(28, 30, 28, 28),
-            child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-              Text('تسجيل الدخول', style: T.display(size: 24)),
-              const SizedBox(height: 18),
-              Text('البريد الإلكتروني', style: T.body(size: 13, color: T.ink2)),
-              const SizedBox(height: 6),
-              TextField(controller: _email, keyboardType: TextInputType.emailAddress, textDirection: TextDirection.ltr, autocorrect: false),
-              const SizedBox(height: 14),
-              Text('كلمة المرور', style: T.body(size: 13, color: T.ink2)),
-              const SizedBox(height: 6),
-              TextField(controller: _password, obscureText: true, textDirection: TextDirection.ltr, onSubmitted: (_) => _submit()),
-              if (_error != null) Padding(padding: const EdgeInsets.only(top: 10), child: Text(_error!, style: T.body(size: 13, color: T.sWeak))),
-              const SizedBox(height: 20),
-              FilledButton(onPressed: _busy ? null : _submit, child: Text(_busy ? '…' : 'ادخل')),
-              const SizedBox(height: 12),
-              Text('العرض التجريبي: teacher1@demo.talaqqi · student؟ استخدم parent1@ أو owner@ · كلمة المرور Talaqqi@2026', style: T.body(size: 12, color: T.ink3)),
-            ]),
-          ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(28, 30, 28, 28),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+            Text('تسجيل الدخول', style: T.display(size: 24)),
+            const SizedBox(height: 18),
+            Text('البريد الإلكتروني', style: T.body(size: 13, color: T.ink2)),
+            const SizedBox(height: 6),
+            TextField(controller: _email, keyboardType: TextInputType.emailAddress, textDirection: TextDirection.ltr, autocorrect: false),
+            const SizedBox(height: 14),
+            Text('كلمة المرور', style: T.body(size: 13, color: T.ink2)),
+            const SizedBox(height: 6),
+            TextField(controller: _password, obscureText: true, textDirection: TextDirection.ltr, onSubmitted: (_) => _submit()),
+            if (_error != null) Padding(padding: const EdgeInsets.only(top: 10), child: Text(_error!, style: T.body(size: 13, color: T.sWeak))),
+            const SizedBox(height: 20),
+            FilledButton(onPressed: _busy ? null : _submit, child: Text(_busy ? '…' : 'ادخل')),
+            const SizedBox(height: 12),
+            Text('العرض التجريبي: teacher1@demo.talaqqi · parent1@ · owner@ — كلمة المرور Talaqqi@2026', style: T.body(size: 12, color: T.ink3)),
+          ]),
         ),
       ]),
     );
