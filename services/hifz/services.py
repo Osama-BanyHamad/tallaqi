@@ -273,6 +273,9 @@ def memory_map(journey: QuranJourney, level: str = "juz", number: int | None = N
 
     if level == "quran":
         return {"level": "quran", "units": [{"number": u.number, **agg(u.first_ayah_index, u.last_ayah_index)} for u in core.units_of("juz")]}
+    if level == "pages":   # every page in one call: powers the folio strip
+        return {"level": "pages", "units": [{"number": p.page, "juz": p.juz, **{k: v for k, v in agg(p.first_ayah_index, p.last_ayah_index).items() if k != "counts"}}
+                                            for p in core.pages]}
     if level == "juz":
         u = core.unit("juz", number)
         pages = [p for p in core.pages if u.first_ayah_index <= p.first_ayah_index <= u.last_ayah_index]

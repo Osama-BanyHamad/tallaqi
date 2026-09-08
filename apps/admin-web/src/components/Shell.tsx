@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { api, getSession, setSession } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 
@@ -23,8 +23,8 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const { t, locale, setLocale } = useI18n();
   const path = usePathname();
   const router = useRouter();
-  const session = typeof window !== "undefined" ? getSession() : null;
-  useEffect(() => { if (!getSession()) router.replace("/login"); }, [router]);
+  const [session, setSessionState] = useState<ReturnType<typeof getSession>>(null);
+  useEffect(() => { const s = getSession(); setSessionState(s); if (!s) router.replace("/login"); }, [router]);
   const caps = useCapabilities();
   const can = (p: string) => caps.data?.permissions.includes(p);
   const mod = (m: string) => caps.data?.modules[m]?.enabled;

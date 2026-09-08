@@ -56,10 +56,17 @@ def _page_stats(core: QuranCore, page: int, rows: list[AyahSnapshot]):
     return {"coverage": len(memorized) / total, "avg": avg, "critical": critical, "weak": weak, "n": len(memorized)}
 
 
-def _segment_for_pages(core: QuranCore, purpose: str, pages: list[int], reason: str, reps: int = 1) -> Segment:
-    first = core.page(min(pages)).first_ayah_index
-    last = core.page(max(pages)).last_ayah_index
-    return Segment(purpose, first, last, sorted(pages), reason, reps)
+def _segments_for_pages(core: QuranCore, purpose: str, pages: list[int], reason: str, reps: int = 1) -> list[Segment]:
+    """One segment per run of consecutive pages, so a segment never spans pages the student is not revising."""
+    out: list[Segment] = []
+    run: list[int] = []
+    for p in sorted(set(pages)) + [None]:
+        if run and (p is None or p != run[-1] + 1):
+            out.append(Segment(purpose, core.page(run[0]).first_ayah_index, core.page(run[-1]).last_ayah_index, list(run), reason, reps))
+            run = []
+        if p is not None:
+            run.append(p)
+    return out
 
 
 def generate(core: QuranCore, policy: LearningPolicy, snaps: list[AyahSnapshot], *, plan_date: date, now: datetime,
@@ -113,8 +120,8 @@ def generate(core: QuranCore, policy: LearningPolicy, snaps: list[AyahSnapshot],
     if near_pool and nr.daily_amount_pages > 0:
         ranked = sorted(near_pool, key=lambda p: stats[p]["avg"])
         take = ranked[: max(1, round(nr.daily_amount_pages))]
-        plan.segments.append(_segment_for_pages(core, "near", take,
-                                                f"مراجعة قريبة: أضعف {len(take)} من آخر {len(near_pool)} صفحة.", nr.repetitions_required))
+        plan.segments.extend(_segments_for_pages(core, "near", take,
+                                                 f"مراجعة قريبة: أضعف {len(take)} من آخر {len(near_pool)} صفحة.", nr.repetitions_required))
 
     # ---- far revision (Manzil): due pages outside the near window ----
     fr = policy.far_revision
@@ -135,8 +142,7 @@ def generate(core: QuranCore, policy: LearningPolicy, snaps: list[AyahSnapshot],
             take += fill[: n - len(take)]
         if take:
             reason = f"مراجعة بعيدة: {len(take)} صفحة ({'الأضعف أولًا' if fr.ordering == 'weakest_first' else 'بالترتيب'})."
-            for p in sorted(take):
-                plan.segments.append(_segment_for_pages(core, "far", [p], reason, 1))
+            plan.segments.extend(_segments_for_pages(core, "far", take, reason, 1))
     if not plan.segments:
         plan.rationale.append("لا توجد مقاطع للخطة اليوم.")
     return plan

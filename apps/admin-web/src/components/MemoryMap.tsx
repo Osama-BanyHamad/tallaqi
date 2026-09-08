@@ -22,10 +22,10 @@ export function MemoryMap({ journeyId, onSelectPage }: { journeyId: string; onSe
   const [page, setPage] = useState<number | null>(null);
   const quran = useQuery({ queryKey: ["mm", journeyId, "quran"], queryFn: () => api<Quran>(`/journeys/${journeyId}/memory-map?level=quran`) });
   const juzQ = useQuery({ queryKey: ["mm", journeyId, "juz", juz], queryFn: () => api<Juz>(`/journeys/${journeyId}/memory-map?level=juz&number=${juz}`), enabled: juz != null });
-  const pages = useQuery({ queryKey: ["quran-pages"], queryFn: () => api<{ number: number; juz: number }[]>("/quran/hafs_asim/units/page"), staleTime: Infinity });
+  const pages = useQuery({ queryKey: ["mm", journeyId, "pages"], queryFn: () => api<{ units: (Unit & { juz: number })[] }>(`/journeys/${journeyId}/memory-map?level=pages`) });
   if (quran.isLoading || pages.isLoading) return <Loading />;
-  const byJuz: Record<number, number[]> = {};
-  pages.data?.forEach((p) => { (byJuz[p.juz] ??= []).push(p.number); });
+  const byJuz: Record<number, (Unit & { juz: number })[]> = {};
+  pages.data?.units.forEach((p) => { (byJuz[p.juz] ??= []).push(p); });
   const maxCols = Math.max(...Object.values(byJuz).map((a) => a.length));
 
   function pick(p: number) { const n = page === p ? null : p; setPage(n); onSelectPage(n); }
@@ -42,7 +42,7 @@ export function MemoryMap({ journeyId, onSelectPage }: { journeyId: string; onSe
             <div key={u.number} className="mmap-row">
               <button className="juz" onClick={() => setJuz(u.number)} style={{ background: "none", border: 0, cursor: "pointer", textAlign: "start", padding: 0 }}>{t("juz")} {fmtNum(u.number, locale)}</button>
               <div className="pages">
-                {byJuz[u.number].map((p) => <PageFolio key={p} journeyId={journeyId} page={p} juzState={u} selected={page === p} onClick={() => { setJuz(u.number); pick(p); }} />)}
+                {byJuz[u.number].map((p) => <PageFolio key={p.number} unit={p} selected={page === p.number} onClick={() => { setJuz(u.number); pick(p.number); }} />)}
               </div>
               <span className="stat">{u.avg_retention == null ? "—" : `${Math.round(u.avg_retention * 100)}%`}</span>
             </div>
@@ -73,11 +73,14 @@ export function MemoryMap({ journeyId, onSelectPage }: { journeyId: string; onSe
   );
 }
 
-function PageFolio({ journeyId, page, juzState, selected, onClick }: { journeyId: string; page: number; juzState: Unit; selected: boolean; onClick: () => void }) {
-  // Quran-level view colours pages by the Juz aggregate to stay cheap; the Juz view fetches page-level states.
-  void journeyId;
-  const state = juzState.memorized_ayat === 0 ? "not_memorized" : juzState.state;
-  return <button className={`folio bg-${state} ${selected ? "selected" : ""}`} title={`${page}`} onClick={onClick} style={{ opacity: juzState.coverage === 0 ? .6 : .55 + juzState.coverage * .45 }} />;
+function PageFolio({ unit, selected, onClick }: { unit: Unit; selected: boolean; onClick: () => void }) {
+  const { t } = useI18n();
+  return (
+    <button className={`folio bg-${unit.state} ${selected ? "selected" : ""}`} title={`${t("page")} ${unit.number} · ${t(`state_${unit.state}` as Key)}`} onClick={onClick}
+      style={{ opacity: unit.memorized_ayat === 0 ? .9 : .6 + unit.coverage * .4 }}>
+      {unit.due_ayat > 0 && <span className="due" />}
+    </button>
+  );
 }
 
 export function PageDetail({ journeyId, page }: { journeyId: string; page: number }) {
