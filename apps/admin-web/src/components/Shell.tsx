@@ -20,6 +20,25 @@ export function useCapabilities() {
   return useQuery({ queryKey: ["capabilities"], queryFn: () => api<Capabilities>("/me/capabilities"), staleTime: 60_000 });
 }
 
+/** Where a role lands after sign-in: students → today, parents → children, staff → dashboard or Halaqat, finance → finance. */
+export function homeFor(c: Capabilities): string {
+  const can = (p: string) => c.permissions.includes(p);
+  const mod = (m: string) => c.modules[m]?.enabled;
+  if (c.roles.includes("student")) return "/me";
+  if (c.roles.includes("guardian")) return "/parent";
+  if (can("intel.supervisor.read") && mod("intel.supervisor")) return "/dashboard";
+  if (can("ops.halaqat.read")) return "/halaqat";
+  if (can("finance.invoicing.read") && mod("finance.fees")) return "/finance";
+  if (can("people.students.read")) return "/students";
+  return "/settings";
+}
+
+/** Permission each app route needs; a role without it is sent to its own home instead of a bare 403. */
+const ROUTE_PERM: [string, string][] = [
+  ["/dashboard", "intel.supervisor.read"], ["/students", "people.students.read"], ["/staff", "people.staff.read"], ["/halaqat", "ops.halaqat.read"],
+  ["/finance", "finance.invoicing.read"], ["/reports", "intel.reports.read"], ["/settings", "platform.tenancy.read"], ["/parent", "parent.portal.use"],
+];
+
 const IconCoins = () => (<svg viewBox="0 0 24 24" fill="none" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round"><ellipse cx="12" cy="6.5" rx="7" ry="3" /><path d="M5 6.5v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5M5 11.5v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5" /></svg>);
 const IconReport = () => (<svg viewBox="0 0 24 24" fill="none" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round"><path d="M5 20V9M12 20V4M19 20v-7" /><path d="M3 20h18" /></svg>);
 const IconFamily = () => (<svg viewBox="0 0 24 24" fill="none" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="7" r="2.6" /><circle cx="16.5" cy="8.5" r="2" /><path d="M3 19c.5-3.2 2.5-5 5-5s4.5 1.8 5 5M13 19c.3-2.3 1.7-3.7 3.5-3.7S19.7 16.7 20 19" /></svg>);
@@ -48,6 +67,12 @@ export function Shell({ children }: { children: React.ReactNode }) {
     { href: "/reports", label: tr("التقارير", "Reports"), Icon: IconReport, show: can("intel.reports.read") && mod("intel.reports") },
     { href: "/settings", label: tr("الإعدادات", "Settings"), Icon: IconSettings, show: can("platform.tenancy.read") || can("platform.rbac.read") },
   ].filter((i) => i.show);
+
+  useEffect(() => {
+    if (!caps.data) return;
+    const rule = ROUTE_PERM.find(([r]) => path === r || path.startsWith(r + "/"));
+    if (rule && !caps.data.permissions.includes(rule[1])) router.replace(homeFor(caps.data));
+  }, [caps.data, path, router]);
 
   const roleLabel: Record<string, string> = { owner: "مالك المؤسسة", quran_supervisor: "مشرف القرآن", teacher: "معلم", assistant_teacher: "معلم مساعد", guardian: "ولي أمر", finance: "مالية", center_admin: "مدير المركز", student: "طالب", support: "دعم", branch_manager: "مدير الفرع" };
   const accent = caps.data?.tenant.branding?.accent;
