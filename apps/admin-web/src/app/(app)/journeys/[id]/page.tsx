@@ -8,6 +8,7 @@ import { fmtNum } from "@/lib/quran";
 import { MemoryMap, PageDetail } from "@/components/MemoryMap";
 import { Avatar, ErrorBox, JuzStrip, Kpi, Loading, Num, Pct, RetentionBar, fmtDate } from "@/components/ui";
 import { AssessmentLauncher } from "@/components/AssessmentLauncher";
+import { AiExplain } from "@/components/Ai";
 
 type Journey = { id: string; student: string; student_name: string; student_code: string; riwayah: string; policy_key: string; status: string; started_at: string; current_ayah_index: number | null;
   current_key: { key: string; surah: number; ayah: number; page: number; surah_name: string } | null; level: string; memorized_ayat: number; strong_ayat: number; needs_revision_ayat: number; weak_ayat: number; critical_ayat: number; mastered_ayat: number; avg_retention: number; memorized_pages: number; juz_map: [number, number | null, string][] };
@@ -100,6 +101,7 @@ export default function JourneyPage({ params }: { params: Promise<{ id: string }
             </ul>
           </div>
           <div>
+            <AiExplain journeyId={d.id} />
             <h3>{t("explanation")}</h3>
             <p>{locale === "ar" ? "الثبات مقياس تعليمي لاستقرار الاسترجاع، يُحسب حتميًا من تسميعات المعلم وأخطائه وزمن المراجعة. ليس حكمًا شرعيًا على التلاوة." : "Retention is an educational measure of recall stability, computed deterministically from teacher-verified recitations, mistakes, and time. It is not a religious judgment."}</p>
             <div className="row" style={{ marginTop: 8 }}><RetentionBar v={d.avg_retention} /></div>

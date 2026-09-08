@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../core/api.dart';
 import '../../core/quran.dart';
 import '../../core/theme.dart';
 import '../../widgets/common.dart';
+import '../../widgets/recite_check.dart';
 
-/// Self-practice on a plan segment: read → hide → recall → reveal. Every hint is the exact verified text from the Quran Core.
-/// No generative text or audio exists anywhere in this path.
+/// Self-practice on a plan segment: read → hide → recall → reveal, plus the AI recitation check.
+/// Every hint is the exact verified text from the Quran Core; nothing generative exists in this path.
 class PracticeScreen extends StatefulWidget {
   const PracticeScreen({super.key, required this.journeyId, required this.from, required this.to, required this.title});
   final String journeyId;
@@ -21,6 +23,15 @@ class _PracticeScreenState extends State<PracticeScreen> {
   final Set<int> _revealed = {};
   bool _hideAll = false;
   int _hints = 0;
+  Map<String, dynamic>? _asr;
+  double _font = 24;
+
+  Set<int> get _flaggedAyat => {for (final a in ((_asr?['ayat'] as List?) ?? const []).cast<Map<String, dynamic>>()) if (a['status'] == 'issues') a['ayah_index'] as int};
+  Set<String> get _flaggedWords => {
+        for (final a in ((_asr?['ayat'] as List?) ?? const []).cast<Map<String, dynamic>>())
+          for (final w in (a['words'] as List).cast<Map<String, dynamic>>())
+            if (w['status'] != 'ok') '${a['ayah_index']}:${w['position']}',
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -31,24 +42,33 @@ class _PracticeScreenState extends State<PracticeScreen> {
           final ayat = (d['ayat'] as List).cast<Map<String, dynamic>>();
           return Column(children: [
             NightHeader(
+              compact: true,
               eyebrow: 'تدريب ذاتي · ${widget.title}', title: '${ayat.first['key']} ← ${ayat.last['key']}',
-              subtitle: 'اقرأ، ثم أخفِ النص واسترجع، ثم اكشف للتحقق. التلميحات من النص الموثّق فقط.',
-              trailing: IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close_rounded, color: T.nightInk)),
+              subtitle: 'اقرأ، ثم أخفِ النص واسترجع، ثم اكشف للتحقق — أو سمّع بصوتك ليقارن النظام تلاوتك بالنص الموثّق.',
+              trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+                IconButton(onPressed: () => setState(() => _font = _font >= 30 ? 20 : _font + 3), icon: const Icon(Icons.format_size_rounded, color: T.nightMuted)),
+                IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close_rounded, color: T.nightInk)),
+              ]),
               child: Row(children: [
-                FilledButton.tonal(
-                  style: FilledButton.styleFrom(backgroundColor: T.gold, foregroundColor: const Color(0xFF1F1806), minimumSize: const Size(0, 40)),
-                  onPressed: () => setState(() { _hideAll = !_hideAll; _revealed.clear(); }),
-                  child: Text(_hideAll ? 'أظهر الكل' : 'أخفِ النص واسترجع'),
-                ),
-                const SizedBox(width: 12),
-                Text('تلميحات: ${arDigits(_hints)}', style: T.body(size: 13, color: T.nightMuted)),
+                Expanded(child: OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(foregroundColor: T.nightInk, side: BorderSide(color: Colors.white.withValues(alpha: .25)), minimumSize: const Size(0, 42), backgroundColor: _hideAll ? Colors.white.withValues(alpha: .08) : null),
+                  onPressed: () { HapticFeedback.selectionClick(); setState(() { _hideAll = !_hideAll; _revealed.clear(); }); },
+                  icon: Icon(_hideAll ? Icons.visibility_rounded : Icons.visibility_off_rounded, size: 18),
+                  label: Text(_hideAll ? 'أظهر الكل' : 'أخفِ واسترجع'),
+                )),
+                const SizedBox(width: 10),
+                Text('تلميحات ${arDigits(_hints)}', style: T.body(size: 13, color: T.nightMuted)),
               ]),
             ),
             Expanded(
-              child: ListView(padding: const EdgeInsets.all(16), children: [
+              child: ListView(padding: const EdgeInsets.fromLTRB(16, 14, 16, 40), children: [
+                ReciteCheck(from: widget.from, to: widget.to, journeyId: widget.journeyId, onResult: (r) => setState(() => _asr = r)),
+                if (_asr != null) ...[const SizedBox(height: 10), AsrSummary(_asr!)],
+                const SizedBox(height: 14),
                 Container(
                   padding: const EdgeInsets.all(18),
-                  decoration: BoxDecoration(color: T.paper, borderRadius: BorderRadius.circular(6), border: Border.all(color: T.gold.withValues(alpha: .55))),
+                  decoration: BoxDecoration(color: T.paper, borderRadius: BorderRadius.circular(8), border: Border.all(color: T.gold.withValues(alpha: .55)),
+                      boxShadow: [BoxShadow(color: T.ink.withValues(alpha: .08), blurRadius: 24, offset: const Offset(0, 10))]),
                   child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                     for (final a in ayat) _ayah(a),
                     const SizedBox(height: 8),
@@ -68,24 +88,33 @@ class _PracticeScreenState extends State<PracticeScreen> {
     final hidden = _hideAll && !_revealed.contains(idx);
     final split = splitBasmalah(a['text_uthmani'], a['surah'], a['ayah']);
     final words = split.body.split(' ');
+    final flagged = _flaggedAyat.contains(idx);
+    final fw = _flaggedWords;
     return InkWell(
-      onTap: hidden ? () => setState(() { _revealed.add(idx); _hints++; }) : null,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
+      onTap: hidden ? () { HapticFeedback.selectionClick(); setState(() { _revealed.add(idx); _hints++; }); } : null,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+        decoration: BoxDecoration(color: flagged ? T.sNeeds.withValues(alpha: .14) : null, borderRadius: BorderRadius.circular(6)),
         child: Directionality(
           textDirection: TextDirection.rtl,
           child: hidden
               ? Row(children: [
-                  Expanded(child: Text('${words.first} ${'ـــ ' * (words.length - 1).clamp(1, 12)}', style: T.quran(size: 22, color: T.ink3), maxLines: 1, overflow: TextOverflow.ellipsis)),
-                  Text(' ﴿${arDigits(a['ayah'])}﴾', style: T.quran(size: 20, color: T.gold)),
+                  Expanded(child: Text('${words.first} ${'ـــ ' * (words.length - 1).clamp(1, 12)}', style: T.quran(size: _font - 2, color: T.ink3), maxLines: 1, overflow: TextOverflow.ellipsis)),
+                  Text(' ﴿${arDigits(a['ayah'])}﴾', style: T.quran(size: _font - 4, color: T.gold)),
                   const SizedBox(width: 6),
                   const Icon(Icons.visibility_outlined, size: 18, color: T.gold),
                 ])
-              : Text.rich(TextSpan(children: [
-                  if (split.basmalah != null) TextSpan(text: '${split.basmalah}\n'),
-                  TextSpan(text: split.body),
-                  TextSpan(text: ' ﴿${arDigits(a['ayah'])}﴾', style: T.quran(size: 20, color: T.gold)),
-                ]), style: T.quran(size: 24), textAlign: TextAlign.justify),
+              : Wrap(textDirection: TextDirection.rtl, crossAxisAlignment: WrapCrossAlignment.center, children: [
+                  if (split.basmalah != null) SizedBox(width: double.infinity, child: Text(split.basmalah!, style: T.quran(size: _font - 2), textAlign: TextAlign.center)),
+                  for (var i = 0; i < words.length; i++)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 2),
+                      decoration: fw.contains('$idx:${i + 1}') ? const BoxDecoration(border: Border(bottom: BorderSide(color: T.gold, width: 3))) : null,
+                      child: Text(words[i], style: T.quran(size: _font)),
+                    ),
+                  Text(' ﴿${arDigits(a['ayah'])}﴾ ', style: T.quran(size: _font - 4, color: T.gold)),
+                ]),
         ),
       ),
     );

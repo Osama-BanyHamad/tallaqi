@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart' show MediaType;
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// API base. Override at build time: flutter run --dart-define=API_URL=https://tallaqi.com
@@ -103,7 +104,30 @@ class Api {
   Future<dynamic> post(String path, Map<String, dynamic> body) =>
       _send(() => http.post(Uri.parse('$apiUrl/api/v1$path'), headers: _headers(json: true), body: jsonEncode(body)));
 
+  /// Multipart upload (audio for the recitation check). Same auth, refresh, and error handling as JSON calls.
+  Future<dynamic> postMultipart(String path, {required Map<String, String> fields, required String fileField, required List<int> bytes, required String filename, required String mime}) {
+    Future<http.Response> send() async {
+      final req = http.MultipartRequest('POST', Uri.parse('$apiUrl/api/v1$path'))
+        ..headers.addAll(_headers())
+        ..fields.addAll(fields)
+        ..files.add(http.MultipartFile.fromBytes(fileField, bytes, filename: filename, contentType: MediaType.parse(mime)));
+      return http.Response.fromStream(await req.send());
+    }
+    return _send(send);
+  }
+
   Future<Map<String, dynamic>> caps() async => capabilities ??= (await get('/me/capabilities')) as Map<String, dynamic>;
+  bool moduleOn(String key) => (capabilities?['modules'] as Map?)?[key]?['enabled'] == true;
   List<String> get roles => List<String>.from(capabilities?['roles'] ?? const []);
   bool can(String p) => (capabilities?['permissions'] as List?)?.contains(p) ?? false;
+}
+
+/// Turn transport exceptions into one calm Arabic line; API errors already carry a readable message.
+String friendlyError(Object e) {
+  final t = e.toString();
+  if (t.contains('SocketException') || t.contains('Failed host lookup') || t.contains('Connection refused') || t.contains('Network is unreachable')) {
+    return 'تعذّر الاتصال بالخادم. تحقّق من اتصال الإنترنت ثم حاول مجددًا.';
+  }
+  if (t.contains('TimeoutException')) return 'انتهت مهلة الاتصال. حاول مجددًا.';
+  return t.replaceFirst('Exception: ', '');
 }

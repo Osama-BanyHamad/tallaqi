@@ -97,14 +97,3 @@ class _SampleStrip extends StatelessWidget {
     );
   }
 }
-
-
-/// Turn transport exceptions into one calm Arabic line; API errors already carry a readable message.
-String friendlyError(Object e) {
-  final t = e.toString();
-  if (t.contains('SocketException') || t.contains('Failed host lookup') || t.contains('Connection refused') || t.contains('Network is unreachable')) {
-    return 'تعذّر الاتصال بالخادم. تحقّق من اتصال الإنترنت ثم حاول مجددًا.';
-  }
-  if (t.contains('TimeoutException')) return 'انتهت مهلة الاتصال. حاول مجددًا.';
-  return t.replaceFirst('Exception: ', '');
-}
