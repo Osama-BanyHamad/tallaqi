@@ -47,6 +47,13 @@ def check(request, permission: str, module: str | None = None, obj=None) -> Deci
     return d
 
 
+def _module_for(view, request):
+    mod = getattr(view, "required_module", None)
+    if isinstance(mod, dict):
+        return mod.get(getattr(view, "action", None) or request.method.lower())
+    return mod
+
+
 class CapabilityPermission(BasePermission):
     """Views declare `required_module` and `required_permission` (str or dict by action)."""
 
@@ -58,7 +65,7 @@ class CapabilityPermission(BasePermission):
             perm = perm.get(getattr(view, "action", None) or request.method.lower())
         if perm is None:
             return True
-        check(request, perm, getattr(view, "required_module", None))
+        check(request, perm, _module_for(view, request))
         return True
 
     def has_object_permission(self, request, view, obj):
@@ -67,7 +74,7 @@ class CapabilityPermission(BasePermission):
             perm = perm.get(getattr(view, "action", None) or request.method.lower())
         if perm is None:
             return True
-        check(request, perm, getattr(view, "required_module", None), obj)
+        check(request, perm, _module_for(view, request), obj)
         return True
 
 

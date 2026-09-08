@@ -6,6 +6,8 @@ import { api } from "@/lib/api";
 import { useI18n, type Key } from "@/lib/i18n";
 import { fmtNum, splitBasmalah } from "@/lib/quran";
 import { Avatar, ErrorBox, Loading, StatePill } from "@/components/ui";
+import { AiDraftButton } from "@/components/Ai";
+import { AsrSummary, ReciteCheck, type AsrCandidate, type AsrResult } from "@/components/Recite";
 import type { AyahRow } from "@/components/MemoryMap";
 
 type QAyah = { ayah_index: number; surah: number; ayah: number; key: string; text_uthmani: string; page: number };
@@ -39,6 +41,8 @@ export default function TasmeePage({ params }: { params: Promise<{ journeyId: st
   const [note, setNote] = useState("");
   const [grade, setGrade] = useState<number | "">("");
   const [done, setDone] = useState<string | null>(null);
+  const [asr, setAsr] = useState<AsrResult | null>(null);
+  const [adopted, setAdopted] = useState(false);
   const idem = useMemo(() => `${journeyId}-${from}-${to}-${Date.now()}`, [journeyId, from, to]);
 
   const save = useMutation({
@@ -60,6 +64,13 @@ export default function TasmeePage({ params }: { params: Promise<{ journeyId: st
   }
   function choose(tp: MType) { if (!picking) return; setMistakes([...mistakes, { ...picking, mistake_type: tp.key, severity: tp.severity }]); setPicking(null); }
   const major = mistakes.filter((m) => m.severity === "major").length;
+  const asrWord = (ayah_index: number, pos: number) => asr?.ayat.find((a) => a.ayah_index === ayah_index)?.words.find((w) => w.position === pos)?.status;
+  function adopt(cands: AsrCandidate[]) {
+    const known = new Set((types.data ?? []).map((x) => x.key));
+    const add = cands.filter((c) => c.kind !== "addition" && c.mistake_type && !mistakes.some((m) => m.ayah_index === c.ayah_index && m.word_position === c.word_position))
+      .map((c) => ({ ayah_index: c.ayah_index, word_position: c.word_position, mistake_type: known.has(c.mistake_type!) ? c.mistake_type! : (types.data?.[0]?.key ?? c.mistake_type!), severity: c.severity }));
+    setMistakes([...mistakes, ...add]); setAdopted(true);
+  }
 
   return (
     <>
@@ -92,7 +103,8 @@ export default function TasmeePage({ params }: { params: Promise<{ journeyId: st
                   <span className={`ayah-line ${st === "weak" || st === "critical" ? st : ""}`} style={{ opacity: dim ? .3 : 1 }}>
                     {words.map((w, i) => {
                       const m = mistakes.find((x) => x.ayah_index === a.ayah_index && x.word_position === i + 1);
-                      return <span key={i} className={`w ${m ? (m.severity === "major" ? "marked" : "minor") : ""}`} onClick={() => toggleWord(a.ayah_index, i + 1)}>{w} </span>;
+                      const aw = !m && inRange(a.ayah_index) ? asrWord(a.ayah_index, i + 1) : undefined;
+                      return <span key={i} className={`w ${m ? (m.severity === "major" ? "marked" : "minor") : aw === "missing" || aw === "substituted" ? "asr-flag" : ""}`} onClick={() => toggleWord(a.ayah_index, i + 1)}>{w} </span>;
                     })}
                     <span className="ayah-end">﴿{fmtNum(a.ayah, "ar")}﴾</span>
                   </span>
@@ -104,6 +116,11 @@ export default function TasmeePage({ params }: { params: Promise<{ journeyId: st
           <p className="attrib">{pageData.attribution}</p>
         </div>
         <aside className="hashiya">
+          <div>
+            <h3>{locale === "ar" ? "التسميع الذكي" : "AI recitation check"}</h3>
+            <ReciteCheck from={from} to={to} journeyId={journeyId} compact onResult={(r) => { setAsr(r); setAdopted(false); }} />
+            {asr && <div style={{ marginTop: 10 }}><AsrSummary r={asr} onAdopt={adopt} adopted={adopted} /></div>}
+          </div>
           <div>
             <h3>{t("mistakes")}</h3>
             {mistakes.length === 0 ? <p>—</p> : (
@@ -126,7 +143,7 @@ export default function TasmeePage({ params }: { params: Promise<{ journeyId: st
             </label>
           )}
           <label className="stack" style={{ gap: 6 }}>
-            <h3>{t("note")}</h3>
+            <div className="row" style={{ justifyContent: "space-between" }}><h3>{t("note")}</h3><AiDraftButton journeyId={journeyId} onDraft={setNote} /></div>
             <textarea className="input" rows={3} value={note} onChange={(e) => setNote(e.target.value)} />
           </label>
           <div className="stack" style={{ gap: 8 }}>

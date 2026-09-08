@@ -4,25 +4,28 @@ import '../core/quran.dart';
 import '../core/theme.dart';
 
 /// A Mushaf page rendered verbatim from the Quran Core API. Word taps are overlays; the text is never modified.
+/// [marks] are the teacher's confirmed mistakes; [flags] are AI candidates (gold underline) awaiting the teacher.
 class MushafPage extends StatelessWidget {
-  const MushafPage({super.key, required this.page, this.surahNames = const {}, this.inRange, this.stateOf, this.marks = const {}, this.onWordTap});
+  const MushafPage({super.key, required this.page, this.surahNames = const {}, this.inRange, this.stateOf, this.marks = const {}, this.flags = const {}, this.onWordTap, this.fontSize = 24});
   final Map<String, dynamic> page;
   final Map<int, String> surahNames;
   final bool Function(int ayahIndex)? inRange;
   final String? Function(int ayahIndex)? stateOf;
   final Map<String, String> marks; // "ayahIndex:word" -> severity
+  final Set<String> flags;         // "ayahIndex:word"
   final void Function(int ayahIndex, int wordPosition)? onWordTap;
+  final double fontSize;
 
   @override
   Widget build(BuildContext context) {
     final ayat = (page['ayat'] as List).cast<Map<String, dynamic>>();
     return Container(
       padding: const EdgeInsets.fromLTRB(18, 22, 18, 18),
-      decoration: BoxDecoration(color: T.paper, borderRadius: BorderRadius.circular(6), border: Border.all(color: T.rule),
+      decoration: BoxDecoration(color: T.paper, borderRadius: BorderRadius.circular(8), border: Border.all(color: T.rule),
           boxShadow: [BoxShadow(color: T.ink.withValues(alpha: .12), blurRadius: 30, offset: const Offset(0, 14))]),
       child: Container(
         padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(border: Border.all(color: T.gold.withValues(alpha: .55)), borderRadius: BorderRadius.circular(3)),
+        decoration: BoxDecoration(border: Border.all(color: T.gold.withValues(alpha: .55)), borderRadius: BorderRadius.circular(4)),
         child: Directionality(
           textDirection: TextDirection.rtl,
           child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
@@ -53,8 +56,9 @@ class MushafPage extends StatelessWidget {
         ]),
       ));
     }
-    if (split.basmalah != null) out.add(Center(child: Text(split.basmalah!, style: T.quran(size: 22))));
-    out.add(Opacity(
+    if (split.basmalah != null) out.add(Center(child: Text(split.basmalah!, style: T.quran(size: fontSize - 2))));
+    out.add(AnimatedOpacity(
+      duration: const Duration(milliseconds: 250),
       opacity: dim ? .3 : 1,
       child: Container(
         decoration: BoxDecoration(
@@ -65,20 +69,28 @@ class MushafPage extends StatelessWidget {
           textDirection: TextDirection.rtl, crossAxisAlignment: WrapCrossAlignment.center, runSpacing: 0,
           children: [
             for (var i = 0; i < words.length; i++)
-              InkWell(
-                onTap: dim || onWordTap == null ? null : () => onWordTap!(idx, i + 1),
-                borderRadius: BorderRadius.circular(4),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 3),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    color: switch (marks['$idx:${i + 1}']) { 'major' => T.sWeak.withValues(alpha: .26), 'minor' => T.sNeeds.withValues(alpha: .26), _ => null },
-                    border: marks.containsKey('$idx:${i + 1}') ? Border(bottom: BorderSide(color: marks['$idx:${i + 1}'] == 'major' ? T.sWeak : T.sNeeds, width: 3)) : null,
+              Builder(builder: (_) {
+                final k = '$idx:${i + 1}';
+                final sev = marks[k];
+                final flagged = sev == null && flags.contains(k);
+                return InkWell(
+                  onTap: dim || onWordTap == null ? null : () => onWordTap!(idx, i + 1),
+                  borderRadius: BorderRadius.circular(4),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    padding: const EdgeInsets.symmetric(horizontal: 3),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      color: switch (sev) { 'major' => T.sWeak.withValues(alpha: .26), 'minor' => T.sNeeds.withValues(alpha: .26), _ => flagged ? T.gold.withValues(alpha: .22) : null },
+                      border: sev != null
+                          ? Border(bottom: BorderSide(color: sev == 'major' ? T.sWeak : T.sNeeds, width: 3))
+                          : flagged ? const Border(bottom: BorderSide(color: T.gold, width: 3)) : null,
+                    ),
+                    child: Text(words[i], style: T.quran(size: fontSize)),
                   ),
-                  child: Text(words[i], style: T.quran(size: 24)),
-                ),
-              ),
-            Text(' ﴿${arDigits(a['ayah'])}﴾ ', style: T.quran(size: 20, color: T.gold)),
+                );
+              }),
+            Text(' ﴿${arDigits(a['ayah'])}﴾ ', style: T.quran(size: fontSize - 4, color: T.gold)),
           ],
         ),
       ),

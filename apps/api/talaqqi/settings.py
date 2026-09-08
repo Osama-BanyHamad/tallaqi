@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "services.people",
     "services.hifz",
     "services.finance",
+    "services.ai",
 ]
 
 MIDDLEWARE = [
@@ -101,6 +102,13 @@ SIMPLE_JWT = {
 }
 
 TEMPLATES = [{"BACKEND": "django.template.backends.django.DjangoTemplates", "APP_DIRS": True, "OPTIONS": {}}]  # drf-spectacular Redoc page
+
+# AI is optional. "null" (default) keeps every AI endpoint answering 503; "openai" enables the adapter.
+AI_PROVIDER = env.str("AI_PROVIDER", default="null")
+OPENAI_API_KEY = env.str("OPENAI_API_KEY", default="")
+OPENAI_MODEL = env.str("OPENAI_MODEL", default="gpt-4o-mini")
+OPENAI_ASR_MODEL = env.str("OPENAI_ASR_MODEL", default="gpt-4o-mini-transcribe")
+OPENAI_BASE_URL = env.str("OPENAI_BASE_URL", default="https://api.openai.com/v1")
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Talaqqi API",

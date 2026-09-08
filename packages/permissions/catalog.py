@@ -49,6 +49,7 @@ MODULES: dict[str, Module] = {m.key: m for m in [
     Module("finance.invoicing", "الفواتير", "Invoicing", default_enabled=False, requires=("finance.fees",), permissions=("finance.invoicing.read", "finance.invoicing.issue")),
     Module("finance.payments", "المدفوعات", "Payments", default_enabled=False, requires=("finance.invoicing",), permissions=("finance.payments.read", "finance.payments.record", "finance.payments.refund")),
     Module("live.classroom", "الفصل المباشر", "Live Classroom", default_enabled=False, requires=("ops.halaqat",), permissions=("live.classroom.host", "live.classroom.join", "live.classroom.manage")),
+    Module("ai.assist", "المساعد الذكي", "AI Assistant", safety="YELLOW", default_enabled=False, requires=("hifz.tasmee",), permissions=("ai.assist.use",)),
 ]}
 
 ALL_PERMISSIONS: frozenset[str] = frozenset(p for m in MODULES.values() for p in m.permissions)
@@ -79,18 +80,18 @@ SYSTEM_ROLES: dict[str, dict] = {
         "hifz.policy.read", "hifz.policy.assign", "hifz.planner.read", "hifz.planner.approve", "hifz.planner.override",
         "hifz.tasmee.read", "hifz.tasmee.record", "hifz.tasmee.edit_any", "hifz.assessments.read", "hifz.assessments.define",
         "hifz.assessments.record", "hifz.review_queue.read", "intel.supervisor.read", "intel.intervention.read",
-        "intel.intervention.act", "intel.reports.read", "intel.reports.export", "quran.core.read", "platform.rbac.read"]},
+        "intel.intervention.act", "intel.reports.read", "intel.reports.export", "quran.core.read", "platform.rbac.read", "ai.assist.use", "hifz.asr.use"]},
     "teacher": {"name_ar": "معلم", "name_en": "Teacher", "permissions": [
         "people.students.read", "ops.halaqat.read", "ops.attendance.read", "ops.attendance.mark",
         "hifz.journey.read", "hifz.memory_map.read", "hifz.retention.read", "hifz.policy.read",
         "hifz.planner.read", "hifz.planner.approve", "hifz.planner.override", "hifz.tasmee.read", "hifz.tasmee.record",
         "hifz.tasmee.edit_own", "hifz.assessments.read", "hifz.assessments.record", "hifz.review_queue.read",
-        "hifz.review_queue.resolve", "live.classroom.host", "quran.core.read"]},
+        "hifz.review_queue.resolve", "live.classroom.host", "quran.core.read", "ai.assist.use", "hifz.asr.use"]},
     "assistant_teacher": {"name_ar": "معلم مساعد", "name_en": "Assistant Teacher", "permissions": [
         "people.students.read", "ops.halaqat.read", "ops.attendance.read", "ops.attendance.mark",
         "hifz.journey.read", "hifz.memory_map.read", "hifz.planner.read", "hifz.tasmee.read", "quran.core.read"]},
     "student": {"name_ar": "طالب", "name_en": "Student", "permissions": [
-        "hifz.journey.read", "hifz.memory_map.read", "hifz.planner.read", "hifz.practice.use", "live.classroom.join", "quran.core.read"]},
+        "hifz.journey.read", "hifz.memory_map.read", "hifz.planner.read", "hifz.practice.use", "hifz.asr.use", "live.classroom.join", "quran.core.read"]},
     "guardian": {"name_ar": "ولي أمر", "name_en": "Guardian", "permissions": [
         "people.students.read", "hifz.journey.read", "hifz.memory_map.read", "hifz.planner.read", "ops.attendance.read",
         "parent.portal.use", "quran.core.read"]},

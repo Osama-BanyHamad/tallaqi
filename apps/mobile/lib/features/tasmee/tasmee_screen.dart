@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../core/api.dart';
 import '../../core/quran.dart';
 import '../../core/theme.dart';
 import '../../widgets/common.dart';
 import '../../widgets/mushaf_page.dart';
+import '../../widgets/recite_check.dart';
 
 /// Tasmee': the teacher's eyes stay on the Mushaf. Tap a word → pick a type → Pass. Designed for one hand on a phone.
+/// The AI recitation check is a helper: its candidates are gold underlines until the teacher adopts them.
 class TasmeeScreen extends StatefulWidget {
   const TasmeeScreen({super.key, required this.journeyId, required this.studentName, required this.purpose, required this.from, required this.to, this.segmentId, this.halaqahId});
   final String journeyId;
@@ -26,8 +29,11 @@ class _TasmeeScreenState extends State<TasmeeScreen> {
   Map<int, String> _surahs = {};
   Map<int, String> _states = {};
   Map<String, dynamic>? _page;
+  Map<String, dynamic>? _asr;
+  bool _adopted = false;
   Object? _error;
   bool _saving = false;
+  double _font = 24;
   final _note = TextEditingController();
   late final String _idem = '${widget.journeyId}-${widget.from}-${widget.to}-${DateTime.now().millisecondsSinceEpoch}';
 
@@ -61,6 +67,7 @@ class _TasmeeScreenState extends State<TasmeeScreen> {
   bool _inRange(int i) => i >= widget.from && i <= widget.to;
 
   void _tapWord(int ayahIndex, int word) async {
+    HapticFeedback.selectionClick();
     final existing = _mistakes.indexWhere((m) => m['ayah_index'] == ayahIndex && m['word_position'] == word);
     if (existing >= 0) {
       setState(() => _mistakes.removeAt(existing));
@@ -73,6 +80,7 @@ class _TasmeeScreenState extends State<TasmeeScreen> {
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
         child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text('نوع الخطأ', style: T.display(size: 16)),
+          Text('${_keyOf(ayahIndex)} · الكلمة ${arDigits(word)}', style: T.mono(size: 11.5)),
           const SizedBox(height: 12),
           Wrap(spacing: 8, runSpacing: 8, children: [
             for (final t in _types)
@@ -95,6 +103,32 @@ class _TasmeeScreenState extends State<TasmeeScreen> {
     if (tp != null) setState(() => _mistakes.add({'ayah_index': ayahIndex, 'word_position': word, 'mistake_type': tp['key'], 'severity': tp['severity']}));
   }
 
+  void _adopt() {
+    final known = _types.map((t) => t['key']).toSet();
+    final cands = ((_asr?['candidates'] as List?) ?? const []).cast<Map<String, dynamic>>();
+    var added = 0;
+    for (final c in cands) {
+      if (c['kind'] == 'addition' || c['mistake_type'] == null) continue;
+      if (_mistakes.any((m) => m['ayah_index'] == c['ayah_index'] && m['word_position'] == c['word_position'])) continue;
+      _mistakes.add({'ayah_index': c['ayah_index'], 'word_position': c['word_position'], 'mistake_type': known.contains(c['mistake_type']) ? c['mistake_type'] : _types.first['key'], 'severity': c['severity']});
+      added++;
+    }
+    HapticFeedback.mediumImpact();
+    setState(() => _adopted = true);
+    toast(context, 'أُضيف ${arDigits(added)} خطأ من مقترحات الكشف الآلي — راجعها قبل الحفظ');
+  }
+
+  /// YELLOW-class assistant: drafts a parent note from the student's real data; the teacher edits before saving.
+  Future<void> _aiDraft() async {
+    try {
+      final r = await Api.I.post('/ai/weekly-note', {'journey_id': widget.journeyId}) as Map<String, dynamic>;
+      setState(() => _note.text = r['text'] as String);
+      if (mounted) toast(context, r['disclaimer'] as String);
+    } catch (e) {
+      if (mounted) toast(context, e is ApiException && e.code == 'capability_disabled' ? 'المساعد الذكي غير مفعّل لهذه المؤسسة' : e is ApiException && e.code == 'ai_unavailable' ? 'المساعد الذكي غير مُعدّ على الخادم' : friendlyError(e), error: true);
+    }
+  }
+
   Future<void> _save(String outcome) async {
     setState(() => _saving = true);
     try {
@@ -103,7 +137,8 @@ class _TasmeeScreenState extends State<TasmeeScreen> {
         'outcome': outcome, 'mistakes': _mistakes, 'note': _note.text, 'plan_segment': widget.segmentId, 'halaqah': widget.halaqahId, 'idempotency_key': _idem,
       });
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('حُفظ التقييم — ${outcomeAr[outcome]}'), backgroundColor: T.ink));
+      HapticFeedback.heavyImpact();
+      toast(context, 'حُفظ التقييم — ${outcomeAr[outcome]}');
       Navigator.pop(context, true);
     } catch (e) {
       setState(() { _saving = false; _error = e; });
@@ -113,47 +148,70 @@ class _TasmeeScreenState extends State<TasmeeScreen> {
   @override
   Widget build(BuildContext context) {
     final marks = {for (final m in _mistakes) '${m['ayah_index']}:${m['word_position']}': m['severity'] as String};
+    final flags = <String>{
+      for (final a in ((_asr?['ayat'] as List?) ?? const []).cast<Map<String, dynamic>>())
+        for (final w in (a['words'] as List).cast<Map<String, dynamic>>())
+          if (w['status'] != 'ok') '${a['ayah_index']}:${w['position']}',
+    };
+    final major = _mistakes.where((m) => m['severity'] == 'major').length;
     return Scaffold(
       body: Column(children: [
         NightHeader(
+          compact: true,
           eyebrow: 'التسميع · ${purposeAr[widget.purpose] ?? widget.purpose}',
           title: widget.studentName,
           subtitle: _page == null ? null : 'صفحة ${arDigits(_page!['page'])} · الجزء ${arDigits(_page!['juz'])} — انقر الكلمة لتسجيل خطأ',
-          trailing: IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close_rounded, color: T.nightInk)),
+          trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+            IconButton(tooltip: 'حجم الخط', onPressed: () => setState(() => _font = _font >= 30 ? 20 : _font + 3), icon: const Icon(Icons.format_size_rounded, color: T.nightMuted)),
+            IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close_rounded, color: T.nightInk)),
+          ]),
+          child: Row(children: [
+            _Pill('${arDigits(_mistakes.length)} خطأ', major > 0 ? T.sWeak : T.sStrong),
+            const SizedBox(width: 8),
+            if (_asr != null) _Pill('كشف آلي ${arDigits(((_asr!['accuracy'] as num) * 100).round())}٪', T.gold2),
+          ]),
         ),
         Expanded(
           child: _error != null
               ? ErrorBox(_error!, onRetry: () { setState(() => _error = null); _load(); })
               : _page == null
                   ? const LoadingBox()
-                  : SingleChildScrollView(
-                      padding: const EdgeInsets.fromLTRB(14, 14, 14, 120),
-                      child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                        MushafPage(page: _page!, surahNames: _surahs, inRange: _inRange, stateOf: (i) => _states[i], marks: marks, onWordTap: _tapWord),
+                  : ListView(
+                      padding: const EdgeInsets.fromLTRB(14, 14, 14, 130),
+                      children: [
+                        ReciteCheck(from: widget.from, to: widget.to, journeyId: widget.journeyId, compact: true, onResult: (r) => setState(() { _asr = r; _adopted = false; })),
+                        if (_asr != null) ...[const SizedBox(height: 10), AsrSummary(_asr!, onAdopt: _adopt, adopted: _adopted)],
+                        const SizedBox(height: 12),
+                        MushafPage(page: _page!, surahNames: _surahs, inRange: _inRange, stateOf: (i) => _states[i], marks: marks, flags: flags, onWordTap: _tapWord, fontSize: _font),
                         const SizedBox(height: 14),
                         if (_mistakes.isNotEmpty) ...[
-                          Text('الأخطاء (${arDigits(_mistakes.length)})', style: T.display(size: 14)),
-                          const SizedBox(height: 6),
+                          SectionTitle('الأخطاء (${arDigits(_mistakes.length)})', top: 4),
                           for (final m in _mistakes)
-                            Row(children: [
-                              Chip2(_types.firstWhere((t) => t['key'] == m['mistake_type'], orElse: () => {'name_ar': m['mistake_type']})['name_ar'], color: m['severity'] == 'major' ? T.sWeak : T.sNeeds, filled: true),
-                              const SizedBox(width: 8),
-                              Text(_keyOf(m['ayah_index']), style: T.mono(size: 11)),
-                              const Spacer(),
-                              IconButton(onPressed: () => setState(() => _mistakes.remove(m)), icon: const Icon(Icons.close_rounded, size: 18)),
-                            ]),
+                            FadeIn(child: Container(
+                              margin: const EdgeInsets.only(bottom: 6),
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                              decoration: BoxDecoration(color: T.surface, borderRadius: BorderRadius.circular(10), border: Border.all(color: T.rule)),
+                              child: Row(children: [
+                                Chip2(_types.firstWhere((t) => t['key'] == m['mistake_type'], orElse: () => {'name_ar': m['mistake_type']})['name_ar'], color: m['severity'] == 'major' ? T.sWeak : T.sNeeds, filled: true),
+                                const SizedBox(width: 8),
+                                Text('${_keyOf(m['ayah_index'])} · ${arDigits(m['word_position'])}', style: T.mono(size: 11)),
+                                const Spacer(),
+                                IconButton(onPressed: () => setState(() => _mistakes.remove(m)), icon: const Icon(Icons.close_rounded, size: 18)),
+                              ]),
+                            )),
                           const SizedBox(height: 8),
                         ],
-                        TextField(controller: _note, minLines: 2, maxLines: 4, decoration: const InputDecoration(hintText: 'ملاحظة للمعلم (تظهر لولي الأمر)')),
-                      ]),
+                        TextField(controller: _note, minLines: 2, maxLines: 4, decoration: InputDecoration(hintText: 'ملاحظة للمعلم (تظهر لولي الأمر)',
+                            suffixIcon: Api.I.moduleOn('ai.assist') && Api.I.can('ai.assist.use') ? IconButton(tooltip: 'مسودة بالذكاء الاصطناعي', icon: const Icon(Icons.auto_awesome_rounded, color: T.gold), onPressed: _aiDraft) : null)),
+                      ],
                     ),
         ),
       ]),
       bottomSheet: _page == null ? null : Container(
         padding: EdgeInsets.fromLTRB(16, 12, 16, 12 + MediaQuery.paddingOf(context).bottom),
-        decoration: const BoxDecoration(color: T.surface, border: Border(top: BorderSide(color: T.gold, width: 1.5))),
+        decoration: BoxDecoration(color: T.surface, border: const Border(top: BorderSide(color: T.gold, width: 1.5)), boxShadow: [BoxShadow(color: T.ink.withValues(alpha: .12), blurRadius: 24, offset: const Offset(0, -8))]),
         child: Row(children: [
-          Expanded(flex: 2, child: FilledButton(onPressed: _saving ? null : () => _save('pass'), child: const Text('اجتاز ✓'))),
+          Expanded(flex: 2, child: FilledButton(style: FilledButton.styleFrom(backgroundColor: T.sStrong), onPressed: _saving ? null : () => _save('pass'), child: const Text('اجتاز ✓'))),
           const SizedBox(width: 8),
           Expanded(child: OutlinedButton(onPressed: _saving ? null : () => _save('partial'), child: const Text('جزئي'))),
           const SizedBox(width: 8),
@@ -168,4 +226,16 @@ class _TasmeeScreenState extends State<TasmeeScreen> {
     final a = (_page?['ayat'] as List?)?.cast<Map<String, dynamic>>().where((x) => x['ayah_index'] == ayahIndex).firstOrNull;
     return a?['key'] ?? '$ayahIndex';
   }
+}
+
+class _Pill extends StatelessWidget {
+  const _Pill(this.text, this.color);
+  final String text;
+  final Color color;
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(color: color.withValues(alpha: .18), borderRadius: BorderRadius.circular(999), border: Border.all(color: color.withValues(alpha: .5))),
+        child: Text(text, style: T.body(size: 12, color: T.nightInk, weight: FontWeight.w600)),
+      );
 }
