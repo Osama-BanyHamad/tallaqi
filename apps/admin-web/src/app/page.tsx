@@ -33,7 +33,7 @@ const AR = {
   modules: ["الطلاب وأولياء الأمور", "المعلمون والموظفون", "الحلقات والحضور", "رحلة الطالب وخريطة الحفظ", "محرك الثبات", "منهجية الحفظ", "خطة الحفظ والمراجعة", "التسميع", "الاختبارات", "المتشابهات", "التدريب الذاتي", "قائمة مراجعة المعلم", "بوابة ولي الأمر", "لوحة المشرف", "الإنذار المبكر", "التقارير", "الفصل المباشر", "الرسوم والفواتير", "التبرعات", "التفسير والحديث", "المكتبة الإسلامية", "المقررات", "التنبيهات", "سجل التدقيق"],
   ossTitle: "مفتوح المصدر، يُستضاف ذاتيًا على خادم واحد",
   ossLede: "AGPL-3.0. PostgreSQL مع عزل صفوف لكل مؤسسة. Django وNext.js وFlutter. يعمل على خادم افتراضي صغير، ويتوسّع عند الحاجة. نسخة سحابية مُدارة لاحقًا لمن لا يريد التشغيل بنفسه.",
-  footer: "نص القرآن: مشروع تنزيل — tanzil.net · تَلَقِّي مشروع مفتوح المصدر برخصة AGPL-3.0",
+  footer: "tallaqi.com · نص القرآن: مشروع تنزيل — tanzil.net · تَلَقِّي مشروع مفتوح المصدر برخصة AGPL-3.0",
 };
 const EN: typeof AR = {
   nav: ["Idea", "Modules", "Quran safety", "For whom", "Open source"],
@@ -63,7 +63,7 @@ const EN: typeof AR = {
   modules: ["Students & guardians", "Teachers & staff", "Halaqat & attendance", "Journey & Memory Map", "Retention engine", "Learning policy", "Hifz & revision planner", "Tasmee'", "Assessments", "Mutashabihat", "Self-practice", "Teacher review queue", "Parent portal", "Supervisor dashboard", "Early warning", "Reports", "Live classroom", "Fees & invoices", "Donations", "Tafsir & Hadith", "Islamic library", "Courses", "Notifications", "Audit log"],
   ossTitle: "Open source, self-hosted on a single server",
   ossLede: "AGPL-3.0. PostgreSQL with per-tenant row isolation. Django, Next.js, Flutter. Runs on a small VPS and scales when needed. A managed cloud later for those who do not want to operate it.",
-  footer: "Quran text: Tanzil Project — tanzil.net · Talaqqi is open source under AGPL-3.0",
+  footer: "tallaqi.com · Quran text: Tanzil Project — tanzil.net · Talaqqi is open source under AGPL-3.0",
 };
 
 export default function Site() {
@@ -91,7 +91,7 @@ export default function Site() {
             <p className="lede">{s.lede}</p>
             <div className="row" style={{ gap: 14 }}>
               <Link href="/login" className="pill-cta lg">{s.cta1}</Link>
-              <a href="https://github.com/talaqqi/talaqqi" className="pill-cta lg ghost">{s.cta2}</a>
+              <a href="https://github.com/Osama-BanyHamad/tallaqi" className="pill-cta lg ghost">{s.cta2}</a>
             </div>
           </div>
           <div className="device fade-up" style={{ animationDelay: ".15s" }}>
@@ -140,7 +140,7 @@ export default function Site() {
 
       <section className="section" id="oss">
         <div className="section-head"><span className="eyebrow">AGPL-3.0</span><h2>{s.ossTitle}</h2><p>{s.ossLede}</p></div>
-        <pre className="code"><span className="c"># one VPS, PostgreSQL 16, Python 3.12, Node 22</span>{"\n"}git clone https://github.com/talaqqi/talaqqi && cd talaqqi{"\n"}python apps/api/manage.py migrate{"\n"}python apps/api/manage.py load_quran_core   <span className="c"># verifies every checksum first</span>{"\n"}python apps/api/manage.py seed_demo{"\n"}python apps/api/manage.py runserver</pre>
+        <pre className="code"><span className="c"># one VPS, PostgreSQL 16, Python 3.12, Node 22</span>{"\n"}git clone https://github.com/Osama-BanyHamad/tallaqi && cd talaqqi{"\n"}python apps/api/manage.py migrate{"\n"}python apps/api/manage.py load_quran_core   <span className="c"># verifies every checksum first</span>{"\n"}python apps/api/manage.py seed_demo{"\n"}python apps/api/manage.py runserver</pre>
       </section>
 
       <footer className="site-footer"><span>{s.footer}</span><span className="num">v0.1</span></footer>

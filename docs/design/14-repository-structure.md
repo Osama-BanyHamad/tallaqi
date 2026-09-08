@@ -90,7 +90,7 @@ Decision recorded in ADR-0001; the choice between AGPL and Apache-2.0 should be 
 ## 14.5 Local development
 
 ```bash
-git clone https://github.com/talaqqi/talaqqi && cd talaqqi
+git clone https://github.com/Osama-BanyHamad/tallaqi && cd talaqqi
 make dev            # docker compose --profile dev up: postgres, valkey, garage, mailpit, livekit-dev
 make migrate seed   # migrations + demo tenant (center with 3 halaqat, 30 students, teachers, parents, plans)
 make quran-core     # download + verify + load the pinned Quran Core release

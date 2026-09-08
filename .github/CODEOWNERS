@@ -1,3 +1,3 @@
 # Quran Core data requires the review board (two approvals enforced by branch protection).
-/packages/quran_core/data/   @talaqqi/quran-core-reviewers
-/docs/safety/                @talaqqi/quran-core-reviewers
+/packages/quran_core/data/   @Osama-BanyHamad
+/docs/safety/                @Osama-BanyHamad

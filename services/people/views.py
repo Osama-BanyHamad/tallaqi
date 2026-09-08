@@ -65,7 +65,7 @@ class StudentViewSet(viewsets.ModelViewSet):
     required_module = "people.students"
     required_permission = {"list": "people.students.read", "retrieve": "people.students.read", "create": "people.students.write",
                            "update": "people.students.write", "partial_update": "people.students.write", "destroy": "people.students.write",
-                           "guardians": "people.guardians.read"}
+                           "guardians": "people.guardians.read", "weekly": "hifz.journey.read"}
     filterset_fields = ["status", "branch", "level"]
     search_fields = ["person__display_name_ar", "person__display_name_en", "student_code", "person__phone"]
     ordering_fields = ["created_at", "student_code"]
@@ -83,6 +83,50 @@ class StudentViewSet(viewsets.ModelViewSet):
         QuranJourney.objects.get_or_create(student=obj, defaults={"riwayah": self.request.tenant.default_riwayah,
                                            "mushaf_type": self.request.tenant.default_mushaf_type, "started_at": date.today()})
         AuditLog.record(self.request, "student.created", "Student", obj.id, after={"code": obj.student_code})
+
+    @action(detail=True, methods=["get"])
+    def weekly(self, request, pk=None):
+        """Parent-facing weekly summary: the six questions, computed from verified data only."""
+        from datetime import timedelta
+
+        from django.utils import timezone as tz
+
+        from services.hifz import services as hifz
+        from services.hifz.models import RecitationSession
+        from services.hifz.views import PlanSerializer
+
+        st = self.get_object()
+        j = getattr(st, "journey", None)
+        now = tz.now()
+        week_ago = now - timedelta(days=7)
+        att = list(AttendanceRecord.objects.filter(student=st, on_date__gte=week_ago.date()).values_list("status", flat=True))
+        sessions = list(RecitationSession.objects.filter(journey=j, started_at__gte=week_ago).order_by("-started_at")) if j else []
+        from packages.quran_core import get_core
+        core = get_core()
+
+        def pages(purposes):
+            seen = set()
+            for s in sessions:
+                if s.purpose in purposes and s.outcome != "repeat":
+                    for pg in range(core.page_of(s.from_ayah_index), core.page_of(s.to_ayah_index) + 1):
+                        seen.add(pg)
+            return len(seen)
+
+        note = next((s.note for s in sessions if s.note and s.note_visibility == "parent"), "")
+        plan = hifz.generate_plan(j, now.date()) if j else None
+        return Response({
+            "student": {"id": st.id, "name": st.person.display_name_ar, "code": st.student_code},
+            "week": {"from": week_ago.date(), "to": now.date()},
+            "attendance": {"present": sum(1 for a in att if a in ("present", "late")), "total": len(att)},
+            "new_pages": pages({"new"}), "revision_pages": pages({"near", "far"}),
+            "sessions": len(sessions), "passed": sum(1 for s in sessions if s.outcome == "pass"),
+            "retention": j.avg_retention if j else None, "memorized_pages": len(j.memorized_pages_order or []) if j else 0,
+            "weak_ayat": j.weak_ayat if j else 0, "critical_ayat": j.critical_ayat if j else 0,
+            "juz_map": j.juz_map if j else [], "teacher_note": note,
+            "plan": PlanSerializer(plan).data if plan else None,
+            "current": ({"key": core.ayah_by_index(j.current_ayah_index).key, "surah_name": core.surah(core.ayah_by_index(j.current_ayah_index).surah).name_ar}
+                        if j and j.current_ayah_index else None),
+        })
 
     @action(detail=True, methods=["get"])
     def guardians(self, request, pk=None):

@@ -13,3 +13,10 @@ build/
 *.log
 .DS_Store
 apps/admin-web/.env*.local
+build/
+.dart_tool/
+.flutter-plugins*
+*.iml
+.idea/
+apps/mobile/android/local.properties
+apps/mobile/android/.gradle/

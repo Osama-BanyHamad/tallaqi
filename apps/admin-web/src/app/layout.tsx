@@ -8,7 +8,7 @@ const kufi = Noto_Kufi_Arabic({ subsets: ["arabic"], weight: ["500", "600", "700
 const amiriQuran = Amiri_Quran({ subsets: ["arabic"], weight: "400", variable: "--font-amiri-quran", display: "swap" });
 const plexMono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-plex-mono", display: "swap" });
 
-export const metadata: Metadata = { title: "تَلَقِّي — Talaqqi", description: "نظام تشغيل مفتوح المصدر لتعليم القرآن · Open-source operating system for Quran education" };
+export const metadata: Metadata = { metadataBase: new URL("https://tallaqi.com"), title: "تَلَقِّي — Talaqqi", description: "نظام تشغيل مفتوح المصدر لتعليم القرآن · Open-source operating system for Quran education" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
