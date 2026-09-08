@@ -31,6 +31,8 @@ export default function TasmeePage({ params }: { params: Promise<{ journeyId: st
   const states = useQuery({ queryKey: ["mm", journeyId, "page", firstPage], queryFn: () => api<{ units: AyahRow[] }>(`/journeys/${journeyId}/memory-map?level=page&number=${firstPage}`), enabled: !!firstPage });
   const journey = useQuery({ queryKey: ["journey", journeyId], queryFn: () => api<{ student_name: string; student_code: string }>(`/journeys/${journeyId}`) });
   const types = useQuery({ queryKey: ["mistake-types"], queryFn: () => api<MType[]>("/recitations/mistake-types"), staleTime: Infinity });
+  const surahs = useQuery({ queryKey: ["surahs"], queryFn: () => api<{ surahs: { number: number; name_ar: string }[] }>("/quran/hafs_asim/surahs"), staleTime: Infinity });
+  const surahName = (n: number) => surahs.data?.surahs.find((s) => s.number === n)?.name_ar ?? String(n);
 
   const [mistakes, setMistakes] = useState<Mistake[]>([]);
   const [picking, setPicking] = useState<{ ayah_index: number; word_position: number } | null>(null);
@@ -81,7 +83,7 @@ export default function TasmeePage({ params }: { params: Promise<{ journeyId: st
               const words = body.split(" ");
               return (
                 <span key={a.key}>
-                  {a.ayah === 1 && a.surah !== 1 && <div className="surah-head">سورة {pageData.surah_starts.includes(a.key) ? "" : ""}{a.surah}</div>}
+                  {a.ayah === 1 && <div className="surah-head">سورة {surahName(a.surah)}</div>}
                   {basmalah && <span className="basmalah">{basmalah}</span>}
                   <span className={`ayah-line ${st === "weak" || st === "critical" ? st : ""}`} style={{ opacity: dim ? .38 : 1 }}>
                     {words.map((w, i) => {

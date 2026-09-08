@@ -137,24 +137,33 @@ class Command(BaseCommand):
         """Replay months of Tasmee' history so the retention model produces a realistic memory map."""
         rnd = random.Random(seed * 31 + len(journey.student.student_code))
         if profile == "post_hifz_40":
-            # Completed Hifz: mark whole Quran as memorized over the last two years with varying strength.
-            pages = list(range(1, 605))
-            start = now - timedelta(days=720)
-            for i, page in enumerate(pages):
+            # Completed Hifz: bulk-seed the whole map directly (fast), then replay a few real revision sessions.
+            from services.hifz.models import StudentAyahState
+            rows = []
+            for page in range(1, 605):
                 p = core.page(page)
-                at = start + timedelta(days=i)
-                hifz.record_recitation(journey, teacher=teacher, halaqah=halaqah, purpose="new", from_ayah_index=p.first_ayah_index,
-                                       to_ayah_index=p.last_ayah_index, outcome="pass", mistakes=[], at=at)
-            # revision cycles: several passes; some pages neglected
-            for cycle in range(2):
-                for page in pages:
-                    if rnd.random() < 0.25 and page % 7 == cycle:
-                        continue
-                    p = core.page(page)
-                    at = now - timedelta(days=(2 - cycle) * 45 - (page % 40))
-                    mistakes = [{"ayah_index": p.first_ayah_index, "mistake_type": "forgotten_word"}] if rnd.random() < 0.08 else []
-                    hifz.record_recitation(journey, teacher=teacher, halaqah=halaqah, purpose="far", from_ayah_index=p.first_ayah_index,
-                                           to_ayah_index=p.last_ayah_index, outcome="repeat" if mistakes else "pass", mistakes=mistakes, at=at, refresh=False)
+                mem_at = now - timedelta(days=720 - page)
+                base = 0.92 if page % 9 else 0.55
+                if rnd.random() < 0.06:
+                    base = 0.3
+                last = now - timedelta(days=rnd.randint(1, 50))
+                for i in range(p.first_ayah_index, p.last_ayah_index + 1):
+                    score = min(1.0, max(0.1, base + rnd.uniform(-0.08, 0.08)))
+                    stab = 90 if base > 0.9 else 12 if base > 0.5 else 3
+                    state = "mastered" if score >= 0.95 and stab >= 90 else "strong" if score >= 0.85 else "needs_revision" if score >= 0.6 else "weak" if score >= 0.35 else "critical"
+                    rows.append(StudentAyahState(tenant_id=journey.tenant_id, journey=journey, ayah_index=i, state=state, retention_score=score,
+                                                 stability_days=stab, memorized_at=mem_at, last_recited_at=last, last_passed_at=last,
+                                                 success_count=rnd.randint(4, 12), fail_count=0 if base > 0.9 else rnd.randint(1, 3),
+                                                 consecutive_successes=6 if base > 0.9 else 1, next_due_at=last + timedelta(days=stab)))
+            StudentAyahState.objects.bulk_create(rows, batch_size=2000)
+            journey.memorized_pages_order = list(range(1, 605))
+            for k in range(12):
+                page = core.page(rnd.randint(1, 604))
+                fail = rnd.random() < 0.2
+                mistakes = [{"ayah_index": page.first_ayah_index, "mistake_type": "forgotten_word"}] if fail else []
+                hifz.record_recitation(journey, teacher=teacher, halaqah=halaqah, purpose="far", from_ayah_index=page.first_ayah_index,
+                                       to_ayah_index=page.last_ayah_index, outcome="repeat" if fail else "pass", mistakes=mistakes,
+                                       at=now - timedelta(days=12 - k), refresh=False)
             journey.status = "retaining"
             journey.current_ayah_index = None
             journey.save()

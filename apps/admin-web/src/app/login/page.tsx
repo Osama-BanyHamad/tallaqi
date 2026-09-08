@@ -34,7 +34,10 @@ export default function LoginPage() {
         </div>
         <div aria-hidden style={{ display: "grid", gridTemplateColumns: "repeat(38, 1fr)", gap: 3, opacity: .9, marginTop: 30 }}>
           {FOLIOS.map((i) => {
-            const v = (Math.sin(i * 0.37) + Math.cos(i * 0.11) + 2) / 4; // deterministic, calm
+            // deterministic hash → looks like a real memory map (Juz 30 strong, earlier Juz sparse), not a wave
+            const h = ((i * 2654435761) >>> 0) % 1000 / 1000;
+            const row = Math.floor(i / 38);
+            const v = h * 0.55 + (row / 16) * 0.45;
             const c = v > .78 ? "var(--s-mastered)" : v > .55 ? "var(--s-strong)" : v > .4 ? "var(--s-recent)" : v > .25 ? "var(--s-needs)" : "rgba(255,255,255,.08)";
             return <span key={i} style={{ height: 9, borderRadius: 1, background: c }} />;
           })}
