@@ -21,4 +21,5 @@ urlpatterns = [
     path("api/v1/quran/", include("services.quran.urls")),
     path("api/v1/", include("services.people.urls")),
     path("api/v1/", include("services.hifz.urls")),
+    path("api/v1/finance/", include("services.finance.urls")),
 ]

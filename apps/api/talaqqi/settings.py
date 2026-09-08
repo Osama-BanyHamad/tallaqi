@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "services.quran",
     "services.people",
     "services.hifz",
+    "services.finance",
 ]
 
 MIDDLEWARE = [
