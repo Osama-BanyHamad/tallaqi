@@ -4,10 +4,10 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
-import { ErrorBox, Loading, Num, RetentionBar } from "@/components/ui";
+import { Avatar, ErrorBox, JuzStrip, Loading, Num, PageHead, RetentionBar } from "@/components/ui";
 
 type Student = { id: string; person: { display_name_ar: string; display_name_en: string }; student_code: string; branch_name: string; status: string; level: string;
-  halaqah: { id: string; name: string } | null; journey_summary: { id: string; memorized_ayat: number; avg_retention: number; weak_ayat: number; critical_ayat: number; memorized_pages: number } | null };
+  halaqah: { id: string; name: string } | null; journey_summary: { id: string; memorized_ayat: number; avg_retention: number; weak_ayat: number; critical_ayat: number; memorized_pages: number; juz_map: [number, number | null, string][] } | null };
 
 export default function StudentsPage() {
   const { t, locale } = useI18n();
@@ -15,28 +15,23 @@ export default function StudentsPage() {
   const q = useQuery({ queryKey: ["students", search], queryFn: () => api<{ count: number; results: Student[] }>(`/students?search=${encodeURIComponent(search)}&page_size=100`) });
   return (
     <>
-      <div className="page-head">
-        <div><span className="eyebrow">{t("nav_students")}</span><h1>{t("students_title")} {q.data && <span className="num muted" style={{ fontSize: 16 }}>· <Num v={q.data.count} /></span>}</h1></div>
-        <input className="input" style={{ maxWidth: 320 }} placeholder={t("search")} value={search} onChange={(e) => setSearch(e.target.value)} />
-      </div>
+      <PageHead eyebrow={t("nav_students")} title={<>{t("students_title")} {q.data && <span className="num muted" style={{ fontSize: 18, fontWeight: 500 }}>· <Num v={q.data.count} /></span>}</>}
+        actions={<input className="input" style={{ width: 320 }} placeholder={t("search")} value={search} onChange={(e) => setSearch(e.target.value)} />} />
       {q.isLoading ? <Loading /> : q.error ? <ErrorBox e={q.error} /> : (
-        <div className="tbl"><table>
-          <thead><tr><th>{t("students")}</th><th>{t("code")}</th><th>{t("halaqah")}</th><th>{t("memorized_pages")}</th><th>{t("memorized")}</th><th>{t("retention")}</th><th>{t("critical_ayat")}</th></tr></thead>
-          <tbody>{q.data!.results.map((s) => {
+        <div className="list stagger">
+          {q.data!.results.map((s) => {
             const j = s.journey_summary;
-            const href = j ? `/journeys/${j.id}` : "#";
+            const name = locale === "en" && s.person.display_name_en ? s.person.display_name_en : s.person.display_name_ar;
             return (
-              <tr key={s.id} className="row-link" onClick={() => j && (window.location.href = href)}>
-                <td><Link href={href}>{locale === "en" && s.person.display_name_en ? s.person.display_name_en : s.person.display_name_ar}</Link><div className="muted" style={{ fontSize: 12 }}>{s.branch_name}{s.level ? ` · ${s.level}` : ""}</div></td>
-                <td className="num" dir="ltr">{s.student_code}</td>
-                <td>{s.halaqah?.name ?? "—"}</td>
-                <td><Num v={j?.memorized_pages} /></td>
-                <td><Num v={j?.memorized_ayat} /> {t("ayat")}</td>
-                <td><RetentionBar v={j?.avg_retention} /></td>
-                <td>{j && j.critical_ayat > 0 ? <span className="pill state-critical"><i className="dot" /><Num v={j.critical_ayat} /></span> : <span className="muted">—</span>}</td>
-              </tr>);
-          })}</tbody>
-        </table></div>
+              <Link key={s.id} href={j ? `/journeys/${j.id}` : "#"} className="person-row">
+                <Avatar name={name} />
+                <div><div className="name">{name}</div><div className="meta"><span className="num" dir="ltr">{s.student_code}</span> · {s.halaqah?.name ?? "—"} · {s.branch_name}</div></div>
+                <div><JuzStrip map={j?.juz_map} /><div className="meta" style={{ marginTop: 4 }}><Num v={j?.memorized_pages} /> {t("page")} · <Num v={j?.memorized_ayat} /> {t("ayat")}</div></div>
+                <RetentionBar v={j?.avg_retention} />
+                <div className="tail">{j && j.critical_ayat > 0 ? <span className="chip bad"><i className="dot" style={{ background: "var(--s-critical)" }} /><Num v={j.critical_ayat} /> {t("critical_ayat")}</span> : <span className="chip"><i className="dot" style={{ background: "var(--s-strong)" }} />{t("on_track")}</span>}</div>
+              </Link>);
+          })}
+        </div>
       )}
     </>
   );

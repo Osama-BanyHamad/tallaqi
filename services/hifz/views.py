@@ -34,9 +34,9 @@ class JourneySerializer(serializers.ModelSerializer):
         fields = ["id", "student", "student_name", "student_code", "riwayah", "mushaf_type", "policy_key", "policy_overrides", "status",
                   "started_at", "direction", "current_ayah_index", "current_key", "level", "memorized_ayat", "strong_ayat",
                   "needs_revision_ayat", "weak_ayat", "critical_ayat", "mastered_ayat", "avg_retention", "memorized_pages",
-                  "memorized_pages_order", "updated_at"]
+                  "memorized_pages_order", "juz_map", "updated_at"]
         read_only_fields = ["id", "student", "memorized_ayat", "strong_ayat", "needs_revision_ayat", "weak_ayat", "critical_ayat",
-                            "mastered_ayat", "avg_retention", "memorized_pages_order", "updated_at"]
+                            "mastered_ayat", "avg_retention", "memorized_pages_order", "juz_map", "updated_at"]
 
     def get_current_key(self, obj):
         from packages.quran_core import get_core

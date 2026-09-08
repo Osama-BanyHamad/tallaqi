@@ -147,14 +147,27 @@ def _record_pages_order(core, journey: QuranJourney, first: int, last: int, purp
 
 
 def refresh_aggregates(journey: QuranJourney) -> None:
-    rows = StudentAyahState.objects.filter(journey=journey).values_list("state", "retention_score")
+    core = get_core(journey.riwayah)
+    rows = StudentAyahState.objects.filter(journey=journey).values_list("state", "retention_score", "ayah_index")
     counts = {"recent": 0, "strong": 0, "needs_revision": 0, "weak": 0, "critical": 0, "mastered": 0}
     total, score_sum = 0, 0.0
-    for state, score in rows:
+    per_juz = {u.number: [0, 0.0, 0, u.last_ayah_index - u.first_ayah_index + 1] for u in core.units_of("juz")}  # n, sum, weak, size
+    for state, score, idx in rows:
         if state in counts:
             counts[state] += 1
             total += 1
             score_sum += score
+            j = per_juz[core.juz_of(idx)]
+            j[0] += 1
+            j[1] += score
+            j[2] += 1 if state in ("weak", "critical") else 0
+    juz_map = []
+    for n in range(1, 31):
+        cnt, ssum, weak, size = per_juz[n]
+        avg = round(ssum / cnt, 3) if cnt else None
+        st = "not_memorized" if cnt == 0 else "weak" if weak / cnt >= 0.3 else "needs_revision" if avg < 0.85 else "strong"
+        juz_map.append([round(cnt / size, 3), avg, st])
+    journey.juz_map = juz_map
     journey.memorized_ayat = total
     journey.strong_ayat = counts["strong"] + counts["recent"]
     journey.needs_revision_ayat = counts["needs_revision"]

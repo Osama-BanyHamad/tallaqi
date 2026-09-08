@@ -27,39 +27,38 @@ export function MemoryMap({ journeyId, onSelectPage }: { journeyId: string; onSe
   const byJuz: Record<number, (Unit & { juz: number })[]> = {};
   pages.data?.units.forEach((p) => { (byJuz[p.juz] ??= []).push(p); });
   const maxCols = Math.max(...Object.values(byJuz).map((a) => a.length));
-
   function pick(p: number) { const n = page === p ? null : p; setPage(n); onSelectPage(n); }
 
   return (
     <div className="stack">
-      <div className="row" style={{ justifyContent: "space-between" }}>
+      <div className="section-title">
         <h2>{t("memory_map")}</h2>
-        {juz != null && <button className="btn" onClick={() => { setJuz(null); setPage(null); onSelectPage(null); }}>{t("quran_level")} ↩</button>}
+        {juz != null ? <button className="btn sm" onClick={() => { setJuz(null); setPage(null); onSelectPage(null); }}>{t("quran_level")} ↩</button> : <small>{t("juz")} ١ → ٣٠ · {t("page")} ١ → ٦٠٤</small>}
       </div>
       {juz == null ? (
         <div className="mmap" style={{ ["--cols" as string]: maxCols }}>
           {quran.data!.units.map((u) => (
             <div key={u.number} className="mmap-row">
-              <button className="juz" onClick={() => setJuz(u.number)} style={{ background: "none", border: 0, cursor: "pointer", textAlign: "start", padding: 0 }}>{t("juz")} {fmtNum(u.number, locale)}</button>
+              <button className="juz" onClick={() => setJuz(u.number)}>{t("juz")} {fmtNum(u.number, locale)}</button>
               <div className="pages">
                 {byJuz[u.number].map((p) => <PageFolio key={p.number} unit={p} selected={page === p.number} onClick={() => { setJuz(u.number); pick(p.number); }} />)}
               </div>
-              <span className="stat">{u.avg_retention == null ? "—" : `${Math.round(u.avg_retention * 100)}%`}</span>
+              <span className="stat">{u.avg_retention == null ? "" : `${Math.round(u.avg_retention * 100)}%`}</span>
             </div>
           ))}
         </div>
       ) : juzQ.isLoading ? <Loading /> : (
         <div className="stack">
-          <div className="row" style={{ gap: 18 }}>
+          <div className="row" style={{ gap: 16 }}>
             <h3>{t("juz")} {fmtNum(juz, locale)}</h3>
             <StatePill state={juzQ.data!.state} />
             <span className="muted" style={{ fontSize: 13 }}>{t("coverage")} <Pct v={juzQ.data!.coverage} /> · {t("avg_retention")} <Pct v={juzQ.data!.avg_retention} /> · <Num v={juzQ.data!.due_ayat} /> {t("due")}</span>
           </div>
-          <div className="pages" style={{ display: "grid", gridTemplateColumns: `repeat(${juzQ.data!.units.length}, 1fr)`, gap: 6 }}>
+          <div style={{ display: "grid", gridTemplateColumns: `repeat(${juzQ.data!.units.length}, 1fr)`, gap: 8 }}>
             {juzQ.data!.units.map((u) => (
-              <button key={u.number} className={`folio bg-${u.state} ${page === u.number ? "selected" : ""}`} style={{ height: 54 }} title={`${t("page")} ${u.number}`} onClick={() => pick(u.number)}>
+              <button key={u.number} className={`folio bg-${u.state} ${page === u.number ? "selected" : ""}`} style={{ height: 72 }} title={`${t("page")} ${u.number} · ${t(`state_${u.state}` as Key)}`} onClick={() => pick(u.number)}>
                 {u.due_ayat > 0 && <span className="due" />}
-                <span style={{ position: "absolute", bottom: 3, insetInlineStart: 0, insetInlineEnd: 0, fontSize: 10, fontFamily: "var(--font-mono)", color: "rgba(255,255,255,.9)", mixBlendMode: "difference" }}>{u.number}</span>
+                <span style={{ position: "absolute", bottom: 5, insetInline: 0, fontSize: 11, fontFamily: "var(--font-mono)", color: "#fff", mixBlendMode: "difference" }}>{u.number}</span>
               </button>
             ))}
           </div>
@@ -76,8 +75,8 @@ export function MemoryMap({ journeyId, onSelectPage }: { journeyId: string; onSe
 function PageFolio({ unit, selected, onClick }: { unit: Unit; selected: boolean; onClick: () => void }) {
   const { t } = useI18n();
   return (
-    <button className={`folio bg-${unit.state} ${selected ? "selected" : ""}`} title={`${t("page")} ${unit.number} · ${t(`state_${unit.state}` as Key)}`} onClick={onClick}
-      style={{ opacity: unit.memorized_ayat === 0 ? .9 : .6 + unit.coverage * .4 }}>
+    <button className={`folio bg-${unit.state} ${selected ? "selected" : ""}`} title={`${t("page")} ${unit.number} · ${t(`state_${unit.state}` as Key)}${unit.avg_retention != null ? ` · ${Math.round(unit.avg_retention * 100)}%` : ""}`} onClick={onClick}
+      style={{ opacity: unit.memorized_ayat === 0 ? 1 : .62 + unit.coverage * .38 }}>
       {unit.due_ayat > 0 && <span className="due" />}
     </button>
   );
@@ -89,19 +88,19 @@ export function PageDetail({ journeyId, page }: { journeyId: string; page: numbe
   if (q.isLoading) return <Loading />;
   const d = q.data!;
   return (
-    <div className="stack" style={{ gap: 10 }}>
+    <div className="stack fade-up" style={{ gap: 10 }}>
       <div className="row" style={{ gap: 14 }}><h3>{t("page")} {fmtNum(page, locale)}</h3><StatePill state={d.state} /><span className="muted" style={{ fontSize: 13 }}>{t("avg_retention")} <Pct v={d.avg_retention} /></span></div>
-      <div className="stack" style={{ gap: 6 }}>
+      <div className="ayah-rows">
         {d.units.map((a) => (
-          <details key={a.key} className="card" style={{ padding: "8px 12px" }}>
-            <summary style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", listStyle: "none" }}>
-              <span className={`pill state-${a.state}`} style={{ minWidth: 100, justifyContent: "center" }}><i className="dot" />{t(`state_${a.state}` as Key)}</span>
-              <span className="num" style={{ fontSize: 12, color: "var(--ink-3)", minWidth: 44 }}>{a.key}</span>
-              <span className="quran grow" style={{ fontSize: 20, lineHeight: 1.8, textAlign: "start", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{a.text_uthmani}</span>
-              <span className="num" style={{ fontSize: 12 }}>{Math.round(a.retention_score * 100)}%</span>
+          <details key={a.key}>
+            <summary>
+              <span className={`chip state-${a.state}`}><i className="dot" />{t(`state_${a.state}` as Key)}</span>
+              <span className="num" style={{ fontSize: 12, color: "var(--ink-3)" }}>{a.key}</span>
+              <span className="quran" style={{ fontSize: 21, lineHeight: 1.8, textAlign: "start", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{a.text_uthmani}</span>
+              <span className="num" style={{ fontSize: 12, textAlign: "end" }}>{Math.round(a.retention_score * 100)}%</span>
             </summary>
-            <div style={{ marginTop: 8, fontSize: 13, color: "var(--ink-2)" }}>
-              <p className="quran" style={{ fontSize: 22, margin: "0 0 8px" }}>{a.text_uthmani}</p>
+            <div style={{ marginTop: 10, fontSize: 13.5, color: "var(--ink-2)", borderTop: "1px dashed var(--rule)", paddingTop: 10 }}>
+              <p className="quran" style={{ fontSize: 24, margin: "0 0 8px" }}>{a.text_uthmani}</p>
               <ul style={{ margin: 0, paddingInlineStart: 18 }}>{a.explanation.map((x, i) => <li key={i}>{x}</li>)}</ul>
             </div>
           </details>

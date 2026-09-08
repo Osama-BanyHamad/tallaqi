@@ -3,25 +3,29 @@ import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
-import { ErrorBox, Loading, Num } from "@/components/ui";
+import { ErrorBox, Loading, Num, PageHead } from "@/components/ui";
 
 type H = { id: string; name: string; branch_name: string; kind: string; policy_key: string; schedule_summary: string; capacity: number; student_count: number; teachers: { name: string; role: string }[] };
+const KIND: Record<string, string> = { in_person: "حضوري", online: "عن بُعد", hybrid: "مدمج" };
 
 export default function HalaqatPage() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const q = useQuery({ queryKey: ["halaqat"], queryFn: () => api<{ results: H[] }>("/halaqat?page_size=100") });
   if (q.isLoading) return <Loading />;
   if (q.error) return <ErrorBox e={q.error} />;
   return (
     <>
-      <div className="page-head"><div><span className="eyebrow">{t("nav_halaqat")}</span><h1>{t("nav_halaqat")}</h1></div></div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 14 }}>
+      <PageHead eyebrow={t("nav_halaqat")} title={t("nav_halaqat")} sub={locale === "ar" ? "افتح الحلقة لتسجيل الحضور والتسميع من خطة اليوم." : "Open a Halaqah to mark attendance and run Tasmee' from today's plan."} />
+      <div className="stagger" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 16 }}>
         {q.data!.results.map((h) => (
-          <Link key={h.id} href={`/halaqat/${h.id}`} className="card stack" style={{ gap: 8, textDecoration: "none", color: "inherit" }}>
-            <div className="row" style={{ justifyContent: "space-between" }}><h2 style={{ fontSize: 16 }}>{h.name}</h2><span className="pill">{h.kind}</span></div>
-            <p className="muted" style={{ margin: 0, fontSize: 13 }}>{h.branch_name} · {h.schedule_summary}</p>
-            <p style={{ margin: 0, fontSize: 13 }}>{t("teacher")}: {h.teachers.map((x) => x.name).join("، ") || "—"}</p>
-            <p style={{ margin: 0, fontSize: 13 }}><Num v={h.student_count} /> / <Num v={h.capacity} /> {t("students")} · {h.policy_key}</p>
+          <Link key={h.id} href={`/halaqat/${h.id}`} className="surface pad stack" style={{ gap: 10, color: "inherit" }}>
+            <div className="row" style={{ justifyContent: "space-between" }}><h2 style={{ fontSize: 18 }}>{h.name}</h2><span className="chip">{locale === "ar" ? KIND[h.kind] ?? h.kind : h.kind}</span></div>
+            <p className="muted" style={{ margin: 0, fontSize: 13.5 }}>{h.branch_name}<br />{h.schedule_summary}</p>
+            <p style={{ margin: 0, fontSize: 14 }}>{t("teacher")}: <b>{h.teachers.map((x) => x.name).join("، ") || "—"}</b></p>
+            <div className="row" style={{ justifyContent: "space-between", marginTop: 4 }}>
+              <span className="num" style={{ fontSize: 22, fontFamily: "var(--font-display)", fontWeight: 700 }}><Num v={h.student_count} /><span className="muted" style={{ fontSize: 13, fontWeight: 500 }}> / <Num v={h.capacity} /> {t("students")}</span></span>
+              <span className="chip">{h.policy_key.replaceAll("_", " ")}</span>
+            </div>
           </Link>
         ))}
       </div>

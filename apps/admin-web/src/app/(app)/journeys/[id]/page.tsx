@@ -6,16 +6,17 @@ import { api } from "@/lib/api";
 import { useI18n, type Key } from "@/lib/i18n";
 import { fmtNum } from "@/lib/quran";
 import { MemoryMap, PageDetail } from "@/components/MemoryMap";
-import { ErrorBox, Loading, Num, Pct, RetentionBar, fmtDate } from "@/components/ui";
+import { Avatar, ErrorBox, JuzStrip, Kpi, Loading, Num, Pct, RetentionBar, fmtDate } from "@/components/ui";
 
 type Journey = { id: string; student: string; student_name: string; student_code: string; riwayah: string; policy_key: string; status: string; started_at: string; current_ayah_index: number | null;
-  current_key: { key: string; surah: number; ayah: number; page: number; surah_name: string } | null; level: string; memorized_ayat: number; strong_ayat: number; needs_revision_ayat: number; weak_ayat: number; critical_ayat: number; mastered_ayat: number; avg_retention: number; memorized_pages: number };
+  current_key: { key: string; surah: number; ayah: number; page: number; surah_name: string } | null; level: string; memorized_ayat: number; strong_ayat: number; needs_revision_ayat: number; weak_ayat: number; critical_ayat: number; mastered_ayat: number; avg_retention: number; memorized_pages: number; juz_map: [number, number | null, string][] };
 type Seg = { id: string; purpose: string; from_ayah_index: number; to_ayah_index: number; from_key: { key: string; surah_name: string; ayah: number }; to_key: { key: string; surah_name: string; ayah: number }; pages: number[]; reason: string; completion: string };
 type Plan = { id: string; plan_date: string; status: string; rationale: string[]; paused_new: boolean; segments: Seg[] };
 type Ev = { id: string; event_type: string; payload: Record<string, unknown>; occurred_at: string };
 type Sess = { id: string; purpose: string; from_key: string; to_key: string; started_at: string; outcome: string; teacher_name: string; mistakes: { mistake_type: string }[]; note: string };
 
-const EV: Record<string, Key | string> = { "journey.first_memorization": "بداية الحفظ", "surah.completed": "أتمّ سورة", "juz.completed": "أتمّ جزءًا", "memory_map.override": "تعديل يدوي لخريطة الحفظ" };
+const EV: Record<string, string> = { "journey.first_memorization": "بداية الحفظ", "surah.completed": "أتمّ سورة", "juz.completed": "أتمّ الجزء", "memory_map.override": "تعديل يدوي لخريطة الحفظ" };
+const STATUS: Record<string, string> = { memorizing: "في الحفظ", retaining: "في المراجعة الطويلة", paused: "متوقف", completed_with_retention: "أتمّ الختم", ijazah_track: "مسار الإجازة" };
 
 export default function JourneyPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -28,35 +29,44 @@ export default function JourneyPage({ params }: { params: Promise<{ id: string }
   if (j.isLoading) return <Loading />;
   if (j.error) return <ErrorBox e={j.error} />;
   const d = j.data!;
+  const pct = Math.round(d.avg_retention * 100);
   return (
     <>
-      <div className="page-head">
-        <div>
-          <span className="eyebrow">{t("journey")}</span>
-          <h1>{d.student_name}</h1>
-          <p><span className="num" dir="ltr">{d.student_code}</span> · {d.riwayah === "hafs_asim" ? "حفص عن عاصم" : d.riwayah} · {d.policy_key} · {t(`status` as Key)}: {d.status}</p>
+      <div className="page-head fade-up" style={{ alignItems: "center" }}>
+        <div className="row" style={{ gap: 20 }}>
+          <Avatar name={d.student_name} />
+          <div>
+            <span className="eyebrow">{t("journey")} · {STATUS[d.status] ?? d.status}</span>
+            <h1 style={{ marginTop: 6 }}>{d.student_name}</h1>
+            <p style={{ marginTop: 4 }}><span className="num" dir="ltr">{d.student_code}</span> · حفص عن عاصم · {d.policy_key.replaceAll("_", " ")}</p>
+          </div>
         </div>
-        {d.current_key && <Link className="btn gold" href={`/tasmee/${d.id}?purpose=new&from=${d.current_ayah_index}&to=${Math.min(d.current_ayah_index! + 7, 6236)}`}>{t("start_tasmee")} →</Link>}
+        {d.current_key && <Link className="btn gold" href={`/tasmee/${d.id}?purpose=new&from=${d.current_ayah_index}&to=${Math.min(d.current_ayah_index! + 7, 6236)}`}>{t("start_tasmee")}</Link>}
       </div>
-      <div className="ledger">
-        <div><div className="label">{t("memorized_pages")}</div><div className="value num"><Num v={d.memorized_pages} /></div></div>
-        <div><div className="label">{t("memorized")}</div><div className="value num"><Num v={d.memorized_ayat} /> <span style={{ fontSize: 14, color: "var(--ink-3)" }}>{t("ayat")}</span></div></div>
-        <div><div className="label">{t("avg_retention")}</div><div className="value num"><Pct v={d.avg_retention} /></div></div>
-        <div><div className="label">{t("state_weak")} / {t("state_critical")}</div><div className="value num" style={{ color: d.critical_ayat ? "var(--s-critical)" : "inherit" }}><Num v={d.weak_ayat} /> / <Num v={d.critical_ayat} /></div></div>
-        <div><div className="label">{t("position")}</div><div className="value" style={{ fontSize: 18 }}>{d.current_key ? `${d.current_key.surah_name} ${fmtNum(d.current_key.ayah, locale)} · ${t("page")} ${fmtNum(d.current_key.page, locale)}` : "—"}</div></div>
+      <div className="surface pad fade-up" style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: 28, alignItems: "center", marginBottom: 26 }}>
+        <div className="ring" style={{ ["--p" as string]: pct }}><div>{fmtNum(pct, locale)}٪<small>{t("avg_retention")}</small></div></div>
+        <div className="stack" style={{ gap: 14 }}>
+          <JuzStrip map={d.juz_map} large />
+          <div className="kpis" style={{ marginBottom: 0, gap: 10 }}>
+            <Kpi label={t("memorized_pages")} value={<Num v={d.memorized_pages} />} />
+            <Kpi label={t("memorized")} value={<Num v={d.memorized_ayat} />} unit={t("ayat")} />
+            <Kpi label={`${t("state_weak")} / ${t("state_critical")}`} tone={d.critical_ayat ? "attention" : undefined} value={<><Num v={d.weak_ayat} /> / <Num v={d.critical_ayat} /></>} />
+            <Kpi label={t("position")} value={<span style={{ fontSize: 20 }}>{d.current_key ? `${d.current_key.surah_name} ${fmtNum(d.current_key.ayah, locale)}` : "—"}</span>} sub={d.current_key ? `${t("page")} ${fmtNum(d.current_key.page, locale)}` : undefined} />
+          </div>
+        </div>
       </div>
       <div className="with-margin">
-        <div className="stack" style={{ gap: 30 }}>
-          <MemoryMap journeyId={id} onSelectPage={setPage} />
+        <div className="stack" style={{ gap: 34 }}>
+          <div className="surface pad"><MemoryMap journeyId={id} onSelectPage={setPage} /></div>
           {page != null && <PageDetail journeyId={id} page={page} />}
-          <section className="stack" style={{ gap: 10 }}>
-            <h2>{t("sessions")}</h2>
+          <section>
+            <div className="section-title"><h2>{t("sessions")}</h2><small>{sessions.data?.length ?? 0}</small></div>
             {sessions.data?.length ? (
               <div className="tbl"><table>
                 <thead><tr><th>{t("timeline")}</th><th>{t("purpose_new")}/{t("purpose_near")}</th><th>{t("ayah")}</th><th>{t("status")}</th><th>{t("mistakes")}</th><th>{t("teacher")}</th></tr></thead>
                 <tbody>{sessions.data.slice(0, 25).map((s) => (
-                  <tr key={s.id}><td className="num" style={{ fontSize: 12 }}>{fmtDate(s.started_at, locale)}</td><td>{t(`purpose_${s.purpose}` as Key)}</td><td className="num" dir="ltr">{s.from_key} → {s.to_key}</td>
-                    <td><span className="pill" style={{ ["--dot" as string]: s.outcome === "pass" ? "var(--s-strong)" : s.outcome === "repeat" ? "var(--s-weak)" : "var(--s-needs)" }}><i className="dot" />{t(`outcome_${s.outcome}` as Key)}</span></td>
+                  <tr key={s.id}><td className="num" style={{ fontSize: 12.5 }}>{fmtDate(s.started_at, locale)}</td><td>{t(`purpose_${s.purpose}` as Key)}</td><td className="num" dir="ltr">{s.from_key} → {s.to_key}</td>
+                    <td><span className="chip" style={{ ["--dot" as string]: s.outcome === "pass" ? "var(--s-strong)" : s.outcome === "repeat" ? "var(--s-weak)" : "var(--s-needs)" }}><i className="dot" />{t(`outcome_${s.outcome}` as Key)}</span></td>
                     <td className="num"><Num v={s.mistakes.length} /></td><td>{s.teacher_name || "—"}</td></tr>))}</tbody>
               </table></div>) : <p className="muted">{t("empty")}</p>}
           </section>
@@ -65,7 +75,7 @@ export default function JourneyPage({ params }: { params: Promise<{ id: string }
           <div>
             <h3>{t("todays_plan")}</h3>
             {plan.data ? (
-              <div className="stack" style={{ gap: 8, marginTop: 8 }}>
+              <div className="stack" style={{ gap: 8 }}>
                 {plan.data.segments.map((s) => (
                   <Link key={s.id} href={`/tasmee/${id}?purpose=${s.purpose}&from=${s.from_ayah_index}&to=${s.to_ayah_index}&segment=${s.id}`} className="seg" style={{ gridTemplateColumns: "auto 1fr" }}>
                     <span className={`purpose ${s.purpose}`}>{t(`purpose_${s.purpose}` as Key)}</span>
@@ -73,7 +83,6 @@ export default function JourneyPage({ params }: { params: Promise<{ id: string }
                   </Link>
                 ))}
                 {plan.data.rationale.map((r, i) => <p key={i} style={{ fontSize: 12.5 }}>{r}</p>)}
-                <p className="muted" style={{ fontSize: 12 }}>{plan.data.status} · {plan.data.plan_date}</p>
               </div>
             ) : <Loading />}
           </div>
@@ -88,7 +97,7 @@ export default function JourneyPage({ params }: { params: Promise<{ id: string }
           <div>
             <h3>{t("explanation")}</h3>
             <p>{locale === "ar" ? "الثبات مقياس تعليمي لاستقرار الاسترجاع، يُحسب حتميًا من تسميعات المعلم وأخطائه وزمن المراجعة. ليس حكمًا شرعيًا على التلاوة." : "Retention is an educational measure of recall stability, computed deterministically from teacher-verified recitations, mistakes, and time. It is not a religious judgment."}</p>
-            <div className="row" style={{ marginTop: 6 }}><RetentionBar v={d.avg_retention} /></div>
+            <div className="row" style={{ marginTop: 8 }}><RetentionBar v={d.avg_retention} /></div>
           </div>
         </aside>
       </div>

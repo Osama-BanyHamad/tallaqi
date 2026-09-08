@@ -29,6 +29,7 @@ class QuranJourney(TenantModel):
     mastered_ayat = models.PositiveIntegerField(default=0)
     avg_retention = models.FloatField(default=0.0)
     memorized_pages_order = models.JSONField(default=list)     # pages in the order memorized (oldest first)
+    juz_map = models.JSONField(default=list)                   # 30 entries: [coverage, avg_retention, state] per Juz (materialized)
 
     class Meta:
         db_table = "hifz_journey"

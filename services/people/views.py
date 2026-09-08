@@ -41,7 +41,8 @@ class StudentSerializer(serializers.ModelSerializer):
         if j is None:
             return None
         return {"id": j.id, "status": j.status, "memorized_ayat": j.memorized_ayat, "avg_retention": j.avg_retention,
-                "weak_ayat": j.weak_ayat, "critical_ayat": j.critical_ayat, "memorized_pages": len(j.memorized_pages_order or [])}
+                "weak_ayat": j.weak_ayat, "critical_ayat": j.critical_ayat, "memorized_pages": len(j.memorized_pages_order or []),
+                "juz_map": j.juz_map, "current_ayah_index": j.current_ayah_index, "status": j.status}
 
     @transaction.atomic
     def create(self, validated):
@@ -175,7 +176,7 @@ class HalaqahViewSet(viewsets.ModelViewSet):
                 "attendance": att[st.id].status if st.id in att else None,
                 "journey": {"memorized_ayat": j.memorized_ayat, "avg_retention": j.avg_retention, "weak_ayat": j.weak_ayat,
                             "critical_ayat": j.critical_ayat, "current_ayah_index": j.current_ayah_index,
-                            "memorized_pages": len(j.memorized_pages_order or [])} if j else None,
+                            "memorized_pages": len(j.memorized_pages_order or []), "juz_map": j.juz_map} if j else None,
                 "plan": PlanSerializer(plan).data if plan else None,
                 "last_session": {"started_at": last.started_at, "outcome": last.outcome, "purpose": last.purpose,
                                  "range": [last.from_ayah_index, last.to_ayah_index]} if last else None,
@@ -238,7 +239,8 @@ class DashboardView(viewsets.ViewSet):
                 reasons.append("بلا تسميع منذ أسبوع")
             row = {"journey_id": j.id, "student_id": j.student_id, "name": j.student.person.display_name_ar, "branch": j.student.branch.name,
                    "avg_retention": j.avg_retention, "memorized_ayat": j.memorized_ayat, "weak_ayat": j.weak_ayat, "critical_ayat": j.critical_ayat,
-                   "sessions_7d": recent.get(j.id, 0), "absences_14d": absent.get(j.student_id, 0), "reasons": reasons}
+                   "sessions_7d": recent.get(j.id, 0), "absences_14d": absent.get(j.student_id, 0), "reasons": reasons, "juz_map": j.juz_map,
+                   "memorized_pages": len(j.memorized_pages_order or [])}
             (attention if len(reasons) >= 2 else behind if reasons else on_track).append(row)
         halaqat = Halaqah.objects.filter(status="active").prefetch_related("enrollments__student__journey", "staff_assignments__staff__person")
         hrows = []

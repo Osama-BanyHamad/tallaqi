@@ -5,7 +5,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { useI18n, type Key } from "@/lib/i18n";
 import { fmtNum, splitBasmalah } from "@/lib/quran";
-import { ErrorBox, Loading, StatePill } from "@/components/ui";
+import { Avatar, ErrorBox, Loading, StatePill } from "@/components/ui";
 import type { AyahRow } from "@/components/MemoryMap";
 
 type QAyah = { ayah_index: number; surah: number; ayah: number; key: string; text_uthmani: string; page: number };
@@ -57,24 +57,27 @@ export default function TasmeePage({ params }: { params: Promise<{ journeyId: st
     if (existing) { setMistakes(mistakes.filter((m) => m !== existing)); return; }
     setPicking({ ayah_index, word_position });
   }
-  function choose(tp: MType) {
-    if (!picking) return;
-    setMistakes([...mistakes, { ...picking, mistake_type: tp.key, severity: tp.severity }]);
-    setPicking(null);
-  }
+  function choose(tp: MType) { if (!picking) return; setMistakes([...mistakes, { ...picking, mistake_type: tp.key, severity: tp.severity }]); setPicking(null); }
+  const major = mistakes.filter((m) => m.severity === "major").length;
 
   return (
     <>
-      <div className="page-head">
-        <div>
-          <span className="eyebrow">{t("tasmee")} · {t(`purpose_${purpose}` as Key)}</span>
-          <h1>{journey.data?.student_name ?? "…"}</h1>
-          <p>{range.data!.ayat[0].key} → {range.data!.ayat.at(-1)!.key} · {t("page")} {fmtNum(pageData.page, locale)} · {t("juz")} {fmtNum(pageData.juz, locale)} — {t("tap_word_hint")}</p>
+      <div className="page-head fade-up" style={{ alignItems: "center" }}>
+        <div className="row" style={{ gap: 16 }}>
+          <Avatar name={journey.data?.student_name ?? "؟"} />
+          <div>
+            <span className="eyebrow">{t("tasmee")} · {t(`purpose_${purpose}` as Key)}</span>
+            <h1 style={{ marginTop: 4 }}>{journey.data?.student_name ?? "…"}</h1>
+            <p style={{ marginTop: 2 }}>{range.data!.ayat[0].key} → {range.data!.ayat.at(-1)!.key} · {t("page")} {fmtNum(pageData.page, locale)} · {t("juz")} {fmtNum(pageData.juz, locale)}</p>
+          </div>
         </div>
-        <div className="row"><span className="pill"><i className="dot" style={{ background: "var(--s-weak)" }} />{t("mistakes")}: <b className="num">{fmtNum(mistakes.length, locale)}</b></span></div>
+        <div className="row">
+          <span className={`chip ${major ? "bad" : ""}`}><i className="dot" style={{ background: major ? "var(--s-weak)" : "var(--s-strong)" }} />{t("mistakes")}: <b className="num">{fmtNum(mistakes.length, locale)}</b></span>
+        </div>
       </div>
+      <p className="muted" style={{ margin: "-14px 0 18px", fontSize: 13.5 }}>{t("tap_word_hint")}</p>
       <div className="with-margin">
-        <div className="mushaf">
+        <div className="mushaf fade-up">
           <div className="quran">
             {pageData.ayat.map((a) => {
               const { basmalah, body } = splitBasmalah(a.text_uthmani, a.surah, a.ayah);
@@ -83,9 +86,9 @@ export default function TasmeePage({ params }: { params: Promise<{ journeyId: st
               const words = body.split(" ");
               return (
                 <span key={a.key}>
-                  {a.ayah === 1 && <div className="surah-head">سورة {surahName(a.surah)}</div>}
+                  {a.ayah === 1 && <div className="surah-head"><span /><span>سورة {surahName(a.surah)}</span><span /></div>}
                   {basmalah && <span className="basmalah">{basmalah}</span>}
-                  <span className={`ayah-line ${st === "weak" || st === "critical" ? st : ""}`} style={{ opacity: dim ? .38 : 1 }}>
+                  <span className={`ayah-line ${st === "weak" || st === "critical" ? st : ""}`} style={{ opacity: dim ? .3 : 1 }}>
                     {words.map((w, i) => {
                       const m = mistakes.find((x) => x.ayah_index === a.ayah_index && x.word_position === i + 1);
                       return <span key={i} className={`w ${m ? (m.severity === "major" ? "marked" : "minor") : ""}`} onClick={() => toggleWord(a.ayah_index, i + 1)}>{w} </span>;
@@ -96,21 +99,22 @@ export default function TasmeePage({ params }: { params: Promise<{ journeyId: st
               );
             })}
           </div>
+          <div className="pageno">{fmtNum(pageData.page, "ar")}</div>
           <p className="attrib">{pageData.attribution}</p>
         </div>
         <aside className="hashiya">
           <div>
             <h3>{t("mistakes")}</h3>
             {mistakes.length === 0 ? <p>—</p> : (
-              <ul style={{ margin: "6px 0 0", paddingInlineStart: 16, fontSize: 13 }}>
+              <div className="stack" style={{ gap: 6 }}>
                 {mistakes.map((m, i) => { const tp = types.data?.find((x) => x.key === m.mistake_type); const ay = pageData.ayat.find((a) => a.ayah_index === m.ayah_index);
-                  return <li key={i}>{ay?.key} · {locale === "en" ? tp?.name_en : tp?.name_ar} <button className="btn" style={{ padding: "0 6px", fontSize: 11 }} onClick={() => setMistakes(mistakes.filter((x) => x !== m))}>×</button></li>; })}
-              </ul>)}
+                  return <div key={i} className="row" style={{ fontSize: 13, justifyContent: "space-between", gap: 8 }}><span><span className="num muted">{ay?.key}</span> · {locale === "en" ? tp?.name_en : tp?.name_ar}</span><button className="btn sm" onClick={() => setMistakes(mistakes.filter((x) => x !== m))} aria-label="remove">×</button></div>; })}
+              </div>)}
           </div>
           <div>
             <h3>{t("memory_map")}</h3>
-            <div className="stack" style={{ gap: 4 }}>
-              {range.data!.ayat.map((a) => { const s = stateOf.get(a.ayah_index); return <div key={a.key} className="row" style={{ fontSize: 12.5, gap: 8 }}><span className="num" style={{ minWidth: 40 }}>{a.key}</span>{s ? <StatePill state={s.state} /> : <StatePill state="not_memorized" />}{s?.retention_score != null && <span className="num muted">{Math.round(s.retention_score * 100)}%</span>}</div>; })}
+            <div className="stack" style={{ gap: 5 }}>
+              {range.data!.ayat.map((a) => { const s = stateOf.get(a.ayah_index); return <div key={a.key} className="row" style={{ fontSize: 12.5, gap: 8, flexWrap: "nowrap" }}><span className="num" style={{ minWidth: 44 }}>{a.key}</span><StatePill state={s?.state ?? "not_memorized"} />{s?.retention_score != null && <span className="num muted">{Math.round(s.retention_score * 100)}%</span>}</div>; })}
             </div>
           </div>
           <label className="stack" style={{ gap: 6 }}>
@@ -118,10 +122,10 @@ export default function TasmeePage({ params }: { params: Promise<{ journeyId: st
             <textarea className="input" rows={3} value={note} onChange={(e) => setNote(e.target.value)} />
           </label>
           <div className="stack" style={{ gap: 8 }}>
-            <button className="btn primary" disabled={save.isPending} onClick={() => save.mutate("pass")} style={{ justifyContent: "center", padding: "12px" }}>{t("pass")} ✓</button>
-            <div className="row" style={{ gap: 8 }}>
-              <button className="btn grow" disabled={save.isPending} onClick={() => save.mutate("partial")} style={{ justifyContent: "center" }}>{t("partial")}</button>
-              <button className="btn grow" disabled={save.isPending} onClick={() => save.mutate("repeat")} style={{ justifyContent: "center", borderColor: "var(--s-weak)", color: "var(--s-weak)" }}>{t("repeat")}</button>
+            <button className="btn primary" disabled={save.isPending} onClick={() => save.mutate("pass")} style={{ height: 48, fontSize: 16 }}>{t("pass")} ✓</button>
+            <div className="row" style={{ gap: 8, flexWrap: "nowrap" }}>
+              <button className="btn grow" disabled={save.isPending} onClick={() => save.mutate("partial")}>{t("partial")}</button>
+              <button className="btn grow danger" disabled={save.isPending} onClick={() => save.mutate("repeat")}>{t("repeat")}</button>
             </div>
             {save.error && <ErrorBox e={save.error} />}
           </div>
@@ -129,12 +133,12 @@ export default function TasmeePage({ params }: { params: Promise<{ journeyId: st
       </div>
       {picking && (
         <div className="sheet" role="dialog" aria-label={t("mistakes")}>
-          <div className="row" style={{ justifyContent: "space-between", marginBottom: 10 }}>
-            <b>{pageData.ayat.find((a) => a.ayah_index === picking.ayah_index)?.key} · {t("ayah")} — {locale === "ar" ? "نوع الخطأ" : "Mistake type"}</b>
-            <button className="btn" onClick={() => setPicking(null)}>×</button>
+          <div className="row" style={{ justifyContent: "space-between", marginBottom: 12 }}>
+            <b>{pageData.ayat.find((a) => a.ayah_index === picking.ayah_index)?.key} · {locale === "ar" ? "نوع الخطأ" : "Mistake type"}</b>
+            <button className="btn sm" onClick={() => setPicking(null)}>×</button>
           </div>
           <div className="types">
-            {(types.data ?? []).map((tp) => <button key={tp.key} onClick={() => choose(tp)}>{locale === "en" ? tp.name_en : tp.name_ar}<small>{tp.severity === "major" ? (locale === "ar" ? "خطأ جسيم" : "major") : (locale === "ar" ? "خطأ خفيف" : "minor")}</small></button>)}
+            {(types.data ?? []).map((tp) => <button key={tp.key} data-sev={tp.severity} onClick={() => choose(tp)}>{locale === "en" ? tp.name_en : tp.name_ar}<small>{tp.severity === "major" ? (locale === "ar" ? "خطأ جسيم" : "major") : (locale === "ar" ? "خطأ خفيف" : "minor")}</small></button>)}
           </div>
         </div>
       )}
