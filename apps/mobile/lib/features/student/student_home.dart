@@ -27,7 +27,7 @@ class _StudentHomeState extends State<StudentHome> {
         final results = (me['results'] as List).cast<Map<String, dynamic>>();
         if (results.isEmpty) throw ApiException(404, 'no_student', 'لا يوجد ملف طالب مرتبط بهذا الحساب');
         final jid = results.first['id'];
-        final r = await Future.wait([Api.I.get('/journeys/$jid'), Api.I.get('/journeys/$jid/plan'), Api.I.get('/journeys/$jid/sessions')]);
+        final r = await Future.wait([Api.I.get('/journeys/$jid'), Api.I.get('/journeys/$jid/plan'), Api.I.get('/journeys/$jid/sessions').catchError((_) => <String, dynamic>{'results': []})]);
         final sess = r[2];
         return {'journey': r[0], 'plan': r[1], 'sessions': sess is Map ? sess['results'] : sess};
       },
