@@ -14,14 +14,14 @@ class StudentHome extends StatelessWidget {
   Widget build(BuildContext context) {
     return Fetch<Map<String, dynamic>>(
       future: () async {
-        final me = await Api.I.get('/students?page_size=1') as Map<String, dynamic>;
+        // Students cannot list the roster; the journeys endpoint is scoped to self.
+        final me = await Api.I.get('/journeys?page_size=1') as Map<String, dynamic>;
         final results = (me['results'] as List).cast<Map<String, dynamic>>();
         if (results.isEmpty) throw ApiException(404, 'no_student', 'لا يوجد ملف طالب مرتبط بهذا الحساب');
-        final s = results.first;
-        final jid = s['journey_summary']?['id'];
+        final jid = results.first['id'];
         final journey = await Api.I.get('/journeys/$jid') as Map<String, dynamic>;
         final plan = await Api.I.get('/journeys/$jid/plan') as Map<String, dynamic>;
-        return {'student': s, 'journey': journey, 'plan': plan};
+        return {'student': results.first, 'journey': journey, 'plan': plan};
       },
       builder: (context, d, refresh) {
         final j = d['journey'] as Map<String, dynamic>;

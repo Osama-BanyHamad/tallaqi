@@ -2,7 +2,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { login } from "@/lib/api";
+import { api, login } from "@/lib/api";
+import { homeFor, type Capabilities } from "@/components/Shell";
 import { useI18n } from "@/lib/i18n";
 import { SampleMap } from "@/components/SampleMap";
 
@@ -17,7 +18,7 @@ export default function LoginPage() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true); setErr(null);
-    try { await login(email, password); r.replace("/dashboard"); }
+    try { await login(email, password); const caps = await api<Capabilities>("/me/capabilities"); r.replace(homeFor(caps)); }
     catch (ex) { setErr((ex as Error).message); }
     finally { setBusy(false); }
   }

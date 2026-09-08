@@ -26,6 +26,32 @@ All demo accounts use the password **`Talaqqi@2026`** on the tenant **`demo`** (
 
 The same accounts work in the Android app (teacher, student, and parent shells).
 
+## Technology
+
+| Layer | Choice | Notes |
+|---|---|---|
+| Backend | **Python 3.12 · Django 5.1 · Django REST Framework** | Modular monolith: each bounded context is a Django app under `services/*` (thin views → services → models). OpenAPI via drf-spectacular at `/api/docs/`. |
+| Database | **PostgreSQL 16 with row-level security** | Shared schema, `tenant_id` on every table, `FORCE ROW LEVEL SECURITY`; the app connects as a non-superuser role so RLS applies to the application itself. Quran tables are read-only by trigger. |
+| Cache / queues | **Valkey** (Redis-compatible) | Sessions, rate limits, and job queues; Celery-ready. |
+| Auth | **JWT (SimpleJWT)** + `X-Tenant` header | One account can belong to several tenants; roles are per tenant with scopes (tenant · branch · Halaqah · student set · self). |
+| Permissions | **Capability catalog + RBAC** (`packages/permissions`) | ~25 modules that can be switched per tenant; disabling a module makes its endpoints return 403. Every check is enforced in the backend, and every mutation is written to an immutable audit log. |
+| Quran text | **Quran Core** (`packages/quran_core`) | Tanzil Uthmani text, verbatim, with a signed manifest and a per-Ayah SHA-256 snapshot; tests fail if a single letter changes. Hafs first, multi-Riwayah data model. |
+| Hifz engine | **`retention/v1` + `planner/v1`** (`packages/hifz_engine`, pure Python) | Deterministic, explainable forgetting curve (FSRS-style stability) per Ayah, computed from teacher-verified recitations. The planner turns it into a daily new/near/far plan the teacher can override. No AI in the loop. |
+| Admin web + site | **Next.js 15 · React 19 · TanStack Query** | Arabic-first RTL design system in plain CSS (Noto Kufi Arabic, IBM Plex Sans Arabic, Amiri Quran for the Mushaf). Public site and app share one codebase; standalone output for Docker. |
+| Mobile | **Flutter 3** (`apps/mobile`) | One codebase, three role shells (teacher · student · parent). Android beta today; iOS build from the same code. |
+| Live classroom | `RtcProvider` abstraction, LiveKit reference adapter (planned) | Audio-first, shared Mushaf, recording absent by design when disabled. |
+| AI | Optional, `NullProvider` by default | GREEN / YELLOW / RED safety classes; type-level separation between sacred text and generated text. The platform runs fully without any AI provider. |
+| Deployment | **Docker Compose + Caddy** | Single VPS: postgres, valkey, api (gunicorn), web (Next standalone), caddy with automatic TLS. `infra/scripts/deploy-do.sh` pulls, builds, migrates, and seeds. |
+| Quality | pytest (tenant isolation, IDOR, capability gating, Tasmee' loop, finance), ruff, TypeScript strict, GitHub Actions CI | The Quran Core integrity test and a label gate protect `packages/quran_core/data/`. |
+
+### How a recitation flows through the system
+
+1. The teacher opens today's plan for a student and taps a word on the Mushaf to record a mistake, then presses Pass / Partial / Repeat.
+2. `services/hifz` stores the recitation and mistake events, then calls `retention/v1` for every Ayah in the range.
+3. Each Ayah's stability and next-due date are updated; the journey's materialized `juz_map` (30 × coverage, average, state) is refreshed for the strips.
+4. `planner/v1` regenerates tomorrow's segments (new / near / far), pausing new memorization when the revision backlog is too large.
+5. The parent portal and the supervisor dashboard read the same records, so everybody sees one truth.
+
 ## Status
 
 Phase 9 bootstrap + first vertical slice of the core loop:

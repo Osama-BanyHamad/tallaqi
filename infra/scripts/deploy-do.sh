@@ -18,7 +18,8 @@ echo "==> Firewall (22, 80, 443)"
 ufw allow OpenSSH >/dev/null; ufw allow 80/tcp >/dev/null; ufw allow 443/tcp >/dev/null; ufw allow 443/udp >/dev/null; ufw --force enable >/dev/null
 
 echo "==> Source"
-if [ -d "$DIR/.git" ]; then git -C "$DIR" pull -q; else git clone -q "$REPO" "$DIR"; fi
+BRANCH="${BRANCH:-main}"
+if [ -d "$DIR/.git" ]; then git -C "$DIR" fetch -q origin && git -C "$DIR" checkout -q "$BRANCH" && git -C "$DIR" pull -q origin "$BRANCH"; else git clone -q -b "$BRANCH" "$REPO" "$DIR"; fi
 cd "$DIR"
 
 echo "==> Environment"
