@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /login
+Disallow: /dashboard
+Sitemap: https://tallaqi.com/sitemap.xml
