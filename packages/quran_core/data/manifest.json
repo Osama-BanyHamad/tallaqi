@@ -1,0 +1,38 @@
+{
+ "schema": "talaqqi.quran-core/1",
+ "riwayat": {
+  "hafs_asim": {
+   "reader": "ʿĀṣim ibn Abī al-Najūd",
+   "transmitter": "Ḥafṣ ibn Sulaymān",
+   "available": true,
+   "ayah_count": 6236,
+   "surah_count": 114,
+   "page_layout": "madani_604",
+   "text_root_sha256": "774c673da3f24d2963095339277034d1e0db547d867dd4665505e9e770c9038e",
+   "files": {
+    "hafs_asim/surahs.json": "f26172055fc2073b649f2a1162acd4bc229044ea62dfdca91e292e5bb1d28bb2",
+    "hafs_asim/ayat.jsonl": "4f2a8fbf9c8bf38e043ef8123512d6f48987a1d7f1b81f985b163d416d9eb0b2",
+    "hafs_asim/units.json": "f5fa439b6f5c05c4db04ac59bf76f17e18bb4f7252a4ed03edabe421d5794154",
+    "hafs_asim/pages.json": "3f42c84e7393b3b96bd1e91cf33c5ce35424f3bb2c9413e8ef238e291ce04488",
+    "hafs_asim/markers.json": "599060e63fa9e76193fae830f4e5b7497bc68b852166e8b5695b8ba4f2f1ae92"
+   }
+  }
+ },
+ "sources": [
+  {
+   "name": "Tanzil Quran Text (Uthmani)",
+   "url": "https://tanzil.net/download/",
+   "license": "Tanzil terms: verbatim copies only, attribution and link required, no modification",
+   "sha256": "bf4f57b968d03f4131c070b1e285da9be0e0a108a21c910e872801ca273312c8"
+  },
+  {
+   "name": "Tanzil Quran Metadata",
+   "url": "https://tanzil.net/res/text/metadata/quran-data.xml",
+   "license": "CC-BY (Tanzil.info)",
+   "sha256": "423afa57b81ccee79a4f15a2df1b8aa6a6c06498cfe8ce12e627adc41512c4a9"
+  }
+ ],
+ "reviewers": [],
+ "built_at": "2026-09-08T14:16:08Z",
+ "version": "0.1.0"
+}

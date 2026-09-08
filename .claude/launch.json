@@ -1,0 +1,7 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "api", "runtimeExecutable": "python", "runtimeArgs": ["apps/api/manage.py", "runserver", "0.0.0.0:8000"], "port": 8000 },
+    { "name": "web", "runtimeExecutable": "pnpm", "runtimeArgs": ["--dir", "apps/admin-web", "dev"], "port": 3000 }
+  ]
+}

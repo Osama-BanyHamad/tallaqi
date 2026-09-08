@@ -1,0 +1,62 @@
+name: talaqqi
+
+x-api: &api
+  build: { context: ., dockerfile: infra/docker/Dockerfile.api }
+  env_file: .env
+  environment:
+    DATABASE_URL: postgres://talaqqi_app:talaqqi_dev@postgres:5432/talaqqi
+    REDIS_URL: redis://valkey:6379/0
+  depends_on: [postgres, valkey]
+  volumes: ["./:/app"]
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    profiles: [dev, single-vps]
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes: ["pgdata:/var/lib/postgresql/data", "./infra/scripts/init-db.sql:/docker-entrypoint-initdb.d/10-init.sql:ro"]
+    ports: ["5432:5432"]
+    healthcheck: { test: ["CMD-SHELL", "pg_isready -U postgres"], interval: 5s, retries: 10 }
+
+  valkey:
+    image: valkey/valkey:8-alpine
+    profiles: [dev, single-vps]
+    ports: ["6379:6379"]
+
+  garage:
+    image: dxflrs/garage:v1.0.1
+    profiles: [dev]
+    volumes: ["./infra/garage/garage.toml:/etc/garage.toml:ro", "garage-meta:/var/lib/garage/meta", "garage-data:/var/lib/garage/data"]
+    ports: ["3900:3900", "3903:3903"]
+
+  mailpit:
+    image: axllent/mailpit
+    profiles: [dev]
+    ports: ["8025:8025", "1025:1025"]
+
+  api:
+    <<: *api
+    profiles: [single-vps]
+    command: sh -c "python apps/api/manage.py migrate && python apps/api/manage.py load_quran_core && gunicorn -c infra/docker/gunicorn.conf.py talaqqi.wsgi:application"
+    working_dir: /app/apps/api
+    ports: ["8000:8000"]
+
+  worker:
+    <<: *api
+    profiles: [single-vps]
+    command: sh -c "cd /app && celery -A talaqqi worker -B -l info"
+
+  caddy:
+    image: caddy:2-alpine
+    profiles: [single-vps]
+    ports: ["80:80", "443:443"]
+    volumes: ["./infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro", "caddy-data:/data"]
+    depends_on: [api]
+
+volumes:
+  pgdata: {}
+  garage-meta: {}
+  garage-data: {}
+  caddy-data: {}

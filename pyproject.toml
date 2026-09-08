@@ -1,0 +1,67 @@
+[project]
+name = "talaqqi"
+version = "0.1.0"
+description = "Open-source operating system for Quran education"
+requires-python = ">=3.12"
+license = { text = "AGPL-3.0-only" }
+dependencies = [
+  "Django>=5.1,<5.3",
+  "djangorestframework>=3.15",
+  "djangorestframework-simplejwt>=5.3",
+  "drf-spectacular>=0.27",
+  "django-filter>=24.0",
+  "django-cors-headers>=4.4",
+  "django-environ>=0.11",
+  "psycopg[binary]>=3.2",
+  "pydantic>=2.8",
+  "celery>=5.4",
+  "redis>=5.0",
+  "channels>=4.1",
+  "channels-redis>=4.2",
+  "gunicorn>=22",
+  "uvicorn>=0.30",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-django>=4.9", "factory_boy>=3.3", "ruff>=0.6", "mypy>=1.11", "django-stubs", "djangorestframework-stubs", "import-linter>=2"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "talaqqi.settings"
+pythonpath = [".", "apps/api"]
+testpaths = ["packages", "services", "tests"]
+python_files = ["test_*.py"]
+addopts = "-p no:cacheprovider --reuse-db"
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["migrations", "tmp"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "DJ"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.12"
+plugins = ["mypy_django_plugin.main"]
+strict = false
+ignore_missing_imports = true
+
+[tool.django-stubs]
+django_settings_module = "talaqqi.settings"
+
+[tool.importlinter]
+root_packages = ["packages", "services"]
+
+[[tool.importlinter.contracts]]
+name = "Domain packages never import Django or services"
+type = "forbidden"
+source_modules = ["packages.quran_core", "packages.hifz_engine", "packages.permissions"]
+forbidden_modules = ["django", "services"]
+
+[[tool.importlinter.contracts]]
+name = "Sacred content modules never import AI providers"
+type = "forbidden"
+source_modules = ["packages.quran_core", "services.quran", "services.hifz.practice"]
+forbidden_modules = ["packages.ai_providers"]

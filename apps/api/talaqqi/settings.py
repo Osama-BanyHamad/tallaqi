@@ -1,0 +1,128 @@
+"""Talaqqi API settings. Environment-driven; safe defaults for local development."""
+from __future__ import annotations
+
+import sys
+from datetime import timedelta
+from pathlib import Path
+
+import environ
+
+BASE_DIR = Path(__file__).resolve().parent.parent          # apps/api
+REPO_ROOT = BASE_DIR.parent.parent                          # repo root
+for p in (str(REPO_ROOT), str(BASE_DIR)):
+    if p not in sys.path:
+        sys.path.insert(0, p)
+
+env = environ.Env(
+    DEBUG=(bool, False),
+    SECRET_KEY=(str, "dev-only-insecure-secret-change-me"),
+    ALLOWED_HOSTS=(list, ["localhost", "127.0.0.1"]),
+    DATABASE_URL=(str, "postgres://talaqqi_app:talaqqi_dev@localhost:5432/talaqqi"),
+    REDIS_URL=(str, "redis://localhost:6379/0"),
+    CORS_ALLOWED_ORIGINS=(list, ["http://localhost:3000", "http://127.0.0.1:3000"]),
+    DEFAULT_LANGUAGE=(str, "ar"),
+)
+environ.Env.read_env(str(REPO_ROOT / ".env"))
+
+DEBUG = env("DEBUG")
+SECRET_KEY = env("SECRET_KEY")
+ALLOWED_HOSTS = env("ALLOWED_HOSTS")
+
+INSTALLED_APPS = [
+    "django.contrib.contenttypes",
+    "django.contrib.auth",
+    "rest_framework",
+    "django_filters",
+    "corsheaders",
+    "drf_spectacular",
+    "services.common",
+    "services.identity",
+    "services.tenants",
+    "services.rbac",
+    "services.audit",
+    "services.quran",
+    "services.people",
+    "services.hifz",
+]
+
+MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "services.common.middleware.RequestIdMiddleware",
+    "services.common.middleware.TenantContextMiddleware",
+]
+
+ROOT_URLCONF = "talaqqi.urls"
+WSGI_APPLICATION = "talaqqi.wsgi.application"
+ASGI_APPLICATION = "talaqqi.asgi.application"
+
+DATABASES = {"default": env.db("DATABASE_URL")}
+DATABASES["default"]["ATOMIC_REQUESTS"] = True
+DATABASES["default"]["CONN_MAX_AGE"] = 0
+DATABASES["default"]["TEST"] = {"NAME": "talaqqi_test"}
+
+AUTH_USER_MODEL = "identity.Account"
+AUTH_PASSWORD_VALIDATORS = [
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator", "OPTIONS": {"min_length": 10}},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+]
+
+LANGUAGE_CODE = env("DEFAULT_LANGUAGE")   # Arabic is the platform default; English supported
+LANGUAGES = [("ar", "العربية"), ("en", "English")]
+TIME_ZONE = "UTC"
+USE_I18N = True
+USE_TZ = True
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework_simplejwt.authentication.JWTAuthentication"],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+    "DEFAULT_PAGINATION_CLASS": "services.common.pagination.CursorOrPagePagination",
+    "PAGE_SIZE": 50,
+    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend",
+                                "rest_framework.filters.SearchFilter", "rest_framework.filters.OrderingFilter"],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "EXCEPTION_HANDLER": "services.common.exceptions.exception_handler",
+    "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"] + (["rest_framework.renderers.BrowsableAPIRenderer"] if DEBUG else []),
+    "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.UserRateThrottle", "rest_framework.throttling.AnonRateThrottle"],
+    "DEFAULT_THROTTLE_RATES": {"user": "600/min", "anon": "60/min"},
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=14),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": False,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "sub",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Talaqqi API",
+    "DESCRIPTION": "Open-source operating system for Quran education. Arabic-first, multi-tenant, capability-enforced.",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,
+}
+
+CORS_ALLOWED_ORIGINS = env("CORS_ALLOWED_ORIGINS")
+CORS_ALLOW_HEADERS = ["authorization", "content-type", "x-tenant", "x-request-id", "idempotency-key", "accept-language"]
+
+CELERY_BROKER_URL = env("REDIS_URL")
+CELERY_TASK_ALWAYS_EAGER = env.bool("CELERY_TASK_ALWAYS_EAGER", default=DEBUG)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {"json": {"()": "services.common.logging.JsonFormatter"}},
+    "handlers": {"console": {"class": "logging.StreamHandler", "formatter": "json"}},
+    "root": {"handlers": ["console"], "level": "INFO"},
+}
+
+TALAQQI = {
+    "DEFAULT_RIWAYAH": "hafs_asim",
+    "DEFAULT_MUSHAF_TYPE": "madani_15_line",
+    "QURAN_TEXT_ATTRIBUTION": "Quran text: Tanzil Project — https://tanzil.net",
+}

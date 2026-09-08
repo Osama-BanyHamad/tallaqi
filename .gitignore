@@ -1,0 +1,15 @@
+.env
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+tmp/
+node_modules/
+.next/
+out/
+dist/
+build/
+*.log
+.DS_Store
+apps/admin-web/.env*.local

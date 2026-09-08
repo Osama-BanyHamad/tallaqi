@@ -1,0 +1,4230 @@
+[
+ {
+  "first_ayah_index": 1,
+  "first_key": "1:1",
+  "juz": 1,
+  "last_ayah_index": 7,
+  "page": 1
+ },
+ {
+  "first_ayah_index": 8,
+  "first_key": "2:1",
+  "juz": 1,
+  "last_ayah_index": 12,
+  "page": 2
+ },
+ {
+  "first_ayah_index": 13,
+  "first_key": "2:6",
+  "juz": 1,
+  "last_ayah_index": 23,
+  "page": 3
+ },
+ {
+  "first_ayah_index": 24,
+  "first_key": "2:17",
+  "juz": 1,
+  "last_ayah_index": 31,
+  "page": 4
+ },
+ {
+  "first_ayah_index": 32,
+  "first_key": "2:25",
+  "juz": 1,
+  "last_ayah_index": 36,
+  "page": 5
+ },
+ {
+  "first_ayah_index": 37,
+  "first_key": "2:30",
+  "juz": 1,
+  "last_ayah_index": 44,
+  "page": 6
+ },
+ {
+  "first_ayah_index": 45,
+  "first_key": "2:38",
+  "juz": 1,
+  "last_ayah_index": 55,
+  "page": 7
+ },
+ {
+  "first_ayah_index": 56,
+  "first_key": "2:49",
+  "juz": 1,
+  "last_ayah_index": 64,
+  "page": 8
+ },
+ {
+  "first_ayah_index": 65,
+  "first_key": "2:58",
+  "juz": 1,
+  "last_ayah_index": 68,
+  "page": 9
+ },
+ {
+  "first_ayah_index": 69,
+  "first_key": "2:62",
+  "juz": 1,
+  "last_ayah_index": 76,
+  "page": 10
+ },
+ {
+  "first_ayah_index": 77,
+  "first_key": "2:70",
+  "juz": 1,
+  "last_ayah_index": 83,
+  "page": 11
+ },
+ {
+  "first_ayah_index": 84,
+  "first_key": "2:77",
+  "juz": 1,
+  "last_ayah_index": 90,
+  "page": 12
+ },
+ {
+  "first_ayah_index": 91,
+  "first_key": "2:84",
+  "juz": 1,
+  "last_ayah_index": 95,
+  "page": 13
+ },
+ {
+  "first_ayah_index": 96,
+  "first_key": "2:89",
+  "juz": 1,
+  "last_ayah_index": 100,
+  "page": 14
+ },
+ {
+  "first_ayah_index": 101,
+  "first_key": "2:94",
+  "juz": 1,
+  "last_ayah_index": 108,
+  "page": 15
+ },
+ {
+  "first_ayah_index": 109,
+  "first_key": "2:102",
+  "juz": 1,
+  "last_ayah_index": 112,
+  "page": 16
+ },
+ {
+  "first_ayah_index": 113,
+  "first_key": "2:106",
+  "juz": 1,
+  "last_ayah_index": 119,
+  "page": 17
+ },
+ {
+  "first_ayah_index": 120,
+  "first_key": "2:113",
+  "juz": 1,
+  "last_ayah_index": 126,
+  "page": 18
+ },
+ {
+  "first_ayah_index": 127,
+  "first_key": "2:120",
+  "juz": 1,
+  "last_ayah_index": 133,
+  "page": 19
+ },
+ {
+  "first_ayah_index": 134,
+  "first_key": "2:127",
+  "juz": 1,
+  "last_ayah_index": 141,
+  "page": 20
+ },
+ {
+  "first_ayah_index": 142,
+  "first_key": "2:135",
+  "juz": 1,
+  "last_ayah_index": 148,
+  "page": 21
+ },
+ {
+  "first_ayah_index": 149,
+  "first_key": "2:142",
+  "juz": 2,
+  "last_ayah_index": 152,
+  "page": 22
+ },
+ {
+  "first_ayah_index": 153,
+  "first_key": "2:146",
+  "juz": 2,
+  "last_ayah_index": 160,
+  "page": 23
+ },
+ {
+  "first_ayah_index": 161,
+  "first_key": "2:154",
+  "juz": 2,
+  "last_ayah_index": 170,
+  "page": 24
+ },
+ {
+  "first_ayah_index": 171,
+  "first_key": "2:164",
+  "juz": 2,
+  "last_ayah_index": 176,
+  "page": 25
+ },
+ {
+  "first_ayah_index": 177,
+  "first_key": "2:170",
+  "juz": 2,
+  "last_ayah_index": 183,
+  "page": 26
+ },
+ {
+  "first_ayah_index": 184,
+  "first_key": "2:177",
+  "juz": 2,
+  "last_ayah_index": 188,
+  "page": 27
+ },
+ {
+  "first_ayah_index": 189,
+  "first_key": "2:182",
+  "juz": 2,
+  "last_ayah_index": 193,
+  "page": 28
+ },
+ {
+  "first_ayah_index": 194,
+  "first_key": "2:187",
+  "juz": 2,
+  "last_ayah_index": 197,
+  "page": 29
+ },
+ {
+  "first_ayah_index": 198,
+  "first_key": "2:191",
+  "juz": 2,
+  "last_ayah_index": 203,
+  "page": 30
+ },
+ {
+  "first_ayah_index": 204,
+  "first_key": "2:197",
+  "juz": 2,
+  "last_ayah_index": 209,
+  "page": 31
+ },
+ {
+  "first_ayah_index": 210,
+  "first_key": "2:203",
+  "juz": 2,
+  "last_ayah_index": 217,
+  "page": 32
+ },
+ {
+  "first_ayah_index": 218,
+  "first_key": "2:211",
+  "juz": 2,
+  "last_ayah_index": 222,
+  "page": 33
+ },
+ {
+  "first_ayah_index": 223,
+  "first_key": "2:216",
+  "juz": 2,
+  "last_ayah_index": 226,
+  "page": 34
+ },
+ {
+  "first_ayah_index": 227,
+  "first_key": "2:220",
+  "juz": 2,
+  "last_ayah_index": 231,
+  "page": 35
+ },
+ {
+  "first_ayah_index": 232,
+  "first_key": "2:225",
+  "juz": 2,
+  "last_ayah_index": 237,
+  "page": 36
+ },
+ {
+  "first_ayah_index": 238,
+  "first_key": "2:231",
+  "juz": 2,
+  "last_ayah_index": 240,
+  "page": 37
+ },
+ {
+  "first_ayah_index": 241,
+  "first_key": "2:234",
+  "juz": 2,
+  "last_ayah_index": 244,
+  "page": 38
+ },
+ {
+  "first_ayah_index": 245,
+  "first_key": "2:238",
+  "juz": 2,
+  "last_ayah_index": 252,
+  "page": 39
+ },
+ {
+  "first_ayah_index": 253,
+  "first_key": "2:246",
+  "juz": 2,
+  "last_ayah_index": 255,
+  "page": 40
+ },
+ {
+  "first_ayah_index": 256,
+  "first_key": "2:249",
+  "juz": 2,
+  "last_ayah_index": 259,
+  "page": 41
+ },
+ {
+  "first_ayah_index": 260,
+  "first_key": "2:253",
+  "juz": 3,
+  "last_ayah_index": 263,
+  "page": 42
+ },
+ {
+  "first_ayah_index": 264,
+  "first_key": "2:257",
+  "juz": 3,
+  "last_ayah_index": 266,
+  "page": 43
+ },
+ {
+  "first_ayah_index": 267,
+  "first_key": "2:260",
+  "juz": 3,
+  "last_ayah_index": 271,
+  "page": 44
+ },
+ {
+  "first_ayah_index": 272,
+  "first_key": "2:265",
+  "juz": 3,
+  "last_ayah_index": 276,
+  "page": 45
+ },
+ {
+  "first_ayah_index": 277,
+  "first_key": "2:270",
+  "juz": 3,
+  "last_ayah_index": 281,
+  "page": 46
+ },
+ {
+  "first_ayah_index": 282,
+  "first_key": "2:275",
+  "juz": 3,
+  "last_ayah_index": 288,
+  "page": 47
+ },
+ {
+  "first_ayah_index": 289,
+  "first_key": "2:282",
+  "juz": 3,
+  "last_ayah_index": 289,
+  "page": 48
+ },
+ {
+  "first_ayah_index": 290,
+  "first_key": "2:283",
+  "juz": 3,
+  "last_ayah_index": 293,
+  "page": 49
+ },
+ {
+  "first_ayah_index": 294,
+  "first_key": "3:1",
+  "juz": 3,
+  "last_ayah_index": 302,
+  "page": 50
+ },
+ {
+  "first_ayah_index": 303,
+  "first_key": "3:10",
+  "juz": 3,
+  "last_ayah_index": 308,
+  "page": 51
+ },
+ {
+  "first_ayah_index": 309,
+  "first_key": "3:16",
+  "juz": 3,
+  "last_ayah_index": 315,
+  "page": 52
+ },
+ {
+  "first_ayah_index": 316,
+  "first_key": "3:23",
+  "juz": 3,
+  "last_ayah_index": 322,
+  "page": 53
+ },
+ {
+  "first_ayah_index": 323,
+  "first_key": "3:30",
+  "juz": 3,
+  "last_ayah_index": 330,
+  "page": 54
+ },
+ {
+  "first_ayah_index": 331,
+  "first_key": "3:38",
+  "juz": 3,
+  "last_ayah_index": 338,
+  "page": 55
+ },
+ {
+  "first_ayah_index": 339,
+  "first_key": "3:46",
+  "juz": 3,
+  "last_ayah_index": 345,
+  "page": 56
+ },
+ {
+  "first_ayah_index": 346,
+  "first_key": "3:53",
+  "juz": 3,
+  "last_ayah_index": 354,
+  "page": 57
+ },
+ {
+  "first_ayah_index": 355,
+  "first_key": "3:62",
+  "juz": 3,
+  "last_ayah_index": 363,
+  "page": 58
+ },
+ {
+  "first_ayah_index": 364,
+  "first_key": "3:71",
+  "juz": 3,
+  "last_ayah_index": 370,
+  "page": 59
+ },
+ {
+  "first_ayah_index": 371,
+  "first_key": "3:78",
+  "juz": 3,
+  "last_ayah_index": 376,
+  "page": 60
+ },
+ {
+  "first_ayah_index": 377,
+  "first_key": "3:84",
+  "juz": 3,
+  "last_ayah_index": 384,
+  "page": 61
+ },
+ {
+  "first_ayah_index": 385,
+  "first_key": "3:92",
+  "juz": 3,
+  "last_ayah_index": 393,
+  "page": 62
+ },
+ {
+  "first_ayah_index": 394,
+  "first_key": "3:101",
+  "juz": 4,
+  "last_ayah_index": 401,
+  "page": 63
+ },
+ {
+  "first_ayah_index": 402,
+  "first_key": "3:109",
+  "juz": 4,
+  "last_ayah_index": 408,
+  "page": 64
+ },
+ {
+  "first_ayah_index": 409,
+  "first_key": "3:116",
+  "juz": 4,
+  "last_ayah_index": 414,
+  "page": 65
+ },
+ {
+  "first_ayah_index": 415,
+  "first_key": "3:122",
+  "juz": 4,
+  "last_ayah_index": 425,
+  "page": 66
+ },
+ {
+  "first_ayah_index": 426,
+  "first_key": "3:133",
+  "juz": 4,
+  "last_ayah_index": 433,
+  "page": 67
+ },
+ {
+  "first_ayah_index": 434,
+  "first_key": "3:141",
+  "juz": 4,
+  "last_ayah_index": 441,
+  "page": 68
+ },
+ {
+  "first_ayah_index": 442,
+  "first_key": "3:149",
+  "juz": 4,
+  "last_ayah_index": 446,
+  "page": 69
+ },
+ {
+  "first_ayah_index": 447,
+  "first_key": "3:154",
+  "juz": 4,
+  "last_ayah_index": 450,
+  "page": 70
+ },
+ {
+  "first_ayah_index": 451,
+  "first_key": "3:158",
+  "juz": 4,
+  "last_ayah_index": 458,
+  "page": 71
+ },
+ {
+  "first_ayah_index": 459,
+  "first_key": "3:166",
+  "juz": 4,
+  "last_ayah_index": 466,
+  "page": 72
+ },
+ {
+  "first_ayah_index": 467,
+  "first_key": "3:174",
+  "juz": 4,
+  "last_ayah_index": 473,
+  "page": 73
+ },
+ {
+  "first_ayah_index": 474,
+  "first_key": "3:181",
+  "juz": 4,
+  "last_ayah_index": 479,
+  "page": 74
+ },
+ {
+  "first_ayah_index": 480,
+  "first_key": "3:187",
+  "juz": 4,
+  "last_ayah_index": 487,
+  "page": 75
+ },
+ {
+  "first_ayah_index": 488,
+  "first_key": "3:195",
+  "juz": 4,
+  "last_ayah_index": 493,
+  "page": 76
+ },
+ {
+  "first_ayah_index": 494,
+  "first_key": "4:1",
+  "juz": 4,
+  "last_ayah_index": 499,
+  "page": 77
+ },
+ {
+  "first_ayah_index": 500,
+  "first_key": "4:7",
+  "juz": 4,
+  "last_ayah_index": 504,
+  "page": 78
+ },
+ {
+  "first_ayah_index": 505,
+  "first_key": "4:12",
+  "juz": 4,
+  "last_ayah_index": 507,
+  "page": 79
+ },
+ {
+  "first_ayah_index": 508,
+  "first_key": "4:15",
+  "juz": 4,
+  "last_ayah_index": 512,
+  "page": 80
+ },
+ {
+  "first_ayah_index": 513,
+  "first_key": "4:20",
+  "juz": 4,
+  "last_ayah_index": 516,
+  "page": 81
+ },
+ {
+  "first_ayah_index": 517,
+  "first_key": "4:24",
+  "juz": 5,
+  "last_ayah_index": 519,
+  "page": 82
+ },
+ {
+  "first_ayah_index": 520,
+  "first_key": "4:27",
+  "juz": 5,
+  "last_ayah_index": 526,
+  "page": 83
+ },
+ {
+  "first_ayah_index": 527,
+  "first_key": "4:34",
+  "juz": 5,
+  "last_ayah_index": 530,
+  "page": 84
+ },
+ {
+  "first_ayah_index": 531,
+  "first_key": "4:38",
+  "juz": 5,
+  "last_ayah_index": 537,
+  "page": 85
+ },
+ {
+  "first_ayah_index": 538,
+  "first_key": "4:45",
+  "juz": 5,
+  "last_ayah_index": 544,
+  "page": 86
+ },
+ {
+  "first_ayah_index": 545,
+  "first_key": "4:52",
+  "juz": 5,
+  "last_ayah_index": 552,
+  "page": 87
+ },
+ {
+  "first_ayah_index": 553,
+  "first_key": "4:60",
+  "juz": 5,
+  "last_ayah_index": 558,
+  "page": 88
+ },
+ {
+  "first_ayah_index": 559,
+  "first_key": "4:66",
+  "juz": 5,
+  "last_ayah_index": 567,
+  "page": 89
+ },
+ {
+  "first_ayah_index": 568,
+  "first_key": "4:75",
+  "juz": 5,
+  "last_ayah_index": 572,
+  "page": 90
+ },
+ {
+  "first_ayah_index": 573,
+  "first_key": "4:80",
+  "juz": 5,
+  "last_ayah_index": 579,
+  "page": 91
+ },
+ {
+  "first_ayah_index": 580,
+  "first_key": "4:87",
+  "juz": 5,
+  "last_ayah_index": 584,
+  "page": 92
+ },
+ {
+  "first_ayah_index": 585,
+  "first_key": "4:92",
+  "juz": 5,
+  "last_ayah_index": 587,
+  "page": 93
+ },
+ {
+  "first_ayah_index": 588,
+  "first_key": "4:95",
+  "juz": 5,
+  "last_ayah_index": 594,
+  "page": 94
+ },
+ {
+  "first_ayah_index": 595,
+  "first_key": "4:102",
+  "juz": 5,
+  "last_ayah_index": 598,
+  "page": 95
+ },
+ {
+  "first_ayah_index": 599,
+  "first_key": "4:106",
+  "juz": 5,
+  "last_ayah_index": 606,
+  "page": 96
+ },
+ {
+  "first_ayah_index": 607,
+  "first_key": "4:114",
+  "juz": 5,
+  "last_ayah_index": 614,
+  "page": 97
+ },
+ {
+  "first_ayah_index": 615,
+  "first_key": "4:122",
+  "juz": 5,
+  "last_ayah_index": 620,
+  "page": 98
+ },
+ {
+  "first_ayah_index": 621,
+  "first_key": "4:128",
+  "juz": 5,
+  "last_ayah_index": 627,
+  "page": 99
+ },
+ {
+  "first_ayah_index": 628,
+  "first_key": "4:135",
+  "juz": 5,
+  "last_ayah_index": 633,
+  "page": 100
+ },
+ {
+  "first_ayah_index": 634,
+  "first_key": "4:141",
+  "juz": 5,
+  "last_ayah_index": 640,
+  "page": 101
+ },
+ {
+  "first_ayah_index": 641,
+  "first_key": "4:148",
+  "juz": 6,
+  "last_ayah_index": 647,
+  "page": 102
+ },
+ {
+  "first_ayah_index": 648,
+  "first_key": "4:155",
+  "juz": 6,
+  "last_ayah_index": 655,
+  "page": 103
+ },
+ {
+  "first_ayah_index": 656,
+  "first_key": "4:163",
+  "juz": 6,
+  "last_ayah_index": 663,
+  "page": 104
+ },
+ {
+  "first_ayah_index": 664,
+  "first_key": "4:171",
+  "juz": 6,
+  "last_ayah_index": 668,
+  "page": 105
+ },
+ {
+  "first_ayah_index": 669,
+  "first_key": "4:176",
+  "juz": 6,
+  "last_ayah_index": 671,
+  "page": 106
+ },
+ {
+  "first_ayah_index": 672,
+  "first_key": "5:3",
+  "juz": 6,
+  "last_ayah_index": 674,
+  "page": 107
+ },
+ {
+  "first_ayah_index": 675,
+  "first_key": "5:6",
+  "juz": 6,
+  "last_ayah_index": 678,
+  "page": 108
+ },
+ {
+  "first_ayah_index": 679,
+  "first_key": "5:10",
+  "juz": 6,
+  "last_ayah_index": 682,
+  "page": 109
+ },
+ {
+  "first_ayah_index": 683,
+  "first_key": "5:14",
+  "juz": 6,
+  "last_ayah_index": 686,
+  "page": 110
+ },
+ {
+  "first_ayah_index": 687,
+  "first_key": "5:18",
+  "juz": 6,
+  "last_ayah_index": 692,
+  "page": 111
+ },
+ {
+  "first_ayah_index": 693,
+  "first_key": "5:24",
+  "juz": 6,
+  "last_ayah_index": 700,
+  "page": 112
+ },
+ {
+  "first_ayah_index": 701,
+  "first_key": "5:32",
+  "juz": 6,
+  "last_ayah_index": 705,
+  "page": 113
+ },
+ {
+  "first_ayah_index": 706,
+  "first_key": "5:37",
+  "juz": 6,
+  "last_ayah_index": 710,
+  "page": 114
+ },
+ {
+  "first_ayah_index": 711,
+  "first_key": "5:42",
+  "juz": 6,
+  "last_ayah_index": 714,
+  "page": 115
+ },
+ {
+  "first_ayah_index": 715,
+  "first_key": "5:46",
+  "juz": 6,
+  "last_ayah_index": 719,
+  "page": 116
+ },
+ {
+  "first_ayah_index": 720,
+  "first_key": "5:51",
+  "juz": 6,
+  "last_ayah_index": 726,
+  "page": 117
+ },
+ {
+  "first_ayah_index": 727,
+  "first_key": "5:58",
+  "juz": 6,
+  "last_ayah_index": 733,
+  "page": 118
+ },
+ {
+  "first_ayah_index": 734,
+  "first_key": "5:65",
+  "juz": 6,
+  "last_ayah_index": 739,
+  "page": 119
+ },
+ {
+  "first_ayah_index": 740,
+  "first_key": "5:71",
+  "juz": 6,
+  "last_ayah_index": 745,
+  "page": 120
+ },
+ {
+  "first_ayah_index": 746,
+  "first_key": "5:77",
+  "juz": 6,
+  "last_ayah_index": 751,
+  "page": 121
+ },
+ {
+  "first_ayah_index": 752,
+  "first_key": "5:83",
+  "juz": 7,
+  "last_ayah_index": 758,
+  "page": 122
+ },
+ {
+  "first_ayah_index": 759,
+  "first_key": "5:90",
+  "juz": 7,
+  "last_ayah_index": 764,
+  "page": 123
+ },
+ {
+  "first_ayah_index": 765,
+  "first_key": "5:96",
+  "juz": 7,
+  "last_ayah_index": 772,
+  "page": 124
+ },
+ {
+  "first_ayah_index": 773,
+  "first_key": "5:104",
+  "juz": 7,
+  "last_ayah_index": 777,
+  "page": 125
+ },
+ {
+  "first_ayah_index": 778,
+  "first_key": "5:109",
+  "juz": 7,
+  "last_ayah_index": 782,
+  "page": 126
+ },
+ {
+  "first_ayah_index": 783,
+  "first_key": "5:114",
+  "juz": 7,
+  "last_ayah_index": 789,
+  "page": 127
+ },
+ {
+  "first_ayah_index": 790,
+  "first_key": "6:1",
+  "juz": 7,
+  "last_ayah_index": 797,
+  "page": 128
+ },
+ {
+  "first_ayah_index": 798,
+  "first_key": "6:9",
+  "juz": 7,
+  "last_ayah_index": 807,
+  "page": 129
+ },
+ {
+  "first_ayah_index": 808,
+  "first_key": "6:19",
+  "juz": 7,
+  "last_ayah_index": 816,
+  "page": 130
+ },
+ {
+  "first_ayah_index": 817,
+  "first_key": "6:28",
+  "juz": 7,
+  "last_ayah_index": 824,
+  "page": 131
+ },
+ {
+  "first_ayah_index": 825,
+  "first_key": "6:36",
+  "juz": 7,
+  "last_ayah_index": 833,
+  "page": 132
+ },
+ {
+  "first_ayah_index": 834,
+  "first_key": "6:45",
+  "juz": 7,
+  "last_ayah_index": 841,
+  "page": 133
+ },
+ {
+  "first_ayah_index": 842,
+  "first_key": "6:53",
+  "juz": 7,
+  "last_ayah_index": 848,
+  "page": 134
+ },
+ {
+  "first_ayah_index": 849,
+  "first_key": "6:60",
+  "juz": 7,
+  "last_ayah_index": 857,
+  "page": 135
+ },
+ {
+  "first_ayah_index": 858,
+  "first_key": "6:69",
+  "juz": 7,
+  "last_ayah_index": 862,
+  "page": 136
+ },
+ {
+  "first_ayah_index": 863,
+  "first_key": "6:74",
+  "juz": 7,
+  "last_ayah_index": 870,
+  "page": 137
+ },
+ {
+  "first_ayah_index": 871,
+  "first_key": "6:82",
+  "juz": 7,
+  "last_ayah_index": 879,
+  "page": 138
+ },
+ {
+  "first_ayah_index": 880,
+  "first_key": "6:91",
+  "juz": 7,
+  "last_ayah_index": 883,
+  "page": 139
+ },
+ {
+  "first_ayah_index": 884,
+  "first_key": "6:95",
+  "juz": 7,
+  "last_ayah_index": 890,
+  "page": 140
+ },
+ {
+  "first_ayah_index": 891,
+  "first_key": "6:102",
+  "juz": 7,
+  "last_ayah_index": 899,
+  "page": 141
+ },
+ {
+  "first_ayah_index": 900,
+  "first_key": "6:111",
+  "juz": 8,
+  "last_ayah_index": 907,
+  "page": 142
+ },
+ {
+  "first_ayah_index": 908,
+  "first_key": "6:119",
+  "juz": 8,
+  "last_ayah_index": 913,
+  "page": 143
+ },
+ {
+  "first_ayah_index": 914,
+  "first_key": "6:125",
+  "juz": 8,
+  "last_ayah_index": 920,
+  "page": 144
+ },
+ {
+  "first_ayah_index": 921,
+  "first_key": "6:132",
+  "juz": 8,
+  "last_ayah_index": 926,
+  "page": 145
+ },
+ {
+  "first_ayah_index": 927,
+  "first_key": "6:138",
+  "juz": 8,
+  "last_ayah_index": 931,
+  "page": 146
+ },
+ {
+  "first_ayah_index": 932,
+  "first_key": "6:143",
+  "juz": 8,
+  "last_ayah_index": 935,
+  "page": 147
+ },
+ {
+  "first_ayah_index": 936,
+  "first_key": "6:147",
+  "juz": 8,
+  "last_ayah_index": 940,
+  "page": 148
+ },
+ {
+  "first_ayah_index": 941,
+  "first_key": "6:152",
+  "juz": 8,
+  "last_ayah_index": 946,
+  "page": 149
+ },
+ {
+  "first_ayah_index": 947,
+  "first_key": "6:158",
+  "juz": 8,
+  "last_ayah_index": 954,
+  "page": 150
+ },
+ {
+  "first_ayah_index": 955,
+  "first_key": "7:1",
+  "juz": 8,
+  "last_ayah_index": 965,
+  "page": 151
+ },
+ {
+  "first_ayah_index": 966,
+  "first_key": "7:12",
+  "juz": 8,
+  "last_ayah_index": 976,
+  "page": 152
+ },
+ {
+  "first_ayah_index": 977,
+  "first_key": "7:23",
+  "juz": 8,
+  "last_ayah_index": 984,
+  "page": 153
+ },
+ {
+  "first_ayah_index": 985,
+  "first_key": "7:31",
+  "juz": 8,
+  "last_ayah_index": 991,
+  "page": 154
+ },
+ {
+  "first_ayah_index": 992,
+  "first_key": "7:38",
+  "juz": 8,
+  "last_ayah_index": 997,
+  "page": 155
+ },
+ {
+  "first_ayah_index": 998,
+  "first_key": "7:44",
+  "juz": 8,
+  "last_ayah_index": 1005,
+  "page": 156
+ },
+ {
+  "first_ayah_index": 1006,
+  "first_key": "7:52",
+  "juz": 8,
+  "last_ayah_index": 1011,
+  "page": 157
+ },
+ {
+  "first_ayah_index": 1012,
+  "first_key": "7:58",
+  "juz": 8,
+  "last_ayah_index": 1021,
+  "page": 158
+ },
+ {
+  "first_ayah_index": 1022,
+  "first_key": "7:68",
+  "juz": 8,
+  "last_ayah_index": 1027,
+  "page": 159
+ },
+ {
+  "first_ayah_index": 1028,
+  "first_key": "7:74",
+  "juz": 8,
+  "last_ayah_index": 1035,
+  "page": 160
+ },
+ {
+  "first_ayah_index": 1036,
+  "first_key": "7:82",
+  "juz": 8,
+  "last_ayah_index": 1041,
+  "page": 161
+ },
+ {
+  "first_ayah_index": 1042,
+  "first_key": "7:88",
+  "juz": 9,
+  "last_ayah_index": 1049,
+  "page": 162
+ },
+ {
+  "first_ayah_index": 1050,
+  "first_key": "7:96",
+  "juz": 9,
+  "last_ayah_index": 1058,
+  "page": 163
+ },
+ {
+  "first_ayah_index": 1059,
+  "first_key": "7:105",
+  "juz": 9,
+  "last_ayah_index": 1074,
+  "page": 164
+ },
+ {
+  "first_ayah_index": 1075,
+  "first_key": "7:121",
+  "juz": 9,
+  "last_ayah_index": 1084,
+  "page": 165
+ },
+ {
+  "first_ayah_index": 1085,
+  "first_key": "7:131",
+  "juz": 9,
+  "last_ayah_index": 1091,
+  "page": 166
+ },
+ {
+  "first_ayah_index": 1092,
+  "first_key": "7:138",
+  "juz": 9,
+  "last_ayah_index": 1097,
+  "page": 167
+ },
+ {
+  "first_ayah_index": 1098,
+  "first_key": "7:144",
+  "juz": 9,
+  "last_ayah_index": 1103,
+  "page": 168
+ },
+ {
+  "first_ayah_index": 1104,
+  "first_key": "7:150",
+  "juz": 9,
+  "last_ayah_index": 1109,
+  "page": 169
+ },
+ {
+  "first_ayah_index": 1110,
+  "first_key": "7:156",
+  "juz": 9,
+  "last_ayah_index": 1113,
+  "page": 170
+ },
+ {
+  "first_ayah_index": 1114,
+  "first_key": "7:160",
+  "juz": 9,
+  "last_ayah_index": 1117,
+  "page": 171
+ },
+ {
+  "first_ayah_index": 1118,
+  "first_key": "7:164",
+  "juz": 9,
+  "last_ayah_index": 1124,
+  "page": 172
+ },
+ {
+  "first_ayah_index": 1125,
+  "first_key": "7:171",
+  "juz": 9,
+  "last_ayah_index": 1132,
+  "page": 173
+ },
+ {
+  "first_ayah_index": 1133,
+  "first_key": "7:179",
+  "juz": 9,
+  "last_ayah_index": 1141,
+  "page": 174
+ },
+ {
+  "first_ayah_index": 1142,
+  "first_key": "7:188",
+  "juz": 9,
+  "last_ayah_index": 1149,
+  "page": 175
+ },
+ {
+  "first_ayah_index": 1150,
+  "first_key": "7:196",
+  "juz": 9,
+  "last_ayah_index": 1160,
+  "page": 176
+ },
+ {
+  "first_ayah_index": 1161,
+  "first_key": "8:1",
+  "juz": 9,
+  "last_ayah_index": 1168,
+  "page": 177
+ },
+ {
+  "first_ayah_index": 1169,
+  "first_key": "8:9",
+  "juz": 9,
+  "last_ayah_index": 1176,
+  "page": 178
+ },
+ {
+  "first_ayah_index": 1177,
+  "first_key": "8:17",
+  "juz": 9,
+  "last_ayah_index": 1185,
+  "page": 179
+ },
+ {
+  "first_ayah_index": 1186,
+  "first_key": "8:26",
+  "juz": 9,
+  "last_ayah_index": 1193,
+  "page": 180
+ },
+ {
+  "first_ayah_index": 1194,
+  "first_key": "8:34",
+  "juz": 9,
+  "last_ayah_index": 1200,
+  "page": 181
+ },
+ {
+  "first_ayah_index": 1201,
+  "first_key": "8:41",
+  "juz": 10,
+  "last_ayah_index": 1205,
+  "page": 182
+ },
+ {
+  "first_ayah_index": 1206,
+  "first_key": "8:46",
+  "juz": 10,
+  "last_ayah_index": 1212,
+  "page": 183
+ },
+ {
+  "first_ayah_index": 1213,
+  "first_key": "8:53",
+  "juz": 10,
+  "last_ayah_index": 1221,
+  "page": 184
+ },
+ {
+  "first_ayah_index": 1222,
+  "first_key": "8:62",
+  "juz": 10,
+  "last_ayah_index": 1229,
+  "page": 185
+ },
+ {
+  "first_ayah_index": 1230,
+  "first_key": "8:70",
+  "juz": 10,
+  "last_ayah_index": 1235,
+  "page": 186
+ },
+ {
+  "first_ayah_index": 1236,
+  "first_key": "9:1",
+  "juz": 10,
+  "last_ayah_index": 1241,
+  "page": 187
+ },
+ {
+  "first_ayah_index": 1242,
+  "first_key": "9:7",
+  "juz": 10,
+  "last_ayah_index": 1248,
+  "page": 188
+ },
+ {
+  "first_ayah_index": 1249,
+  "first_key": "9:14",
+  "juz": 10,
+  "last_ayah_index": 1255,
+  "page": 189
+ },
+ {
+  "first_ayah_index": 1256,
+  "first_key": "9:21",
+  "juz": 10,
+  "last_ayah_index": 1261,
+  "page": 190
+ },
+ {
+  "first_ayah_index": 1262,
+  "first_key": "9:27",
+  "juz": 10,
+  "last_ayah_index": 1266,
+  "page": 191
+ },
+ {
+  "first_ayah_index": 1267,
+  "first_key": "9:32",
+  "juz": 10,
+  "last_ayah_index": 1271,
+  "page": 192
+ },
+ {
+  "first_ayah_index": 1272,
+  "first_key": "9:37",
+  "juz": 10,
+  "last_ayah_index": 1275,
+  "page": 193
+ },
+ {
+  "first_ayah_index": 1276,
+  "first_key": "9:41",
+  "juz": 10,
+  "last_ayah_index": 1282,
+  "page": 194
+ },
+ {
+  "first_ayah_index": 1283,
+  "first_key": "9:48",
+  "juz": 10,
+  "last_ayah_index": 1289,
+  "page": 195
+ },
+ {
+  "first_ayah_index": 1290,
+  "first_key": "9:55",
+  "juz": 10,
+  "last_ayah_index": 1296,
+  "page": 196
+ },
+ {
+  "first_ayah_index": 1297,
+  "first_key": "9:62",
+  "juz": 10,
+  "last_ayah_index": 1303,
+  "page": 197
+ },
+ {
+  "first_ayah_index": 1304,
+  "first_key": "9:69",
+  "juz": 10,
+  "last_ayah_index": 1307,
+  "page": 198
+ },
+ {
+  "first_ayah_index": 1308,
+  "first_key": "9:73",
+  "juz": 10,
+  "last_ayah_index": 1314,
+  "page": 199
+ },
+ {
+  "first_ayah_index": 1315,
+  "first_key": "9:80",
+  "juz": 10,
+  "last_ayah_index": 1321,
+  "page": 200
+ },
+ {
+  "first_ayah_index": 1322,
+  "first_key": "9:87",
+  "juz": 10,
+  "last_ayah_index": 1328,
+  "page": 201
+ },
+ {
+  "first_ayah_index": 1329,
+  "first_key": "9:94",
+  "juz": 11,
+  "last_ayah_index": 1334,
+  "page": 202
+ },
+ {
+  "first_ayah_index": 1335,
+  "first_key": "9:100",
+  "juz": 11,
+  "last_ayah_index": 1341,
+  "page": 203
+ },
+ {
+  "first_ayah_index": 1342,
+  "first_key": "9:107",
+  "juz": 11,
+  "last_ayah_index": 1346,
+  "page": 204
+ },
+ {
+  "first_ayah_index": 1347,
+  "first_key": "9:112",
+  "juz": 11,
+  "last_ayah_index": 1352,
+  "page": 205
+ },
+ {
+  "first_ayah_index": 1353,
+  "first_key": "9:118",
+  "juz": 11,
+  "last_ayah_index": 1357,
+  "page": 206
+ },
+ {
+  "first_ayah_index": 1358,
+  "first_key": "9:123",
+  "juz": 11,
+  "last_ayah_index": 1364,
+  "page": 207
+ },
+ {
+  "first_ayah_index": 1365,
+  "first_key": "10:1",
+  "juz": 11,
+  "last_ayah_index": 1370,
+  "page": 208
+ },
+ {
+  "first_ayah_index": 1371,
+  "first_key": "10:7",
+  "juz": 11,
+  "last_ayah_index": 1378,
+  "page": 209
+ },
+ {
+  "first_ayah_index": 1379,
+  "first_key": "10:15",
+  "juz": 11,
+  "last_ayah_index": 1384,
+  "page": 210
+ },
+ {
+  "first_ayah_index": 1385,
+  "first_key": "10:21",
+  "juz": 11,
+  "last_ayah_index": 1389,
+  "page": 211
+ },
+ {
+  "first_ayah_index": 1390,
+  "first_key": "10:26",
+  "juz": 11,
+  "last_ayah_index": 1397,
+  "page": 212
+ },
+ {
+  "first_ayah_index": 1398,
+  "first_key": "10:34",
+  "juz": 11,
+  "last_ayah_index": 1406,
+  "page": 213
+ },
+ {
+  "first_ayah_index": 1407,
+  "first_key": "10:43",
+  "juz": 11,
+  "last_ayah_index": 1417,
+  "page": 214
+ },
+ {
+  "first_ayah_index": 1418,
+  "first_key": "10:54",
+  "juz": 11,
+  "last_ayah_index": 1425,
+  "page": 215
+ },
+ {
+  "first_ayah_index": 1426,
+  "first_key": "10:62",
+  "juz": 11,
+  "last_ayah_index": 1434,
+  "page": 216
+ },
+ {
+  "first_ayah_index": 1435,
+  "first_key": "10:71",
+  "juz": 11,
+  "last_ayah_index": 1442,
+  "page": 217
+ },
+ {
+  "first_ayah_index": 1443,
+  "first_key": "10:79",
+  "juz": 11,
+  "last_ayah_index": 1452,
+  "page": 218
+ },
+ {
+  "first_ayah_index": 1453,
+  "first_key": "10:89",
+  "juz": 11,
+  "last_ayah_index": 1461,
+  "page": 219
+ },
+ {
+  "first_ayah_index": 1462,
+  "first_key": "10:98",
+  "juz": 11,
+  "last_ayah_index": 1470,
+  "page": 220
+ },
+ {
+  "first_ayah_index": 1471,
+  "first_key": "10:107",
+  "juz": 11,
+  "last_ayah_index": 1478,
+  "page": 221
+ },
+ {
+  "first_ayah_index": 1479,
+  "first_key": "11:6",
+  "juz": 12,
+  "last_ayah_index": 1485,
+  "page": 222
+ },
+ {
+  "first_ayah_index": 1486,
+  "first_key": "11:13",
+  "juz": 12,
+  "last_ayah_index": 1492,
+  "page": 223
+ },
+ {
+  "first_ayah_index": 1493,
+  "first_key": "11:20",
+  "juz": 12,
+  "last_ayah_index": 1501,
+  "page": 224
+ },
+ {
+  "first_ayah_index": 1502,
+  "first_key": "11:29",
+  "juz": 12,
+  "last_ayah_index": 1510,
+  "page": 225
+ },
+ {
+  "first_ayah_index": 1511,
+  "first_key": "11:38",
+  "juz": 12,
+  "last_ayah_index": 1518,
+  "page": 226
+ },
+ {
+  "first_ayah_index": 1519,
+  "first_key": "11:46",
+  "juz": 12,
+  "last_ayah_index": 1526,
+  "page": 227
+ },
+ {
+  "first_ayah_index": 1527,
+  "first_key": "11:54",
+  "juz": 12,
+  "last_ayah_index": 1535,
+  "page": 228
+ },
+ {
+  "first_ayah_index": 1536,
+  "first_key": "11:63",
+  "juz": 12,
+  "last_ayah_index": 1544,
+  "page": 229
+ },
+ {
+  "first_ayah_index": 1545,
+  "first_key": "11:72",
+  "juz": 12,
+  "last_ayah_index": 1554,
+  "page": 230
+ },
+ {
+  "first_ayah_index": 1555,
+  "first_key": "11:82",
+  "juz": 12,
+  "last_ayah_index": 1561,
+  "page": 231
+ },
+ {
+  "first_ayah_index": 1562,
+  "first_key": "11:89",
+  "juz": 12,
+  "last_ayah_index": 1570,
+  "page": 232
+ },
+ {
+  "first_ayah_index": 1571,
+  "first_key": "11:98",
+  "juz": 12,
+  "last_ayah_index": 1581,
+  "page": 233
+ },
+ {
+  "first_ayah_index": 1582,
+  "first_key": "11:109",
+  "juz": 12,
+  "last_ayah_index": 1590,
+  "page": 234
+ },
+ {
+  "first_ayah_index": 1591,
+  "first_key": "11:118",
+  "juz": 12,
+  "last_ayah_index": 1600,
+  "page": 235
+ },
+ {
+  "first_ayah_index": 1601,
+  "first_key": "12:5",
+  "juz": 12,
+  "last_ayah_index": 1610,
+  "page": 236
+ },
+ {
+  "first_ayah_index": 1611,
+  "first_key": "12:15",
+  "juz": 12,
+  "last_ayah_index": 1618,
+  "page": 237
+ },
+ {
+  "first_ayah_index": 1619,
+  "first_key": "12:23",
+  "juz": 12,
+  "last_ayah_index": 1626,
+  "page": 238
+ },
+ {
+  "first_ayah_index": 1627,
+  "first_key": "12:31",
+  "juz": 12,
+  "last_ayah_index": 1633,
+  "page": 239
+ },
+ {
+  "first_ayah_index": 1634,
+  "first_key": "12:38",
+  "juz": 12,
+  "last_ayah_index": 1639,
+  "page": 240
+ },
+ {
+  "first_ayah_index": 1640,
+  "first_key": "12:44",
+  "juz": 12,
+  "last_ayah_index": 1648,
+  "page": 241
+ },
+ {
+  "first_ayah_index": 1649,
+  "first_key": "12:53",
+  "juz": 13,
+  "last_ayah_index": 1659,
+  "page": 242
+ },
+ {
+  "first_ayah_index": 1660,
+  "first_key": "12:64",
+  "juz": 13,
+  "last_ayah_index": 1665,
+  "page": 243
+ },
+ {
+  "first_ayah_index": 1666,
+  "first_key": "12:70",
+  "juz": 13,
+  "last_ayah_index": 1674,
+  "page": 244
+ },
+ {
+  "first_ayah_index": 1675,
+  "first_key": "12:79",
+  "juz": 13,
+  "last_ayah_index": 1682,
+  "page": 245
+ },
+ {
+  "first_ayah_index": 1683,
+  "first_key": "12:87",
+  "juz": 13,
+  "last_ayah_index": 1691,
+  "page": 246
+ },
+ {
+  "first_ayah_index": 1692,
+  "first_key": "12:96",
+  "juz": 13,
+  "last_ayah_index": 1699,
+  "page": 247
+ },
+ {
+  "first_ayah_index": 1700,
+  "first_key": "12:104",
+  "juz": 13,
+  "last_ayah_index": 1707,
+  "page": 248
+ },
+ {
+  "first_ayah_index": 1708,
+  "first_key": "13:1",
+  "juz": 13,
+  "last_ayah_index": 1712,
+  "page": 249
+ },
+ {
+  "first_ayah_index": 1713,
+  "first_key": "13:6",
+  "juz": 13,
+  "last_ayah_index": 1720,
+  "page": 250
+ },
+ {
+  "first_ayah_index": 1721,
+  "first_key": "13:14",
+  "juz": 13,
+  "last_ayah_index": 1725,
+  "page": 251
+ },
+ {
+  "first_ayah_index": 1726,
+  "first_key": "13:19",
+  "juz": 13,
+  "last_ayah_index": 1735,
+  "page": 252
+ },
+ {
+  "first_ayah_index": 1736,
+  "first_key": "13:29",
+  "juz": 13,
+  "last_ayah_index": 1741,
+  "page": 253
+ },
+ {
+  "first_ayah_index": 1742,
+  "first_key": "13:35",
+  "juz": 13,
+  "last_ayah_index": 1749,
+  "page": 254
+ },
+ {
+  "first_ayah_index": 1750,
+  "first_key": "13:43",
+  "juz": 13,
+  "last_ayah_index": 1755,
+  "page": 255
+ },
+ {
+  "first_ayah_index": 1756,
+  "first_key": "14:6",
+  "juz": 13,
+  "last_ayah_index": 1760,
+  "page": 256
+ },
+ {
+  "first_ayah_index": 1761,
+  "first_key": "14:11",
+  "juz": 13,
+  "last_ayah_index": 1768,
+  "page": 257
+ },
+ {
+  "first_ayah_index": 1769,
+  "first_key": "14:19",
+  "juz": 13,
+  "last_ayah_index": 1774,
+  "page": 258
+ },
+ {
+  "first_ayah_index": 1775,
+  "first_key": "14:25",
+  "juz": 13,
+  "last_ayah_index": 1783,
+  "page": 259
+ },
+ {
+  "first_ayah_index": 1784,
+  "first_key": "14:34",
+  "juz": 13,
+  "last_ayah_index": 1792,
+  "page": 260
+ },
+ {
+  "first_ayah_index": 1793,
+  "first_key": "14:43",
+  "juz": 13,
+  "last_ayah_index": 1802,
+  "page": 261
+ },
+ {
+  "first_ayah_index": 1803,
+  "first_key": "15:1",
+  "juz": 14,
+  "last_ayah_index": 1817,
+  "page": 262
+ },
+ {
+  "first_ayah_index": 1818,
+  "first_key": "15:16",
+  "juz": 14,
+  "last_ayah_index": 1833,
+  "page": 263
+ },
+ {
+  "first_ayah_index": 1834,
+  "first_key": "15:32",
+  "juz": 14,
+  "last_ayah_index": 1853,
+  "page": 264
+ },
+ {
+  "first_ayah_index": 1854,
+  "first_key": "15:52",
+  "juz": 14,
+  "last_ayah_index": 1872,
+  "page": 265
+ },
+ {
+  "first_ayah_index": 1873,
+  "first_key": "15:71",
+  "juz": 14,
+  "last_ayah_index": 1892,
+  "page": 266
+ },
+ {
+  "first_ayah_index": 1893,
+  "first_key": "15:91",
+  "juz": 14,
+  "last_ayah_index": 1907,
+  "page": 267
+ },
+ {
+  "first_ayah_index": 1908,
+  "first_key": "16:7",
+  "juz": 14,
+  "last_ayah_index": 1915,
+  "page": 268
+ },
+ {
+  "first_ayah_index": 1916,
+  "first_key": "16:15",
+  "juz": 14,
+  "last_ayah_index": 1927,
+  "page": 269
+ },
+ {
+  "first_ayah_index": 1928,
+  "first_key": "16:27",
+  "juz": 14,
+  "last_ayah_index": 1935,
+  "page": 270
+ },
+ {
+  "first_ayah_index": 1936,
+  "first_key": "16:35",
+  "juz": 14,
+  "last_ayah_index": 1943,
+  "page": 271
+ },
+ {
+  "first_ayah_index": 1944,
+  "first_key": "16:43",
+  "juz": 14,
+  "last_ayah_index": 1955,
+  "page": 272
+ },
+ {
+  "first_ayah_index": 1956,
+  "first_key": "16:55",
+  "juz": 14,
+  "last_ayah_index": 1965,
+  "page": 273
+ },
+ {
+  "first_ayah_index": 1966,
+  "first_key": "16:65",
+  "juz": 14,
+  "last_ayah_index": 1973,
+  "page": 274
+ },
+ {
+  "first_ayah_index": 1974,
+  "first_key": "16:73",
+  "juz": 14,
+  "last_ayah_index": 1980,
+  "page": 275
+ },
+ {
+  "first_ayah_index": 1981,
+  "first_key": "16:80",
+  "juz": 14,
+  "last_ayah_index": 1988,
+  "page": 276
+ },
+ {
+  "first_ayah_index": 1989,
+  "first_key": "16:88",
+  "juz": 14,
+  "last_ayah_index": 1994,
+  "page": 277
+ },
+ {
+  "first_ayah_index": 1995,
+  "first_key": "16:94",
+  "juz": 14,
+  "last_ayah_index": 2003,
+  "page": 278
+ },
+ {
+  "first_ayah_index": 2004,
+  "first_key": "16:103",
+  "juz": 14,
+  "last_ayah_index": 2011,
+  "page": 279
+ },
+ {
+  "first_ayah_index": 2012,
+  "first_key": "16:111",
+  "juz": 14,
+  "last_ayah_index": 2019,
+  "page": 280
+ },
+ {
+  "first_ayah_index": 2020,
+  "first_key": "16:119",
+  "juz": 14,
+  "last_ayah_index": 2029,
+  "page": 281
+ },
+ {
+  "first_ayah_index": 2030,
+  "first_key": "17:1",
+  "juz": 15,
+  "last_ayah_index": 2036,
+  "page": 282
+ },
+ {
+  "first_ayah_index": 2037,
+  "first_key": "17:8",
+  "juz": 15,
+  "last_ayah_index": 2046,
+  "page": 283
+ },
+ {
+  "first_ayah_index": 2047,
+  "first_key": "17:18",
+  "juz": 15,
+  "last_ayah_index": 2056,
+  "page": 284
+ },
+ {
+  "first_ayah_index": 2057,
+  "first_key": "17:28",
+  "juz": 15,
+  "last_ayah_index": 2067,
+  "page": 285
+ },
+ {
+  "first_ayah_index": 2068,
+  "first_key": "17:39",
+  "juz": 15,
+  "last_ayah_index": 2078,
+  "page": 286
+ },
+ {
+  "first_ayah_index": 2079,
+  "first_key": "17:50",
+  "juz": 15,
+  "last_ayah_index": 2087,
+  "page": 287
+ },
+ {
+  "first_ayah_index": 2088,
+  "first_key": "17:59",
+  "juz": 15,
+  "last_ayah_index": 2095,
+  "page": 288
+ },
+ {
+  "first_ayah_index": 2096,
+  "first_key": "17:67",
+  "juz": 15,
+  "last_ayah_index": 2104,
+  "page": 289
+ },
+ {
+  "first_ayah_index": 2105,
+  "first_key": "17:76",
+  "juz": 15,
+  "last_ayah_index": 2115,
+  "page": 290
+ },
+ {
+  "first_ayah_index": 2116,
+  "first_key": "17:87",
+  "juz": 15,
+  "last_ayah_index": 2125,
+  "page": 291
+ },
+ {
+  "first_ayah_index": 2126,
+  "first_key": "17:97",
+  "juz": 15,
+  "last_ayah_index": 2133,
+  "page": 292
+ },
+ {
+  "first_ayah_index": 2134,
+  "first_key": "17:105",
+  "juz": 15,
+  "last_ayah_index": 2144,
+  "page": 293
+ },
+ {
+  "first_ayah_index": 2145,
+  "first_key": "18:5",
+  "juz": 15,
+  "last_ayah_index": 2155,
+  "page": 294
+ },
+ {
+  "first_ayah_index": 2156,
+  "first_key": "18:16",
+  "juz": 15,
+  "last_ayah_index": 2160,
+  "page": 295
+ },
+ {
+  "first_ayah_index": 2161,
+  "first_key": "18:21",
+  "juz": 15,
+  "last_ayah_index": 2167,
+  "page": 296
+ },
+ {
+  "first_ayah_index": 2168,
+  "first_key": "18:28",
+  "juz": 15,
+  "last_ayah_index": 2174,
+  "page": 297
+ },
+ {
+  "first_ayah_index": 2175,
+  "first_key": "18:35",
+  "juz": 15,
+  "last_ayah_index": 2185,
+  "page": 298
+ },
+ {
+  "first_ayah_index": 2186,
+  "first_key": "18:46",
+  "juz": 15,
+  "last_ayah_index": 2193,
+  "page": 299
+ },
+ {
+  "first_ayah_index": 2194,
+  "first_key": "18:54",
+  "juz": 15,
+  "last_ayah_index": 2201,
+  "page": 300
+ },
+ {
+  "first_ayah_index": 2202,
+  "first_key": "18:62",
+  "juz": 15,
+  "last_ayah_index": 2214,
+  "page": 301
+ },
+ {
+  "first_ayah_index": 2215,
+  "first_key": "18:75",
+  "juz": 16,
+  "last_ayah_index": 2223,
+  "page": 302
+ },
+ {
+  "first_ayah_index": 2224,
+  "first_key": "18:84",
+  "juz": 16,
+  "last_ayah_index": 2237,
+  "page": 303
+ },
+ {
+  "first_ayah_index": 2238,
+  "first_key": "18:98",
+  "juz": 16,
+  "last_ayah_index": 2250,
+  "page": 304
+ },
+ {
+  "first_ayah_index": 2251,
+  "first_key": "19:1",
+  "juz": 16,
+  "last_ayah_index": 2261,
+  "page": 305
+ },
+ {
+  "first_ayah_index": 2262,
+  "first_key": "19:12",
+  "juz": 16,
+  "last_ayah_index": 2275,
+  "page": 306
+ },
+ {
+  "first_ayah_index": 2276,
+  "first_key": "19:26",
+  "juz": 16,
+  "last_ayah_index": 2288,
+  "page": 307
+ },
+ {
+  "first_ayah_index": 2289,
+  "first_key": "19:39",
+  "juz": 16,
+  "last_ayah_index": 2301,
+  "page": 308
+ },
+ {
+  "first_ayah_index": 2302,
+  "first_key": "19:52",
+  "juz": 16,
+  "last_ayah_index": 2314,
+  "page": 309
+ },
+ {
+  "first_ayah_index": 2315,
+  "first_key": "19:65",
+  "juz": 16,
+  "last_ayah_index": 2326,
+  "page": 310
+ },
+ {
+  "first_ayah_index": 2327,
+  "first_key": "19:77",
+  "juz": 16,
+  "last_ayah_index": 2345,
+  "page": 311
+ },
+ {
+  "first_ayah_index": 2346,
+  "first_key": "19:96",
+  "juz": 16,
+  "last_ayah_index": 2360,
+  "page": 312
+ },
+ {
+  "first_ayah_index": 2361,
+  "first_key": "20:13",
+  "juz": 16,
+  "last_ayah_index": 2385,
+  "page": 313
+ },
+ {
+  "first_ayah_index": 2386,
+  "first_key": "20:38",
+  "juz": 16,
+  "last_ayah_index": 2399,
+  "page": 314
+ },
+ {
+  "first_ayah_index": 2400,
+  "first_key": "20:52",
+  "juz": 16,
+  "last_ayah_index": 2412,
+  "page": 315
+ },
+ {
+  "first_ayah_index": 2413,
+  "first_key": "20:65",
+  "juz": 16,
+  "last_ayah_index": 2424,
+  "page": 316
+ },
+ {
+  "first_ayah_index": 2425,
+  "first_key": "20:77",
+  "juz": 16,
+  "last_ayah_index": 2435,
+  "page": 317
+ },
+ {
+  "first_ayah_index": 2436,
+  "first_key": "20:88",
+  "juz": 16,
+  "last_ayah_index": 2446,
+  "page": 318
+ },
+ {
+  "first_ayah_index": 2447,
+  "first_key": "20:99",
+  "juz": 16,
+  "last_ayah_index": 2461,
+  "page": 319
+ },
+ {
+  "first_ayah_index": 2462,
+  "first_key": "20:114",
+  "juz": 16,
+  "last_ayah_index": 2473,
+  "page": 320
+ },
+ {
+  "first_ayah_index": 2474,
+  "first_key": "20:126",
+  "juz": 16,
+  "last_ayah_index": 2483,
+  "page": 321
+ },
+ {
+  "first_ayah_index": 2484,
+  "first_key": "21:1",
+  "juz": 17,
+  "last_ayah_index": 2493,
+  "page": 322
+ },
+ {
+  "first_ayah_index": 2494,
+  "first_key": "21:11",
+  "juz": 17,
+  "last_ayah_index": 2507,
+  "page": 323
+ },
+ {
+  "first_ayah_index": 2508,
+  "first_key": "21:25",
+  "juz": 17,
+  "last_ayah_index": 2518,
+  "page": 324
+ },
+ {
+  "first_ayah_index": 2519,
+  "first_key": "21:36",
+  "juz": 17,
+  "last_ayah_index": 2527,
+  "page": 325
+ },
+ {
+  "first_ayah_index": 2528,
+  "first_key": "21:45",
+  "juz": 17,
+  "last_ayah_index": 2540,
+  "page": 326
+ },
+ {
+  "first_ayah_index": 2541,
+  "first_key": "21:58",
+  "juz": 17,
+  "last_ayah_index": 2555,
+  "page": 327
+ },
+ {
+  "first_ayah_index": 2556,
+  "first_key": "21:73",
+  "juz": 17,
+  "last_ayah_index": 2564,
+  "page": 328
+ },
+ {
+  "first_ayah_index": 2565,
+  "first_key": "21:82",
+  "juz": 17,
+  "last_ayah_index": 2573,
+  "page": 329
+ },
+ {
+  "first_ayah_index": 2574,
+  "first_key": "21:91",
+  "juz": 17,
+  "last_ayah_index": 2584,
+  "page": 330
+ },
+ {
+  "first_ayah_index": 2585,
+  "first_key": "21:102",
+  "juz": 17,
+  "last_ayah_index": 2595,
+  "page": 331
+ },
+ {
+  "first_ayah_index": 2596,
+  "first_key": "22:1",
+  "juz": 17,
+  "last_ayah_index": 2600,
+  "page": 332
+ },
+ {
+  "first_ayah_index": 2601,
+  "first_key": "22:6",
+  "juz": 17,
+  "last_ayah_index": 2610,
+  "page": 333
+ },
+ {
+  "first_ayah_index": 2611,
+  "first_key": "22:16",
+  "juz": 17,
+  "last_ayah_index": 2618,
+  "page": 334
+ },
+ {
+  "first_ayah_index": 2619,
+  "first_key": "22:24",
+  "juz": 17,
+  "last_ayah_index": 2625,
+  "page": 335
+ },
+ {
+  "first_ayah_index": 2626,
+  "first_key": "22:31",
+  "juz": 17,
+  "last_ayah_index": 2633,
+  "page": 336
+ },
+ {
+  "first_ayah_index": 2634,
+  "first_key": "22:39",
+  "juz": 17,
+  "last_ayah_index": 2641,
+  "page": 337
+ },
+ {
+  "first_ayah_index": 2642,
+  "first_key": "22:47",
+  "juz": 17,
+  "last_ayah_index": 2650,
+  "page": 338
+ },
+ {
+  "first_ayah_index": 2651,
+  "first_key": "22:56",
+  "juz": 17,
+  "last_ayah_index": 2659,
+  "page": 339
+ },
+ {
+  "first_ayah_index": 2660,
+  "first_key": "22:65",
+  "juz": 17,
+  "last_ayah_index": 2667,
+  "page": 340
+ },
+ {
+  "first_ayah_index": 2668,
+  "first_key": "22:73",
+  "juz": 17,
+  "last_ayah_index": 2673,
+  "page": 341
+ },
+ {
+  "first_ayah_index": 2674,
+  "first_key": "23:1",
+  "juz": 18,
+  "last_ayah_index": 2690,
+  "page": 342
+ },
+ {
+  "first_ayah_index": 2691,
+  "first_key": "23:18",
+  "juz": 18,
+  "last_ayah_index": 2700,
+  "page": 343
+ },
+ {
+  "first_ayah_index": 2701,
+  "first_key": "23:28",
+  "juz": 18,
+  "last_ayah_index": 2715,
+  "page": 344
+ },
+ {
+  "first_ayah_index": 2716,
+  "first_key": "23:43",
+  "juz": 18,
+  "last_ayah_index": 2732,
+  "page": 345
+ },
+ {
+  "first_ayah_index": 2733,
+  "first_key": "23:60",
+  "juz": 18,
+  "last_ayah_index": 2747,
+  "page": 346
+ },
+ {
+  "first_ayah_index": 2748,
+  "first_key": "23:75",
+  "juz": 18,
+  "last_ayah_index": 2762,
+  "page": 347
+ },
+ {
+  "first_ayah_index": 2763,
+  "first_key": "23:90",
+  "juz": 18,
+  "last_ayah_index": 2777,
+  "page": 348
+ },
+ {
+  "first_ayah_index": 2778,
+  "first_key": "23:105",
+  "juz": 18,
+  "last_ayah_index": 2791,
+  "page": 349
+ },
+ {
+  "first_ayah_index": 2792,
+  "first_key": "24:1",
+  "juz": 18,
+  "last_ayah_index": 2801,
+  "page": 350
+ },
+ {
+  "first_ayah_index": 2802,
+  "first_key": "24:11",
+  "juz": 18,
+  "last_ayah_index": 2811,
+  "page": 351
+ },
+ {
+  "first_ayah_index": 2812,
+  "first_key": "24:21",
+  "juz": 18,
+  "last_ayah_index": 2818,
+  "page": 352
+ },
+ {
+  "first_ayah_index": 2819,
+  "first_key": "24:28",
+  "juz": 18,
+  "last_ayah_index": 2822,
+  "page": 353
+ },
+ {
+  "first_ayah_index": 2823,
+  "first_key": "24:32",
+  "juz": 18,
+  "last_ayah_index": 2827,
+  "page": 354
+ },
+ {
+  "first_ayah_index": 2828,
+  "first_key": "24:37",
+  "juz": 18,
+  "last_ayah_index": 2834,
+  "page": 355
+ },
+ {
+  "first_ayah_index": 2835,
+  "first_key": "24:44",
+  "juz": 18,
+  "last_ayah_index": 2844,
+  "page": 356
+ },
+ {
+  "first_ayah_index": 2845,
+  "first_key": "24:54",
+  "juz": 18,
+  "last_ayah_index": 2849,
+  "page": 357
+ },
+ {
+  "first_ayah_index": 2850,
+  "first_key": "24:59",
+  "juz": 18,
+  "last_ayah_index": 2852,
+  "page": 358
+ },
+ {
+  "first_ayah_index": 2853,
+  "first_key": "24:62",
+  "juz": 18,
+  "last_ayah_index": 2857,
+  "page": 359
+ },
+ {
+  "first_ayah_index": 2858,
+  "first_key": "25:3",
+  "juz": 18,
+  "last_ayah_index": 2866,
+  "page": 360
+ },
+ {
+  "first_ayah_index": 2867,
+  "first_key": "25:12",
+  "juz": 18,
+  "last_ayah_index": 2875,
+  "page": 361
+ },
+ {
+  "first_ayah_index": 2876,
+  "first_key": "25:21",
+  "juz": 19,
+  "last_ayah_index": 2887,
+  "page": 362
+ },
+ {
+  "first_ayah_index": 2888,
+  "first_key": "25:33",
+  "juz": 19,
+  "last_ayah_index": 2898,
+  "page": 363
+ },
+ {
+  "first_ayah_index": 2899,
+  "first_key": "25:44",
+  "juz": 19,
+  "last_ayah_index": 2910,
+  "page": 364
+ },
+ {
+  "first_ayah_index": 2911,
+  "first_key": "25:56",
+  "juz": 19,
+  "last_ayah_index": 2922,
+  "page": 365
+ },
+ {
+  "first_ayah_index": 2923,
+  "first_key": "25:68",
+  "juz": 19,
+  "last_ayah_index": 2932,
+  "page": 366
+ },
+ {
+  "first_ayah_index": 2933,
+  "first_key": "26:1",
+  "juz": 19,
+  "last_ayah_index": 2951,
+  "page": 367
+ },
+ {
+  "first_ayah_index": 2952,
+  "first_key": "26:20",
+  "juz": 19,
+  "last_ayah_index": 2971,
+  "page": 368
+ },
+ {
+  "first_ayah_index": 2972,
+  "first_key": "26:40",
+  "juz": 19,
+  "last_ayah_index": 2992,
+  "page": 369
+ },
+ {
+  "first_ayah_index": 2993,
+  "first_key": "26:61",
+  "juz": 19,
+  "last_ayah_index": 3015,
+  "page": 370
+ },
+ {
+  "first_ayah_index": 3016,
+  "first_key": "26:84",
+  "juz": 19,
+  "last_ayah_index": 3043,
+  "page": 371
+ },
+ {
+  "first_ayah_index": 3044,
+  "first_key": "26:112",
+  "juz": 19,
+  "last_ayah_index": 3068,
+  "page": 372
+ },
+ {
+  "first_ayah_index": 3069,
+  "first_key": "26:137",
+  "juz": 19,
+  "last_ayah_index": 3091,
+  "page": 373
+ },
+ {
+  "first_ayah_index": 3092,
+  "first_key": "26:160",
+  "juz": 19,
+  "last_ayah_index": 3115,
+  "page": 374
+ },
+ {
+  "first_ayah_index": 3116,
+  "first_key": "26:184",
+  "juz": 19,
+  "last_ayah_index": 3138,
+  "page": 375
+ },
+ {
+  "first_ayah_index": 3139,
+  "first_key": "26:207",
+  "juz": 19,
+  "last_ayah_index": 3159,
+  "page": 376
+ },
+ {
+  "first_ayah_index": 3160,
+  "first_key": "27:1",
+  "juz": 19,
+  "last_ayah_index": 3172,
+  "page": 377
+ },
+ {
+  "first_ayah_index": 3173,
+  "first_key": "27:14",
+  "juz": 19,
+  "last_ayah_index": 3181,
+  "page": 378
+ },
+ {
+  "first_ayah_index": 3182,
+  "first_key": "27:23",
+  "juz": 19,
+  "last_ayah_index": 3194,
+  "page": 379
+ },
+ {
+  "first_ayah_index": 3195,
+  "first_key": "27:36",
+  "juz": 19,
+  "last_ayah_index": 3203,
+  "page": 380
+ },
+ {
+  "first_ayah_index": 3204,
+  "first_key": "27:45",
+  "juz": 19,
+  "last_ayah_index": 3214,
+  "page": 381
+ },
+ {
+  "first_ayah_index": 3215,
+  "first_key": "27:56",
+  "juz": 20,
+  "last_ayah_index": 3222,
+  "page": 382
+ },
+ {
+  "first_ayah_index": 3223,
+  "first_key": "27:64",
+  "juz": 20,
+  "last_ayah_index": 3235,
+  "page": 383
+ },
+ {
+  "first_ayah_index": 3236,
+  "first_key": "27:77",
+  "juz": 20,
+  "last_ayah_index": 3247,
+  "page": 384
+ },
+ {
+  "first_ayah_index": 3248,
+  "first_key": "27:89",
+  "juz": 20,
+  "last_ayah_index": 3257,
+  "page": 385
+ },
+ {
+  "first_ayah_index": 3258,
+  "first_key": "28:6",
+  "juz": 20,
+  "last_ayah_index": 3265,
+  "page": 386
+ },
+ {
+  "first_ayah_index": 3266,
+  "first_key": "28:14",
+  "juz": 20,
+  "last_ayah_index": 3273,
+  "page": 387
+ },
+ {
+  "first_ayah_index": 3274,
+  "first_key": "28:22",
+  "juz": 20,
+  "last_ayah_index": 3280,
+  "page": 388
+ },
+ {
+  "first_ayah_index": 3281,
+  "first_key": "28:29",
+  "juz": 20,
+  "last_ayah_index": 3287,
+  "page": 389
+ },
+ {
+  "first_ayah_index": 3288,
+  "first_key": "28:36",
+  "juz": 20,
+  "last_ayah_index": 3295,
+  "page": 390
+ },
+ {
+  "first_ayah_index": 3296,
+  "first_key": "28:44",
+  "juz": 20,
+  "last_ayah_index": 3302,
+  "page": 391
+ },
+ {
+  "first_ayah_index": 3303,
+  "first_key": "28:51",
+  "juz": 20,
+  "last_ayah_index": 3311,
+  "page": 392
+ },
+ {
+  "first_ayah_index": 3312,
+  "first_key": "28:60",
+  "juz": 20,
+  "last_ayah_index": 3322,
+  "page": 393
+ },
+ {
+  "first_ayah_index": 3323,
+  "first_key": "28:71",
+  "juz": 20,
+  "last_ayah_index": 3329,
+  "page": 394
+ },
+ {
+  "first_ayah_index": 3330,
+  "first_key": "28:78",
+  "juz": 20,
+  "last_ayah_index": 3336,
+  "page": 395
+ },
+ {
+  "first_ayah_index": 3337,
+  "first_key": "28:85",
+  "juz": 20,
+  "last_ayah_index": 3346,
+  "page": 396
+ },
+ {
+  "first_ayah_index": 3347,
+  "first_key": "29:7",
+  "juz": 20,
+  "last_ayah_index": 3354,
+  "page": 397
+ },
+ {
+  "first_ayah_index": 3355,
+  "first_key": "29:15",
+  "juz": 20,
+  "last_ayah_index": 3363,
+  "page": 398
+ },
+ {
+  "first_ayah_index": 3364,
+  "first_key": "29:24",
+  "juz": 20,
+  "last_ayah_index": 3370,
+  "page": 399
+ },
+ {
+  "first_ayah_index": 3371,
+  "first_key": "29:31",
+  "juz": 20,
+  "last_ayah_index": 3378,
+  "page": 400
+ },
+ {
+  "first_ayah_index": 3379,
+  "first_key": "29:39",
+  "juz": 20,
+  "last_ayah_index": 3385,
+  "page": 401
+ },
+ {
+  "first_ayah_index": 3386,
+  "first_key": "29:46",
+  "juz": 21,
+  "last_ayah_index": 3392,
+  "page": 402
+ },
+ {
+  "first_ayah_index": 3393,
+  "first_key": "29:53",
+  "juz": 21,
+  "last_ayah_index": 3403,
+  "page": 403
+ },
+ {
+  "first_ayah_index": 3404,
+  "first_key": "29:64",
+  "juz": 21,
+  "last_ayah_index": 3414,
+  "page": 404
+ },
+ {
+  "first_ayah_index": 3415,
+  "first_key": "30:6",
+  "juz": 21,
+  "last_ayah_index": 3424,
+  "page": 405
+ },
+ {
+  "first_ayah_index": 3425,
+  "first_key": "30:16",
+  "juz": 21,
+  "last_ayah_index": 3433,
+  "page": 406
+ },
+ {
+  "first_ayah_index": 3434,
+  "first_key": "30:25",
+  "juz": 21,
+  "last_ayah_index": 3441,
+  "page": 407
+ },
+ {
+  "first_ayah_index": 3442,
+  "first_key": "30:33",
+  "juz": 21,
+  "last_ayah_index": 3450,
+  "page": 408
+ },
+ {
+  "first_ayah_index": 3451,
+  "first_key": "30:42",
+  "juz": 21,
+  "last_ayah_index": 3459,
+  "page": 409
+ },
+ {
+  "first_ayah_index": 3460,
+  "first_key": "30:51",
+  "juz": 21,
+  "last_ayah_index": 3469,
+  "page": 410
+ },
+ {
+  "first_ayah_index": 3470,
+  "first_key": "31:1",
+  "juz": 21,
+  "last_ayah_index": 3480,
+  "page": 411
+ },
+ {
+  "first_ayah_index": 3481,
+  "first_key": "31:12",
+  "juz": 21,
+  "last_ayah_index": 3488,
+  "page": 412
+ },
+ {
+  "first_ayah_index": 3489,
+  "first_key": "31:20",
+  "juz": 21,
+  "last_ayah_index": 3497,
+  "page": 413
+ },
+ {
+  "first_ayah_index": 3498,
+  "first_key": "31:29",
+  "juz": 21,
+  "last_ayah_index": 3503,
+  "page": 414
+ },
+ {
+  "first_ayah_index": 3504,
+  "first_key": "32:1",
+  "juz": 21,
+  "last_ayah_index": 3514,
+  "page": 415
+ },
+ {
+  "first_ayah_index": 3515,
+  "first_key": "32:12",
+  "juz": 21,
+  "last_ayah_index": 3523,
+  "page": 416
+ },
+ {
+  "first_ayah_index": 3524,
+  "first_key": "32:21",
+  "juz": 21,
+  "last_ayah_index": 3533,
+  "page": 417
+ },
+ {
+  "first_ayah_index": 3534,
+  "first_key": "33:1",
+  "juz": 21,
+  "last_ayah_index": 3539,
+  "page": 418
+ },
+ {
+  "first_ayah_index": 3540,
+  "first_key": "33:7",
+  "juz": 21,
+  "last_ayah_index": 3548,
+  "page": 419
+ },
+ {
+  "first_ayah_index": 3549,
+  "first_key": "33:16",
+  "juz": 21,
+  "last_ayah_index": 3555,
+  "page": 420
+ },
+ {
+  "first_ayah_index": 3556,
+  "first_key": "33:23",
+  "juz": 21,
+  "last_ayah_index": 3563,
+  "page": 421
+ },
+ {
+  "first_ayah_index": 3564,
+  "first_key": "33:31",
+  "juz": 22,
+  "last_ayah_index": 3568,
+  "page": 422
+ },
+ {
+  "first_ayah_index": 3569,
+  "first_key": "33:36",
+  "juz": 22,
+  "last_ayah_index": 3576,
+  "page": 423
+ },
+ {
+  "first_ayah_index": 3577,
+  "first_key": "33:44",
+  "juz": 22,
+  "last_ayah_index": 3583,
+  "page": 424
+ },
+ {
+  "first_ayah_index": 3584,
+  "first_key": "33:51",
+  "juz": 22,
+  "last_ayah_index": 3587,
+  "page": 425
+ },
+ {
+  "first_ayah_index": 3588,
+  "first_key": "33:55",
+  "juz": 22,
+  "last_ayah_index": 3595,
+  "page": 426
+ },
+ {
+  "first_ayah_index": 3596,
+  "first_key": "33:63",
+  "juz": 22,
+  "last_ayah_index": 3606,
+  "page": 427
+ },
+ {
+  "first_ayah_index": 3607,
+  "first_key": "34:1",
+  "juz": 22,
+  "last_ayah_index": 3613,
+  "page": 428
+ },
+ {
+  "first_ayah_index": 3614,
+  "first_key": "34:8",
+  "juz": 22,
+  "last_ayah_index": 3620,
+  "page": 429
+ },
+ {
+  "first_ayah_index": 3621,
+  "first_key": "34:15",
+  "juz": 22,
+  "last_ayah_index": 3628,
+  "page": 430
+ },
+ {
+  "first_ayah_index": 3629,
+  "first_key": "34:23",
+  "juz": 22,
+  "last_ayah_index": 3637,
+  "page": 431
+ },
+ {
+  "first_ayah_index": 3638,
+  "first_key": "34:32",
+  "juz": 22,
+  "last_ayah_index": 3645,
+  "page": 432
+ },
+ {
+  "first_ayah_index": 3646,
+  "first_key": "34:40",
+  "juz": 22,
+  "last_ayah_index": 3654,
+  "page": 433
+ },
+ {
+  "first_ayah_index": 3655,
+  "first_key": "34:49",
+  "juz": 22,
+  "last_ayah_index": 3663,
+  "page": 434
+ },
+ {
+  "first_ayah_index": 3664,
+  "first_key": "35:4",
+  "juz": 22,
+  "last_ayah_index": 3671,
+  "page": 435
+ },
+ {
+  "first_ayah_index": 3672,
+  "first_key": "35:12",
+  "juz": 22,
+  "last_ayah_index": 3678,
+  "page": 436
+ },
+ {
+  "first_ayah_index": 3679,
+  "first_key": "35:19",
+  "juz": 22,
+  "last_ayah_index": 3690,
+  "page": 437
+ },
+ {
+  "first_ayah_index": 3691,
+  "first_key": "35:31",
+  "juz": 22,
+  "last_ayah_index": 3698,
+  "page": 438
+ },
+ {
+  "first_ayah_index": 3699,
+  "first_key": "35:39",
+  "juz": 22,
+  "last_ayah_index": 3704,
+  "page": 439
+ },
+ {
+  "first_ayah_index": 3705,
+  "first_key": "35:45",
+  "juz": 22,
+  "last_ayah_index": 3717,
+  "page": 440
+ },
+ {
+  "first_ayah_index": 3718,
+  "first_key": "36:13",
+  "juz": 22,
+  "last_ayah_index": 3732,
+  "page": 441
+ },
+ {
+  "first_ayah_index": 3733,
+  "first_key": "36:28",
+  "juz": 23,
+  "last_ayah_index": 3745,
+  "page": 442
+ },
+ {
+  "first_ayah_index": 3746,
+  "first_key": "36:41",
+  "juz": 23,
+  "last_ayah_index": 3759,
+  "page": 443
+ },
+ {
+  "first_ayah_index": 3760,
+  "first_key": "36:55",
+  "juz": 23,
+  "last_ayah_index": 3775,
+  "page": 444
+ },
+ {
+  "first_ayah_index": 3776,
+  "first_key": "36:71",
+  "juz": 23,
+  "last_ayah_index": 3788,
+  "page": 445
+ },
+ {
+  "first_ayah_index": 3789,
+  "first_key": "37:1",
+  "juz": 23,
+  "last_ayah_index": 3812,
+  "page": 446
+ },
+ {
+  "first_ayah_index": 3813,
+  "first_key": "37:25",
+  "juz": 23,
+  "last_ayah_index": 3839,
+  "page": 447
+ },
+ {
+  "first_ayah_index": 3840,
+  "first_key": "37:52",
+  "juz": 23,
+  "last_ayah_index": 3864,
+  "page": 448
+ },
+ {
+  "first_ayah_index": 3865,
+  "first_key": "37:77",
+  "juz": 23,
+  "last_ayah_index": 3890,
+  "page": 449
+ },
+ {
+  "first_ayah_index": 3891,
+  "first_key": "37:103",
+  "juz": 23,
+  "last_ayah_index": 3914,
+  "page": 450
+ },
+ {
+  "first_ayah_index": 3915,
+  "first_key": "37:127",
+  "juz": 23,
+  "last_ayah_index": 3941,
+  "page": 451
+ },
+ {
+  "first_ayah_index": 3942,
+  "first_key": "37:154",
+  "juz": 23,
+  "last_ayah_index": 3970,
+  "page": 452
+ },
+ {
+  "first_ayah_index": 3971,
+  "first_key": "38:1",
+  "juz": 23,
+  "last_ayah_index": 3986,
+  "page": 453
+ },
+ {
+  "first_ayah_index": 3987,
+  "first_key": "38:17",
+  "juz": 23,
+  "last_ayah_index": 3996,
+  "page": 454
+ },
+ {
+  "first_ayah_index": 3997,
+  "first_key": "38:27",
+  "juz": 23,
+  "last_ayah_index": 4012,
+  "page": 455
+ },
+ {
+  "first_ayah_index": 4013,
+  "first_key": "38:43",
+  "juz": 23,
+  "last_ayah_index": 4031,
+  "page": 456
+ },
+ {
+  "first_ayah_index": 4032,
+  "first_key": "38:62",
+  "juz": 23,
+  "last_ayah_index": 4053,
+  "page": 457
+ },
+ {
+  "first_ayah_index": 4054,
+  "first_key": "38:84",
+  "juz": 23,
+  "last_ayah_index": 4063,
+  "page": 458
+ },
+ {
+  "first_ayah_index": 4064,
+  "first_key": "39:6",
+  "juz": 23,
+  "last_ayah_index": 4068,
+  "page": 459
+ },
+ {
+  "first_ayah_index": 4069,
+  "first_key": "39:11",
+  "juz": 23,
+  "last_ayah_index": 4079,
+  "page": 460
+ },
+ {
+  "first_ayah_index": 4080,
+  "first_key": "39:22",
+  "juz": 23,
+  "last_ayah_index": 4089,
+  "page": 461
+ },
+ {
+  "first_ayah_index": 4090,
+  "first_key": "39:32",
+  "juz": 24,
+  "last_ayah_index": 4098,
+  "page": 462
+ },
+ {
+  "first_ayah_index": 4099,
+  "first_key": "39:41",
+  "juz": 24,
+  "last_ayah_index": 4105,
+  "page": 463
+ },
+ {
+  "first_ayah_index": 4106,
+  "first_key": "39:48",
+  "juz": 24,
+  "last_ayah_index": 4114,
+  "page": 464
+ },
+ {
+  "first_ayah_index": 4115,
+  "first_key": "39:57",
+  "juz": 24,
+  "last_ayah_index": 4125,
+  "page": 465
+ },
+ {
+  "first_ayah_index": 4126,
+  "first_key": "39:68",
+  "juz": 24,
+  "last_ayah_index": 4132,
+  "page": 466
+ },
+ {
+  "first_ayah_index": 4133,
+  "first_key": "39:75",
+  "juz": 24,
+  "last_ayah_index": 4140,
+  "page": 467
+ },
+ {
+  "first_ayah_index": 4141,
+  "first_key": "40:8",
+  "juz": 24,
+  "last_ayah_index": 4149,
+  "page": 468
+ },
+ {
+  "first_ayah_index": 4150,
+  "first_key": "40:17",
+  "juz": 24,
+  "last_ayah_index": 4158,
+  "page": 469
+ },
+ {
+  "first_ayah_index": 4159,
+  "first_key": "40:26",
+  "juz": 24,
+  "last_ayah_index": 4166,
+  "page": 470
+ },
+ {
+  "first_ayah_index": 4167,
+  "first_key": "40:34",
+  "juz": 24,
+  "last_ayah_index": 4173,
+  "page": 471
+ },
+ {
+  "first_ayah_index": 4174,
+  "first_key": "40:41",
+  "juz": 24,
+  "last_ayah_index": 4182,
+  "page": 472
+ },
+ {
+  "first_ayah_index": 4183,
+  "first_key": "40:50",
+  "juz": 24,
+  "last_ayah_index": 4191,
+  "page": 473
+ },
+ {
+  "first_ayah_index": 4192,
+  "first_key": "40:59",
+  "juz": 24,
+  "last_ayah_index": 4199,
+  "page": 474
+ },
+ {
+  "first_ayah_index": 4200,
+  "first_key": "40:67",
+  "juz": 24,
+  "last_ayah_index": 4210,
+  "page": 475
+ },
+ {
+  "first_ayah_index": 4211,
+  "first_key": "40:78",
+  "juz": 24,
+  "last_ayah_index": 4218,
+  "page": 476
+ },
+ {
+  "first_ayah_index": 4219,
+  "first_key": "41:1",
+  "juz": 24,
+  "last_ayah_index": 4229,
+  "page": 477
+ },
+ {
+  "first_ayah_index": 4230,
+  "first_key": "41:12",
+  "juz": 24,
+  "last_ayah_index": 4238,
+  "page": 478
+ },
+ {
+  "first_ayah_index": 4239,
+  "first_key": "41:21",
+  "juz": 24,
+  "last_ayah_index": 4247,
+  "page": 479
+ },
+ {
+  "first_ayah_index": 4248,
+  "first_key": "41:30",
+  "juz": 24,
+  "last_ayah_index": 4256,
+  "page": 480
+ },
+ {
+  "first_ayah_index": 4257,
+  "first_key": "41:39",
+  "juz": 24,
+  "last_ayah_index": 4264,
+  "page": 481
+ },
+ {
+  "first_ayah_index": 4265,
+  "first_key": "41:47",
+  "juz": 25,
+  "last_ayah_index": 4272,
+  "page": 482
+ },
+ {
+  "first_ayah_index": 4273,
+  "first_key": "42:1",
+  "juz": 25,
+  "last_ayah_index": 4282,
+  "page": 483
+ },
+ {
+  "first_ayah_index": 4283,
+  "first_key": "42:11",
+  "juz": 25,
+  "last_ayah_index": 4287,
+  "page": 484
+ },
+ {
+  "first_ayah_index": 4288,
+  "first_key": "42:16",
+  "juz": 25,
+  "last_ayah_index": 4294,
+  "page": 485
+ },
+ {
+  "first_ayah_index": 4295,
+  "first_key": "42:23",
+  "juz": 25,
+  "last_ayah_index": 4303,
+  "page": 486
+ },
+ {
+  "first_ayah_index": 4304,
+  "first_key": "42:32",
+  "juz": 25,
+  "last_ayah_index": 4316,
+  "page": 487
+ },
+ {
+  "first_ayah_index": 4317,
+  "first_key": "42:45",
+  "juz": 25,
+  "last_ayah_index": 4323,
+  "page": 488
+ },
+ {
+  "first_ayah_index": 4324,
+  "first_key": "42:52",
+  "juz": 25,
+  "last_ayah_index": 4335,
+  "page": 489
+ },
+ {
+  "first_ayah_index": 4336,
+  "first_key": "43:11",
+  "juz": 25,
+  "last_ayah_index": 4347,
+  "page": 490
+ },
+ {
+  "first_ayah_index": 4348,
+  "first_key": "43:23",
+  "juz": 25,
+  "last_ayah_index": 4358,
+  "page": 491
+ },
+ {
+  "first_ayah_index": 4359,
+  "first_key": "43:34",
+  "juz": 25,
+  "last_ayah_index": 4372,
+  "page": 492
+ },
+ {
+  "first_ayah_index": 4373,
+  "first_key": "43:48",
+  "juz": 25,
+  "last_ayah_index": 4385,
+  "page": 493
+ },
+ {
+  "first_ayah_index": 4386,
+  "first_key": "43:61",
+  "juz": 25,
+  "last_ayah_index": 4398,
+  "page": 494
+ },
+ {
+  "first_ayah_index": 4399,
+  "first_key": "43:74",
+  "juz": 25,
+  "last_ayah_index": 4414,
+  "page": 495
+ },
+ {
+  "first_ayah_index": 4415,
+  "first_key": "44:1",
+  "juz": 25,
+  "last_ayah_index": 4432,
+  "page": 496
+ },
+ {
+  "first_ayah_index": 4433,
+  "first_key": "44:19",
+  "juz": 25,
+  "last_ayah_index": 4453,
+  "page": 497
+ },
+ {
+  "first_ayah_index": 4454,
+  "first_key": "44:40",
+  "juz": 25,
+  "last_ayah_index": 4473,
+  "page": 498
+ },
+ {
+  "first_ayah_index": 4474,
+  "first_key": "45:1",
+  "juz": 25,
+  "last_ayah_index": 4486,
+  "page": 499
+ },
+ {
+  "first_ayah_index": 4487,
+  "first_key": "45:14",
+  "juz": 25,
+  "last_ayah_index": 4495,
+  "page": 500
+ },
+ {
+  "first_ayah_index": 4496,
+  "first_key": "45:23",
+  "juz": 25,
+  "last_ayah_index": 4505,
+  "page": 501
+ },
+ {
+  "first_ayah_index": 4506,
+  "first_key": "45:33",
+  "juz": 25,
+  "last_ayah_index": 4515,
+  "page": 502
+ },
+ {
+  "first_ayah_index": 4516,
+  "first_key": "46:6",
+  "juz": 26,
+  "last_ayah_index": 4524,
+  "page": 503
+ },
+ {
+  "first_ayah_index": 4525,
+  "first_key": "46:15",
+  "juz": 26,
+  "last_ayah_index": 4530,
+  "page": 504
+ },
+ {
+  "first_ayah_index": 4531,
+  "first_key": "46:21",
+  "juz": 26,
+  "last_ayah_index": 4538,
+  "page": 505
+ },
+ {
+  "first_ayah_index": 4539,
+  "first_key": "46:29",
+  "juz": 26,
+  "last_ayah_index": 4545,
+  "page": 506
+ },
+ {
+  "first_ayah_index": 4546,
+  "first_key": "47:1",
+  "juz": 26,
+  "last_ayah_index": 4556,
+  "page": 507
+ },
+ {
+  "first_ayah_index": 4557,
+  "first_key": "47:12",
+  "juz": 26,
+  "last_ayah_index": 4564,
+  "page": 508
+ },
+ {
+  "first_ayah_index": 4565,
+  "first_key": "47:20",
+  "juz": 26,
+  "last_ayah_index": 4574,
+  "page": 509
+ },
+ {
+  "first_ayah_index": 4575,
+  "first_key": "47:30",
+  "juz": 26,
+  "last_ayah_index": 4583,
+  "page": 510
+ },
+ {
+  "first_ayah_index": 4584,
+  "first_key": "48:1",
+  "juz": 26,
+  "last_ayah_index": 4592,
+  "page": 511
+ },
+ {
+  "first_ayah_index": 4593,
+  "first_key": "48:10",
+  "juz": 26,
+  "last_ayah_index": 4598,
+  "page": 512
+ },
+ {
+  "first_ayah_index": 4599,
+  "first_key": "48:16",
+  "juz": 26,
+  "last_ayah_index": 4606,
+  "page": 513
+ },
+ {
+  "first_ayah_index": 4607,
+  "first_key": "48:24",
+  "juz": 26,
+  "last_ayah_index": 4611,
+  "page": 514
+ },
+ {
+  "first_ayah_index": 4612,
+  "first_key": "48:29",
+  "juz": 26,
+  "last_ayah_index": 4616,
+  "page": 515
+ },
+ {
+  "first_ayah_index": 4617,
+  "first_key": "49:5",
+  "juz": 26,
+  "last_ayah_index": 4623,
+  "page": 516
+ },
+ {
+  "first_ayah_index": 4624,
+  "first_key": "49:12",
+  "juz": 26,
+  "last_ayah_index": 4630,
+  "page": 517
+ },
+ {
+  "first_ayah_index": 4631,
+  "first_key": "50:1",
+  "juz": 26,
+  "last_ayah_index": 4645,
+  "page": 518
+ },
+ {
+  "first_ayah_index": 4646,
+  "first_key": "50:16",
+  "juz": 26,
+  "last_ayah_index": 4665,
+  "page": 519
+ },
+ {
+  "first_ayah_index": 4666,
+  "first_key": "50:36",
+  "juz": 26,
+  "last_ayah_index": 4681,
+  "page": 520
+ },
+ {
+  "first_ayah_index": 4682,
+  "first_key": "51:7",
+  "juz": 26,
+  "last_ayah_index": 4705,
+  "page": 521
+ },
+ {
+  "first_ayah_index": 4706,
+  "first_key": "51:31",
+  "juz": 27,
+  "last_ayah_index": 4726,
+  "page": 522
+ },
+ {
+  "first_ayah_index": 4727,
+  "first_key": "51:52",
+  "juz": 27,
+  "last_ayah_index": 4749,
+  "page": 523
+ },
+ {
+  "first_ayah_index": 4750,
+  "first_key": "52:15",
+  "juz": 27,
+  "last_ayah_index": 4766,
+  "page": 524
+ },
+ {
+  "first_ayah_index": 4767,
+  "first_key": "52:32",
+  "juz": 27,
+  "last_ayah_index": 4784,
+  "page": 525
+ },
+ {
+  "first_ayah_index": 4785,
+  "first_key": "53:1",
+  "juz": 27,
+  "last_ayah_index": 4810,
+  "page": 526
+ },
+ {
+  "first_ayah_index": 4811,
+  "first_key": "53:27",
+  "juz": 27,
+  "last_ayah_index": 4828,
+  "page": 527
+ },
+ {
+  "first_ayah_index": 4829,
+  "first_key": "53:45",
+  "juz": 27,
+  "last_ayah_index": 4852,
+  "page": 528
+ },
+ {
+  "first_ayah_index": 4853,
+  "first_key": "54:7",
+  "juz": 27,
+  "last_ayah_index": 4873,
+  "page": 529
+ },
+ {
+  "first_ayah_index": 4874,
+  "first_key": "54:28",
+  "juz": 27,
+  "last_ayah_index": 4895,
+  "page": 530
+ },
+ {
+  "first_ayah_index": 4896,
+  "first_key": "54:50",
+  "juz": 27,
+  "last_ayah_index": 4917,
+  "page": 531
+ },
+ {
+  "first_ayah_index": 4918,
+  "first_key": "55:17",
+  "juz": 27,
+  "last_ayah_index": 4941,
+  "page": 532
+ },
+ {
+  "first_ayah_index": 4942,
+  "first_key": "55:41",
+  "juz": 27,
+  "last_ayah_index": 4968,
+  "page": 533
+ },
+ {
+  "first_ayah_index": 4969,
+  "first_key": "55:68",
+  "juz": 27,
+  "last_ayah_index": 4995,
+  "page": 534
+ },
+ {
+  "first_ayah_index": 4996,
+  "first_key": "56:17",
+  "juz": 27,
+  "last_ayah_index": 5029,
+  "page": 535
+ },
+ {
+  "first_ayah_index": 5030,
+  "first_key": "56:51",
+  "juz": 27,
+  "last_ayah_index": 5055,
+  "page": 536
+ },
+ {
+  "first_ayah_index": 5056,
+  "first_key": "56:77",
+  "juz": 27,
+  "last_ayah_index": 5078,
+  "page": 537
+ },
+ {
+  "first_ayah_index": 5079,
+  "first_key": "57:4",
+  "juz": 27,
+  "last_ayah_index": 5086,
+  "page": 538
+ },
+ {
+  "first_ayah_index": 5087,
+  "first_key": "57:12",
+  "juz": 27,
+  "last_ayah_index": 5093,
+  "page": 539
+ },
+ {
+  "first_ayah_index": 5094,
+  "first_key": "57:19",
+  "juz": 27,
+  "last_ayah_index": 5099,
+  "page": 540
+ },
+ {
+  "first_ayah_index": 5100,
+  "first_key": "57:25",
+  "juz": 27,
+  "last_ayah_index": 5104,
+  "page": 541
+ },
+ {
+  "first_ayah_index": 5105,
+  "first_key": "58:1",
+  "juz": 28,
+  "last_ayah_index": 5110,
+  "page": 542
+ },
+ {
+  "first_ayah_index": 5111,
+  "first_key": "58:7",
+  "juz": 28,
+  "last_ayah_index": 5115,
+  "page": 543
+ },
+ {
+  "first_ayah_index": 5116,
+  "first_key": "58:12",
+  "juz": 28,
+  "last_ayah_index": 5125,
+  "page": 544
+ },
+ {
+  "first_ayah_index": 5126,
+  "first_key": "58:22",
+  "juz": 28,
+  "last_ayah_index": 5129,
+  "page": 545
+ },
+ {
+  "first_ayah_index": 5130,
+  "first_key": "59:4",
+  "juz": 28,
+  "last_ayah_index": 5135,
+  "page": 546
+ },
+ {
+  "first_ayah_index": 5136,
+  "first_key": "59:10",
+  "juz": 28,
+  "last_ayah_index": 5142,
+  "page": 547
+ },
+ {
+  "first_ayah_index": 5143,
+  "first_key": "59:17",
+  "juz": 28,
+  "last_ayah_index": 5150,
+  "page": 548
+ },
+ {
+  "first_ayah_index": 5151,
+  "first_key": "60:1",
+  "juz": 28,
+  "last_ayah_index": 5155,
+  "page": 549
+ },
+ {
+  "first_ayah_index": 5156,
+  "first_key": "60:6",
+  "juz": 28,
+  "last_ayah_index": 5161,
+  "page": 550
+ },
+ {
+  "first_ayah_index": 5162,
+  "first_key": "60:12",
+  "juz": 28,
+  "last_ayah_index": 5168,
+  "page": 551
+ },
+ {
+  "first_ayah_index": 5169,
+  "first_key": "61:6",
+  "juz": 28,
+  "last_ayah_index": 5177,
+  "page": 552
+ },
+ {
+  "first_ayah_index": 5178,
+  "first_key": "62:1",
+  "juz": 28,
+  "last_ayah_index": 5185,
+  "page": 553
+ },
+ {
+  "first_ayah_index": 5186,
+  "first_key": "62:9",
+  "juz": 28,
+  "last_ayah_index": 5192,
+  "page": 554
+ },
+ {
+  "first_ayah_index": 5193,
+  "first_key": "63:5",
+  "juz": 28,
+  "last_ayah_index": 5199,
+  "page": 555
+ },
+ {
+  "first_ayah_index": 5200,
+  "first_key": "64:1",
+  "juz": 28,
+  "last_ayah_index": 5208,
+  "page": 556
+ },
+ {
+  "first_ayah_index": 5209,
+  "first_key": "64:10",
+  "juz": 28,
+  "last_ayah_index": 5217,
+  "page": 557
+ },
+ {
+  "first_ayah_index": 5218,
+  "first_key": "65:1",
+  "juz": 28,
+  "last_ayah_index": 5222,
+  "page": 558
+ },
+ {
+  "first_ayah_index": 5223,
+  "first_key": "65:6",
+  "juz": 28,
+  "last_ayah_index": 5229,
+  "page": 559
+ },
+ {
+  "first_ayah_index": 5230,
+  "first_key": "66:1",
+  "juz": 28,
+  "last_ayah_index": 5236,
+  "page": 560
+ },
+ {
+  "first_ayah_index": 5237,
+  "first_key": "66:8",
+  "juz": 28,
+  "last_ayah_index": 5241,
+  "page": 561
+ },
+ {
+  "first_ayah_index": 5242,
+  "first_key": "67:1",
+  "juz": 29,
+  "last_ayah_index": 5253,
+  "page": 562
+ },
+ {
+  "first_ayah_index": 5254,
+  "first_key": "67:13",
+  "juz": 29,
+  "last_ayah_index": 5267,
+  "page": 563
+ },
+ {
+  "first_ayah_index": 5268,
+  "first_key": "67:27",
+  "juz": 29,
+  "last_ayah_index": 5286,
+  "page": 564
+ },
+ {
+  "first_ayah_index": 5287,
+  "first_key": "68:16",
+  "juz": 29,
+  "last_ayah_index": 5313,
+  "page": 565
+ },
+ {
+  "first_ayah_index": 5314,
+  "first_key": "68:43",
+  "juz": 29,
+  "last_ayah_index": 5331,
+  "page": 566
+ },
+ {
+  "first_ayah_index": 5332,
+  "first_key": "69:9",
+  "juz": 29,
+  "last_ayah_index": 5357,
+  "page": 567
+ },
+ {
+  "first_ayah_index": 5358,
+  "first_key": "69:35",
+  "juz": 29,
+  "last_ayah_index": 5385,
+  "page": 568
+ },
+ {
+  "first_ayah_index": 5386,
+  "first_key": "70:11",
+  "juz": 29,
+  "last_ayah_index": 5414,
+  "page": 569
+ },
+ {
+  "first_ayah_index": 5415,
+  "first_key": "70:40",
+  "juz": 29,
+  "last_ayah_index": 5429,
+  "page": 570
+ },
+ {
+  "first_ayah_index": 5430,
+  "first_key": "71:11",
+  "juz": 29,
+  "last_ayah_index": 5447,
+  "page": 571
+ },
+ {
+  "first_ayah_index": 5448,
+  "first_key": "72:1",
+  "juz": 29,
+  "last_ayah_index": 5460,
+  "page": 572
+ },
+ {
+  "first_ayah_index": 5461,
+  "first_key": "72:14",
+  "juz": 29,
+  "last_ayah_index": 5475,
+  "page": 573
+ },
+ {
+  "first_ayah_index": 5476,
+  "first_key": "73:1",
+  "juz": 29,
+  "last_ayah_index": 5494,
+  "page": 574
+ },
+ {
+  "first_ayah_index": 5495,
+  "first_key": "73:20",
+  "juz": 29,
+  "last_ayah_index": 5512,
+  "page": 575
+ },
+ {
+  "first_ayah_index": 5513,
+  "first_key": "74:18",
+  "juz": 29,
+  "last_ayah_index": 5542,
+  "page": 576
+ },
+ {
+  "first_ayah_index": 5543,
+  "first_key": "74:48",
+  "juz": 29,
+  "last_ayah_index": 5570,
+  "page": 577
+ },
+ {
+  "first_ayah_index": 5571,
+  "first_key": "75:20",
+  "juz": 29,
+  "last_ayah_index": 5596,
+  "page": 578
+ },
+ {
+  "first_ayah_index": 5597,
+  "first_key": "76:6",
+  "juz": 29,
+  "last_ayah_index": 5616,
+  "page": 579
+ },
+ {
+  "first_ayah_index": 5617,
+  "first_key": "76:26",
+  "juz": 29,
+  "last_ayah_index": 5641,
+  "page": 580
+ },
+ {
+  "first_ayah_index": 5642,
+  "first_key": "77:20",
+  "juz": 29,
+  "last_ayah_index": 5672,
+  "page": 581
+ },
+ {
+  "first_ayah_index": 5673,
+  "first_key": "78:1",
+  "juz": 30,
+  "last_ayah_index": 5702,
+  "page": 582
+ },
+ {
+  "first_ayah_index": 5703,
+  "first_key": "78:31",
+  "juz": 30,
+  "last_ayah_index": 5727,
+  "page": 583
+ },
+ {
+  "first_ayah_index": 5728,
+  "first_key": "79:16",
+  "juz": 30,
+  "last_ayah_index": 5758,
+  "page": 584
+ },
+ {
+  "first_ayah_index": 5759,
+  "first_key": "80:1",
+  "juz": 30,
+  "last_ayah_index": 5800,
+  "page": 585
+ },
+ {
+  "first_ayah_index": 5801,
+  "first_key": "81:1",
+  "juz": 30,
+  "last_ayah_index": 5829,
+  "page": 586
+ },
+ {
+  "first_ayah_index": 5830,
+  "first_key": "82:1",
+  "juz": 30,
+  "last_ayah_index": 5854,
+  "page": 587
+ },
+ {
+  "first_ayah_index": 5855,
+  "first_key": "83:7",
+  "juz": 30,
+  "last_ayah_index": 5882,
+  "page": 588
+ },
+ {
+  "first_ayah_index": 5883,
+  "first_key": "83:35",
+  "juz": 30,
+  "last_ayah_index": 5909,
+  "page": 589
+ },
+ {
+  "first_ayah_index": 5910,
+  "first_key": "85:1",
+  "juz": 30,
+  "last_ayah_index": 5931,
+  "page": 590
+ },
+ {
+  "first_ayah_index": 5932,
+  "first_key": "86:1",
+  "juz": 30,
+  "last_ayah_index": 5963,
+  "page": 591
+ },
+ {
+  "first_ayah_index": 5964,
+  "first_key": "87:16",
+  "juz": 30,
+  "last_ayah_index": 5993,
+  "page": 592
+ },
+ {
+  "first_ayah_index": 5994,
+  "first_key": "89:1",
+  "juz": 30,
+  "last_ayah_index": 6016,
+  "page": 593
+ },
+ {
+  "first_ayah_index": 6017,
+  "first_key": "89:24",
+  "juz": 30,
+  "last_ayah_index": 6043,
+  "page": 594
+ },
+ {
+  "first_ayah_index": 6044,
+  "first_key": "91:1",
+  "juz": 30,
+  "last_ayah_index": 6072,
+  "page": 595
+ },
+ {
+  "first_ayah_index": 6073,
+  "first_key": "92:15",
+  "juz": 30,
+  "last_ayah_index": 6098,
+  "page": 596
+ },
+ {
+  "first_ayah_index": 6099,
+  "first_key": "95:1",
+  "juz": 30,
+  "last_ayah_index": 6125,
+  "page": 597
+ },
+ {
+  "first_ayah_index": 6126,
+  "first_key": "97:1",
+  "juz": 30,
+  "last_ayah_index": 6137,
+  "page": 598
+ },
+ {
+  "first_ayah_index": 6138,
+  "first_key": "98:8",
+  "juz": 30,
+  "last_ayah_index": 6155,
+  "page": 599
+ },
+ {
+  "first_ayah_index": 6156,
+  "first_key": "100:10",
+  "juz": 30,
+  "last_ayah_index": 6176,
+  "page": 600
+ },
+ {
+  "first_ayah_index": 6177,
+  "first_key": "103:1",
+  "juz": 30,
+  "last_ayah_index": 6193,
+  "page": 601
+ },
+ {
+  "first_ayah_index": 6194,
+  "first_key": "106:1",
+  "juz": 30,
+  "last_ayah_index": 6207,
+  "page": 602
+ },
+ {
+  "first_ayah_index": 6208,
+  "first_key": "109:1",
+  "juz": 30,
+  "last_ayah_index": 6221,
+  "page": 603
+ },
+ {
+  "first_ayah_index": 6222,
+  "first_key": "112:1",
+  "juz": 30,
+  "last_ayah_index": 6236,
+  "page": 604
+ }
+]

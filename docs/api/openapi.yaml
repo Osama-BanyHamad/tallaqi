@@ -1,0 +1,2953 @@
+openapi: 3.0.3
+info:
+  title: Talaqqi API
+  version: 1.0.0
+  description: Open-source operating system for Quran education. Arabic-first, multi-tenant,
+    capability-enforced.
+paths:
+  /api/v1/auth/login:
+    post:
+      operationId: v1_auth_login_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
+      security:
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginOut'
+          description: ''
+  /api/v1/auth/me:
+    get:
+      operationId: v1_auth_me_retrieve
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/auth/refresh:
+    post:
+      operationId: v1_auth_refresh_create
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequest'
+        required: true
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenRefresh'
+          description: ''
+  /api/v1/branches:
+    get:
+      operationId: v1_branches_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: أي حقل يجب استخدامه عند ترتيب النتائج.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: رقم الصفحة ضمن النتائج المقسمة.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: عدد النتائج التي يجب إرجاعها في كل صفحة.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: مصطلح البحث.
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedBranchList'
+          description: ''
+    post:
+      operationId: v1_branches_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BranchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BranchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BranchRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Branch'
+          description: ''
+  /api/v1/branches/{id}:
+    get:
+      operationId: v1_branches_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Branch'
+          description: ''
+    put:
+      operationId: v1_branches_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BranchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/BranchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/BranchRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Branch'
+          description: ''
+    patch:
+      operationId: v1_branches_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedBranchRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedBranchRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedBranchRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Branch'
+          description: ''
+    delete:
+      operationId: v1_branches_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/dashboard:
+    get:
+      operationId: v1_dashboard_retrieve
+      description: 'Supervisor intelligence: on-track / behind / attention, with explanations.'
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/halaqat:
+    get:
+      operationId: v1_halaqat_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: أي حقل يجب استخدامه عند ترتيب النتائج.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: رقم الصفحة ضمن النتائج المقسمة.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: عدد النتائج التي يجب إرجاعها في كل صفحة.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: مصطلح البحث.
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedHalaqahList'
+          description: ''
+    post:
+      operationId: v1_halaqat_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HalaqahRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/HalaqahRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HalaqahRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Halaqah'
+          description: ''
+  /api/v1/halaqat/{id}:
+    get:
+      operationId: v1_halaqat_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Halaqah'
+          description: ''
+    put:
+      operationId: v1_halaqat_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HalaqahRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/HalaqahRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HalaqahRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Halaqah'
+          description: ''
+    patch:
+      operationId: v1_halaqat_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedHalaqahRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedHalaqahRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedHalaqahRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Halaqah'
+          description: ''
+    delete:
+      operationId: v1_halaqat_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/halaqat/{id}/attendance:
+    post:
+      operationId: v1_halaqat_attendance_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HalaqahRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/HalaqahRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HalaqahRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Halaqah'
+          description: ''
+  /api/v1/halaqat/{id}/enroll:
+    post:
+      operationId: v1_halaqat_enroll_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HalaqahRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/HalaqahRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/HalaqahRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Halaqah'
+          description: ''
+  /api/v1/halaqat/{id}/today:
+    get:
+      operationId: v1_halaqat_today_retrieve
+      description: 'The teacher''s working screen: roster + today''s plan per student
+        + attendance + last session.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Halaqah'
+          description: ''
+  /api/v1/journeys:
+    get:
+      operationId: v1_journeys_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: أي حقل يجب استخدامه عند ترتيب النتائج.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: رقم الصفحة ضمن النتائج المقسمة.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: عدد النتائج التي يجب إرجاعها في كل صفحة.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: مصطلح البحث.
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedJourneyList'
+          description: ''
+    post:
+      operationId: v1_journeys_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JourneyRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/JourneyRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/JourneyRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Journey'
+          description: ''
+  /api/v1/journeys/{id}:
+    get:
+      operationId: v1_journeys_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Journey'
+          description: ''
+    patch:
+      operationId: v1_journeys_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedJourneyRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedJourneyRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedJourneyRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Journey'
+          description: ''
+  /api/v1/journeys/{id}/decay:
+    post:
+      operationId: v1_journeys_decay_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JourneyRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/JourneyRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/JourneyRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Journey'
+          description: ''
+  /api/v1/journeys/{id}/memory-map:
+    get:
+      operationId: v1_journeys_memory_map_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Journey'
+          description: ''
+  /api/v1/journeys/{id}/override:
+    post:
+      operationId: v1_journeys_override_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JourneyRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/JourneyRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/JourneyRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Journey'
+          description: ''
+  /api/v1/journeys/{id}/plan:
+    get:
+      operationId: v1_journeys_plan_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Journey'
+          description: ''
+    post:
+      operationId: v1_journeys_plan_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JourneyRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/JourneyRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/JourneyRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Journey'
+          description: ''
+  /api/v1/journeys/{id}/plan/action:
+    post:
+      operationId: v1_journeys_plan_action_create
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JourneyRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/JourneyRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/JourneyRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Journey'
+          description: ''
+  /api/v1/journeys/{id}/sessions:
+    get:
+      operationId: v1_journeys_sessions_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Journey'
+          description: ''
+  /api/v1/journeys/{id}/timeline:
+    get:
+      operationId: v1_journeys_timeline_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Journey'
+          description: ''
+  /api/v1/me/capabilities:
+    get:
+      operationId: v1_me_capabilities_retrieve
+      description: The manifest the UI renders from. The backend enforces; this is
+        a projection.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/policies:
+    get:
+      operationId: v1_policies_retrieve
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/quran/{riwayah}/ayah/{key}:
+    get:
+      operationId: v1_quran_ayah_retrieve
+      parameters:
+      - in: path
+        name: key
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: riwayah
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/quran/{riwayah}/page/{page}:
+    get:
+      operationId: v1_quran_page_retrieve
+      parameters:
+      - in: path
+        name: page
+        schema:
+          type: integer
+        required: true
+      - in: path
+        name: riwayah
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/quran/{riwayah}/range:
+    get:
+      operationId: v1_quran_range_retrieve
+      parameters:
+      - in: path
+        name: riwayah
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/quran/{riwayah}/surahs:
+    get:
+      operationId: v1_quran_surahs_retrieve
+      parameters:
+      - in: path
+        name: riwayah
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/quran/{riwayah}/units/{unit_type}:
+    get:
+      operationId: v1_quran_units_retrieve
+      parameters:
+      - in: path
+        name: riwayah
+        schema:
+          type: string
+        required: true
+      - in: path
+        name: unit_type
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/quran/manifest:
+    get:
+      operationId: v1_quran_manifest_retrieve
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/recitations:
+    get:
+      operationId: v1_recitations_list
+      description: 'Tasmee'' recording. The most important teacher endpoint: one POST
+        records a full evaluation.'
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: أي حقل يجب استخدامه عند ترتيب النتائج.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: رقم الصفحة ضمن النتائج المقسمة.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: عدد النتائج التي يجب إرجاعها في كل صفحة.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: مصطلح البحث.
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedSessionList'
+          description: ''
+    post:
+      operationId: v1_recitations_create
+      description: 'Tasmee'' recording. The most important teacher endpoint: one POST
+        records a full evaluation.'
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SessionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SessionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/SessionRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+          description: ''
+  /api/v1/recitations/{id}:
+    get:
+      operationId: v1_recitations_retrieve
+      description: 'Tasmee'' recording. The most important teacher endpoint: one POST
+        records a full evaluation.'
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+          description: ''
+  /api/v1/recitations/mistake-types:
+    get:
+      operationId: v1_recitations_mistake_types_retrieve
+      description: 'Tasmee'' recording. The most important teacher endpoint: one POST
+        records a full evaluation.'
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+          description: ''
+  /api/v1/role-assignments:
+    get:
+      operationId: v1_role_assignments_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: أي حقل يجب استخدامه عند ترتيب النتائج.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: رقم الصفحة ضمن النتائج المقسمة.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: عدد النتائج التي يجب إرجاعها في كل صفحة.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: مصطلح البحث.
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAssignmentList'
+          description: ''
+    post:
+      operationId: v1_role_assignments_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AssignmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AssignmentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Assignment'
+          description: ''
+  /api/v1/role-assignments/{id}:
+    get:
+      operationId: v1_role_assignments_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: نوع نص UUID يحدد هذا role assignment.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Assignment'
+          description: ''
+    put:
+      operationId: v1_role_assignments_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: نوع نص UUID يحدد هذا role assignment.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AssignmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AssignmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AssignmentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Assignment'
+          description: ''
+    patch:
+      operationId: v1_role_assignments_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: نوع نص UUID يحدد هذا role assignment.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAssignmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAssignmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAssignmentRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Assignment'
+          description: ''
+    delete:
+      operationId: v1_role_assignments_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: نوع نص UUID يحدد هذا role assignment.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/roles:
+    get:
+      operationId: v1_roles_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: أي حقل يجب استخدامه عند ترتيب النتائج.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: رقم الصفحة ضمن النتائج المقسمة.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: عدد النتائج التي يجب إرجاعها في كل صفحة.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: مصطلح البحث.
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedRoleList'
+          description: ''
+  /api/v1/roles/{id}:
+    get:
+      operationId: v1_roles_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+          format: uuid
+        description: نوع نص UUID يحدد هذا role.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Role'
+          description: ''
+  /api/v1/staff:
+    get:
+      operationId: v1_staff_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: أي حقل يجب استخدامه عند ترتيب النتائج.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: رقم الصفحة ضمن النتائج المقسمة.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: عدد النتائج التي يجب إرجاعها في كل صفحة.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: مصطلح البحث.
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStaffList'
+          description: ''
+    post:
+      operationId: v1_staff_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Staff'
+          description: ''
+  /api/v1/staff/{id}:
+    get:
+      operationId: v1_staff_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Staff'
+          description: ''
+    put:
+      operationId: v1_staff_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StaffRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StaffRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StaffRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Staff'
+          description: ''
+    patch:
+      operationId: v1_staff_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStaffRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Staff'
+          description: ''
+    delete:
+      operationId: v1_staff_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/students:
+    get:
+      operationId: v1_students_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: أي حقل يجب استخدامه عند ترتيب النتائج.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: رقم الصفحة ضمن النتائج المقسمة.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: عدد النتائج التي يجب إرجاعها في كل صفحة.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: مصطلح البحث.
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedStudentList'
+          description: ''
+    post:
+      operationId: v1_students_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StudentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StudentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+          description: ''
+  /api/v1/students/{id}:
+    get:
+      operationId: v1_students_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+          description: ''
+    put:
+      operationId: v1_students_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StudentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/StudentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/StudentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+          description: ''
+    patch:
+      operationId: v1_students_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedStudentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedStudentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedStudentRequest'
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+          description: ''
+    delete:
+      operationId: v1_students_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/students/{id}/guardians:
+    get:
+      operationId: v1_students_guardians_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Student'
+          description: ''
+  /api/v1/tenant:
+    get:
+      operationId: v1_tenant_retrieve
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+    patch:
+      operationId: v1_tenant_partial_update
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+  /api/v1/tenant/modules:
+    get:
+      operationId: v1_tenant_modules_retrieve
+      description: 'Capability configuration. Backend-enforced: disabling a module
+        makes its endpoints return 403.'
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+    put:
+      operationId: v1_tenant_modules_update
+      description: 'Capability configuration. Backend-enforced: disabling a module
+        makes its endpoints return 403.'
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      responses:
+        '200':
+          description: No response body
+components:
+  schemas:
+    AccountOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        full_name:
+          type: string
+        locale:
+          type: string
+      required:
+      - email
+      - full_name
+      - id
+      - locale
+    Assignment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        membership:
+          type: string
+          format: uuid
+        role:
+          type: string
+          format: uuid
+        role_key:
+          type: string
+          readOnly: true
+        account_email:
+          type: string
+          format: email
+          readOnly: true
+        scope_type:
+          $ref: '#/components/schemas/ScopeTypeEnum'
+        scope_refs: {}
+        valid_from:
+          type: string
+          format: date
+          nullable: true
+        valid_to:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - account_email
+      - id
+      - membership
+      - role
+      - role_key
+    AssignmentRequest:
+      type: object
+      properties:
+        membership:
+          type: string
+          format: uuid
+        role:
+          type: string
+          format: uuid
+        scope_type:
+          $ref: '#/components/schemas/ScopeTypeEnum'
+        scope_refs: {}
+        valid_from:
+          type: string
+          format: date
+          nullable: true
+        valid_to:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - membership
+      - role
+    Branch:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 200
+        name_en:
+          type: string
+          maxLength: 200
+        code:
+          type: string
+          maxLength: 20
+        timezone:
+          type: string
+          maxLength: 64
+        locale:
+          type: string
+          maxLength: 8
+        address: {}
+        gender_policy:
+          type: string
+          maxLength: 12
+        is_active:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - id
+      - name
+    BranchRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        name_en:
+          type: string
+          maxLength: 200
+        code:
+          type: string
+          maxLength: 20
+        timezone:
+          type: string
+          maxLength: 64
+        locale:
+          type: string
+          maxLength: 8
+        address: {}
+        gender_policy:
+          type: string
+          minLength: 1
+          maxLength: 12
+        is_active:
+          type: boolean
+      required:
+      - name
+    Halaqah:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        branch:
+          type: string
+          format: uuid
+        branch_name:
+          type: string
+          readOnly: true
+        name:
+          type: string
+          maxLength: 120
+        kind:
+          $ref: '#/components/schemas/KindEnum'
+        gender_policy:
+          type: string
+          maxLength: 8
+        capacity:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        riwayah:
+          type: string
+          maxLength: 32
+        mushaf_type:
+          type: string
+          maxLength: 32
+        policy_key:
+          type: string
+          maxLength: 40
+        schedule_summary:
+          type: string
+          maxLength: 200
+        status:
+          type: string
+          maxLength: 12
+        teachers:
+          type: string
+          readOnly: true
+        student_count:
+          type: string
+          readOnly: true
+      required:
+      - branch
+      - branch_name
+      - id
+      - name
+      - student_count
+      - teachers
+    HalaqahRequest:
+      type: object
+      properties:
+        branch:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        kind:
+          $ref: '#/components/schemas/KindEnum'
+        gender_policy:
+          type: string
+          minLength: 1
+          maxLength: 8
+        capacity:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        riwayah:
+          type: string
+          minLength: 1
+          maxLength: 32
+        mushaf_type:
+          type: string
+          minLength: 1
+          maxLength: 32
+        policy_key:
+          type: string
+          minLength: 1
+          maxLength: 40
+        schedule_summary:
+          type: string
+          maxLength: 200
+        status:
+          type: string
+          minLength: 1
+          maxLength: 12
+      required:
+      - branch
+      - name
+    Journey:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        student:
+          type: string
+          format: uuid
+          readOnly: true
+        student_name:
+          type: string
+          readOnly: true
+        student_code:
+          type: string
+          readOnly: true
+        riwayah:
+          type: string
+          maxLength: 32
+        mushaf_type:
+          type: string
+          maxLength: 32
+        policy_key:
+          type: string
+          maxLength: 40
+        policy_overrides: {}
+        status:
+          $ref: '#/components/schemas/JourneyStatusEnum'
+        started_at:
+          type: string
+          format: date
+        direction:
+          type: string
+          maxLength: 12
+        current_ayah_index:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        current_key:
+          type: string
+          readOnly: true
+        level:
+          type: string
+          maxLength: 40
+        memorized_ayat:
+          type: integer
+          readOnly: true
+        strong_ayat:
+          type: integer
+          readOnly: true
+        needs_revision_ayat:
+          type: integer
+          readOnly: true
+        weak_ayat:
+          type: integer
+          readOnly: true
+        critical_ayat:
+          type: integer
+          readOnly: true
+        mastered_ayat:
+          type: integer
+          readOnly: true
+        avg_retention:
+          type: number
+          format: double
+          readOnly: true
+        memorized_pages:
+          type: string
+          readOnly: true
+        memorized_pages_order:
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - avg_retention
+      - critical_ayat
+      - current_key
+      - id
+      - mastered_ayat
+      - memorized_ayat
+      - memorized_pages
+      - memorized_pages_order
+      - needs_revision_ayat
+      - started_at
+      - strong_ayat
+      - student
+      - student_code
+      - student_name
+      - updated_at
+      - weak_ayat
+    JourneyRequest:
+      type: object
+      properties:
+        riwayah:
+          type: string
+          minLength: 1
+          maxLength: 32
+        mushaf_type:
+          type: string
+          minLength: 1
+          maxLength: 32
+        policy_key:
+          type: string
+          minLength: 1
+          maxLength: 40
+        policy_overrides: {}
+        status:
+          $ref: '#/components/schemas/JourneyStatusEnum'
+        started_at:
+          type: string
+          format: date
+        direction:
+          type: string
+          minLength: 1
+          maxLength: 12
+        current_ayah_index:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        level:
+          type: string
+          maxLength: 40
+      required:
+      - started_at
+    JourneyStatusEnum:
+      enum:
+      - memorizing
+      - retaining
+      - paused
+      - completed_with_retention
+      - ijazah_track
+      type: string
+      description: |-
+        * `memorizing` - في الحفظ
+        * `retaining` - في المراجعة الطويلة
+        * `paused` - متوقف
+        * `completed_with_retention` - أتمّ الختم
+        * `ijazah_track` - مسار الإجازة
+    KindEnum:
+      enum:
+      - in_person
+      - online
+      - hybrid
+      type: string
+      description: |-
+        * `in_person` - حضوري
+        * `online` - عن بُعد
+        * `hybrid` - مدمج
+    LoginOut:
+      type: object
+      properties:
+        access:
+          type: string
+        refresh:
+          type: string
+        account:
+          $ref: '#/components/schemas/AccountOut'
+        memberships:
+          type: array
+          items:
+            $ref: '#/components/schemas/MembershipOut'
+      required:
+      - access
+      - account
+      - memberships
+      - refresh
+    LoginRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+      required:
+      - email
+      - password
+    MembershipOut:
+      type: object
+      properties:
+        tenant_slug:
+          type: string
+        tenant_name:
+          type: string
+        tenant_kind:
+          type: string
+        roles:
+          type: array
+          items:
+            type: string
+      required:
+      - roles
+      - tenant_kind
+      - tenant_name
+      - tenant_slug
+    MistakeOut:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        ayah_index:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        word_position:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          nullable: true
+        mistake_type:
+          type: string
+          maxLength: 40
+        severity:
+          type: string
+          maxLength: 8
+        confused_with_ayah_index:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        note:
+          type: string
+          maxLength: 200
+      required:
+      - ayah_index
+      - id
+      - mistake_type
+    MistakeOutRequest:
+      type: object
+      properties:
+        ayah_index:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        word_position:
+          type: integer
+          maximum: 32767
+          minimum: 0
+          nullable: true
+        mistake_type:
+          type: string
+          minLength: 1
+          maxLength: 40
+        severity:
+          type: string
+          minLength: 1
+          maxLength: 8
+        confused_with_ayah_index:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        note:
+          type: string
+          maxLength: 200
+      required:
+      - ayah_index
+      - mistake_type
+    OutcomeEnum:
+      enum:
+      - pass
+      - repeat
+      - partial
+      type: string
+      description: |-
+        * `pass` - اجتاز
+        * `repeat` - يعيد
+        * `partial` - جزئي
+    PaginatedAssignmentList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Assignment'
+    PaginatedBranchList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Branch'
+    PaginatedHalaqahList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Halaqah'
+    PaginatedJourneyList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Journey'
+    PaginatedRoleList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Role'
+    PaginatedSessionList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Session'
+    PaginatedStaffList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Staff'
+    PaginatedStudentList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Student'
+    PatchedAssignmentRequest:
+      type: object
+      properties:
+        membership:
+          type: string
+          format: uuid
+        role:
+          type: string
+          format: uuid
+        scope_type:
+          $ref: '#/components/schemas/ScopeTypeEnum'
+        scope_refs: {}
+        valid_from:
+          type: string
+          format: date
+          nullable: true
+        valid_to:
+          type: string
+          format: date
+          nullable: true
+    PatchedBranchRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 200
+        name_en:
+          type: string
+          maxLength: 200
+        code:
+          type: string
+          maxLength: 20
+        timezone:
+          type: string
+          maxLength: 64
+        locale:
+          type: string
+          maxLength: 8
+        address: {}
+        gender_policy:
+          type: string
+          minLength: 1
+          maxLength: 12
+        is_active:
+          type: boolean
+    PatchedHalaqahRequest:
+      type: object
+      properties:
+        branch:
+          type: string
+          format: uuid
+        name:
+          type: string
+          minLength: 1
+          maxLength: 120
+        kind:
+          $ref: '#/components/schemas/KindEnum'
+        gender_policy:
+          type: string
+          minLength: 1
+          maxLength: 8
+        capacity:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        riwayah:
+          type: string
+          minLength: 1
+          maxLength: 32
+        mushaf_type:
+          type: string
+          minLength: 1
+          maxLength: 32
+        policy_key:
+          type: string
+          minLength: 1
+          maxLength: 40
+        schedule_summary:
+          type: string
+          maxLength: 200
+        status:
+          type: string
+          minLength: 1
+          maxLength: 12
+    PatchedJourneyRequest:
+      type: object
+      properties:
+        riwayah:
+          type: string
+          minLength: 1
+          maxLength: 32
+        mushaf_type:
+          type: string
+          minLength: 1
+          maxLength: 32
+        policy_key:
+          type: string
+          minLength: 1
+          maxLength: 40
+        policy_overrides: {}
+        status:
+          $ref: '#/components/schemas/JourneyStatusEnum'
+        started_at:
+          type: string
+          format: date
+        direction:
+          type: string
+          minLength: 1
+          maxLength: 12
+        current_ayah_index:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+          nullable: true
+        level:
+          type: string
+          maxLength: 40
+    PatchedStaffRequest:
+      type: object
+      properties:
+        person:
+          $ref: '#/components/schemas/PersonRequest'
+        branch:
+          type: string
+          format: uuid
+          nullable: true
+        staff_type:
+          $ref: '#/components/schemas/StaffTypeEnum'
+        qualifications: {}
+        riwayat: {}
+        max_load:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        is_active:
+          type: boolean
+    PatchedStudentRequest:
+      type: object
+      properties:
+        person:
+          $ref: '#/components/schemas/PersonRequest'
+        branch:
+          type: string
+          format: uuid
+        student_code:
+          type: string
+          maxLength: 32
+        level:
+          type: string
+          maxLength: 40
+        status:
+          $ref: '#/components/schemas/StudentStatusEnum'
+        is_minor:
+          type: boolean
+        notes:
+          type: string
+    Person:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        first_name:
+          type: string
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        display_name_ar:
+          type: string
+          maxLength: 200
+        display_name_en:
+          type: string
+          maxLength: 200
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        gender:
+          type: string
+          maxLength: 8
+        phone:
+          type: string
+          maxLength: 32
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        status:
+          type: string
+          maxLength: 16
+      required:
+      - display_name_ar
+      - first_name
+      - id
+    PersonRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 100
+        last_name:
+          type: string
+          maxLength: 100
+        display_name_ar:
+          type: string
+          minLength: 1
+          maxLength: 200
+        display_name_en:
+          type: string
+          maxLength: 200
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+        gender:
+          type: string
+          maxLength: 8
+        phone:
+          type: string
+          maxLength: 32
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        status:
+          type: string
+          minLength: 1
+          maxLength: 16
+      required:
+      - display_name_ar
+      - first_name
+    Role:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        key:
+          type: string
+          maxLength: 40
+        name_ar:
+          type: string
+          maxLength: 100
+        name_en:
+          type: string
+          maxLength: 100
+        system:
+          type: boolean
+        permissions:
+          type: string
+          readOnly: true
+      required:
+      - id
+      - key
+      - name_ar
+      - permissions
+    ScopeTypeEnum:
+      enum:
+      - tenant
+      - branch
+      - halaqah
+      - course
+      - student_set
+      - self
+      type: string
+      description: |-
+        * `tenant` - tenant
+        * `branch` - branch
+        * `halaqah` - halaqah
+        * `course` - course
+        * `student_set` - student_set
+        * `self` - self
+    Session:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        journey:
+          type: string
+          format: uuid
+        student_name:
+          type: string
+          readOnly: true
+        teacher:
+          type: string
+          format: uuid
+          nullable: true
+        teacher_name:
+          type: string
+          readOnly: true
+          default: ''
+        halaqah:
+          type: string
+          format: uuid
+          nullable: true
+        plan_segment:
+          type: string
+          format: uuid
+          nullable: true
+        purpose:
+          type: string
+          maxLength: 16
+        from_ayah_index:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        to_ayah_index:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        from_key:
+          type: string
+          readOnly: true
+        to_key:
+          type: string
+          readOnly: true
+        started_at:
+          type: string
+          format: date-time
+        ended_at:
+          type: string
+          format: date-time
+          nullable: true
+        outcome:
+          $ref: '#/components/schemas/OutcomeEnum'
+        grade:
+          type: number
+          format: double
+          nullable: true
+        note:
+          type: string
+        note_visibility:
+          type: string
+          maxLength: 12
+        source:
+          type: string
+          maxLength: 16
+        mistakes:
+          type: array
+          items:
+            $ref: '#/components/schemas/MistakeOut'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - created_at
+      - from_ayah_index
+      - from_key
+      - id
+      - journey
+      - mistakes
+      - started_at
+      - student_name
+      - teacher_name
+      - to_ayah_index
+      - to_key
+    SessionRequest:
+      type: object
+      properties:
+        journey:
+          type: string
+          format: uuid
+        teacher:
+          type: string
+          format: uuid
+          nullable: true
+        halaqah:
+          type: string
+          format: uuid
+          nullable: true
+        plan_segment:
+          type: string
+          format: uuid
+          nullable: true
+        purpose:
+          type: string
+          minLength: 1
+          maxLength: 16
+        from_ayah_index:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        to_ayah_index:
+          type: integer
+          maximum: 2147483647
+          minimum: 0
+        started_at:
+          type: string
+          format: date-time
+        ended_at:
+          type: string
+          format: date-time
+          nullable: true
+        outcome:
+          $ref: '#/components/schemas/OutcomeEnum'
+        grade:
+          type: number
+          format: double
+          nullable: true
+        note:
+          type: string
+        note_visibility:
+          type: string
+          minLength: 1
+          maxLength: 12
+        source:
+          type: string
+          minLength: 1
+          maxLength: 16
+      required:
+      - from_ayah_index
+      - journey
+      - started_at
+      - to_ayah_index
+    Staff:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        person:
+          $ref: '#/components/schemas/Person'
+        branch:
+          type: string
+          format: uuid
+          nullable: true
+        staff_type:
+          $ref: '#/components/schemas/StaffTypeEnum'
+        qualifications: {}
+        riwayat: {}
+        max_load:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        is_active:
+          type: boolean
+        halaqat:
+          type: string
+          readOnly: true
+      required:
+      - halaqat
+      - id
+      - person
+    StaffRequest:
+      type: object
+      properties:
+        person:
+          $ref: '#/components/schemas/PersonRequest'
+        branch:
+          type: string
+          format: uuid
+          nullable: true
+        staff_type:
+          $ref: '#/components/schemas/StaffTypeEnum'
+        qualifications: {}
+        riwayat: {}
+        max_load:
+          type: integer
+          maximum: 32767
+          minimum: 0
+        is_active:
+          type: boolean
+      required:
+      - person
+    StaffTypeEnum:
+      enum:
+      - teacher
+      - assistant
+      - supervisor
+      - admin
+      - finance
+      - hr
+      - instructor
+      - support
+      type: string
+      description: |-
+        * `teacher` - معلم
+        * `assistant` - معلم مساعد
+        * `supervisor` - مشرف
+        * `admin` - إداري
+        * `finance` - مالية
+        * `hr` - موارد بشرية
+        * `instructor` - مدرب
+        * `support` - دعم
+    Student:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        person:
+          $ref: '#/components/schemas/Person'
+        branch:
+          type: string
+          format: uuid
+        branch_name:
+          type: string
+          readOnly: true
+        student_code:
+          type: string
+          maxLength: 32
+        level:
+          type: string
+          maxLength: 40
+        status:
+          $ref: '#/components/schemas/StudentStatusEnum'
+        is_minor:
+          type: boolean
+        notes:
+          type: string
+        halaqah:
+          type: string
+          readOnly: true
+        journey_summary:
+          type: string
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - branch
+      - branch_name
+      - created_at
+      - halaqah
+      - id
+      - journey_summary
+      - person
+    StudentRequest:
+      type: object
+      properties:
+        person:
+          $ref: '#/components/schemas/PersonRequest'
+        branch:
+          type: string
+          format: uuid
+        student_code:
+          type: string
+          maxLength: 32
+        level:
+          type: string
+          maxLength: 40
+        status:
+          $ref: '#/components/schemas/StudentStatusEnum'
+        is_minor:
+          type: boolean
+        notes:
+          type: string
+      required:
+      - branch
+      - person
+    StudentStatusEnum:
+      enum:
+      - applicant
+      - active
+      - paused
+      - left
+      - alumni
+      type: string
+      description: |-
+        * `applicant` - متقدم
+        * `active` - نشط
+        * `paused` - متوقف
+        * `left` - منسحب
+        * `alumni` - خريج
+    TokenRefresh:
+      type: object
+      properties:
+        access:
+          type: string
+          readOnly: true
+        refresh:
+          type: string
+      required:
+      - access
+      - refresh
+    TokenRefreshRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+          minLength: 1
+      required:
+      - refresh
+  securitySchemes:
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
