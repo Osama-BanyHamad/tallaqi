@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useI18n } from "@/lib/i18n";
 import { SampleMap } from "@/components/SampleMap";
+import { IconGlobe } from "@/components/icons";
 
 /* Public site — the project's front door. Arabic-first; English mirrors. */
 const AR = {
@@ -74,22 +75,23 @@ export default function Site() {
       <nav className="site-nav">
         <Link href="/" className="wordmark" style={{ flexDirection: "row", alignItems: "baseline", gap: 10 }}><span className="ar" style={{ fontSize: 30 }}>تَلَقِّي</span><span className="latin">Talaqqi</span></Link>
         <div className="links">{s.nav.map((n, i) => <a key={i} href={`#${ids[i]}`}>{n}</a>)}</div>
-        <div className="row" style={{ gap: 8 }}>
-          <button className="btn sm" style={{ background: "transparent", color: "var(--night-ink)", borderColor: "rgba(255,255,255,.2)" }} onClick={() => setLocale(locale === "ar" ? "en" : "ar")}>{locale === "ar" ? "English" : "العربية"}</button>
-          <Link href="/login" className="btn sm gold">{s.cta1}</Link>
+        <div className="actions">
+          <button className="lang" onClick={() => setLocale(locale === "ar" ? "en" : "ar")}><IconGlobe />{locale === "ar" ? "English" : "العربية"}</button>
+          <Link href="/login" className="pill-cta">{s.cta1}</Link>
         </div>
       </nav>
 
       <header className="hero">
         <div className="lattice" />
+        <div className="watermark" aria-hidden>تلقي</div>
         <div className="hero-grid">
           <div className="fade-up">
-            <div className="mark">تَلَقِّي</div>
+            <span className="kicker">{locale === "ar" ? "مفتوح المصدر · عربي أولًا · يُستضاف ذاتيًا" : "Open source · Arabic-first · self-hosted"}</span>
             <h1 className="display">{s.h1}</h1>
             <p className="lede">{s.lede}</p>
-            <div className="row" style={{ gap: 12 }}>
-              <Link href="/login" className="btn gold" style={{ height: 48, padding: "0 22px", fontSize: 15 }}>{s.cta1}</Link>
-              <a href="https://github.com/talaqqi/talaqqi" className="btn" style={{ height: 48, padding: "0 22px", background: "transparent", color: "var(--night-ink)", borderColor: "rgba(255,255,255,.25)" }}>{s.cta2}</a>
+            <div className="row" style={{ gap: 14 }}>
+              <Link href="/login" className="pill-cta lg">{s.cta1}</Link>
+              <a href="https://github.com/talaqqi/talaqqi" className="pill-cta lg ghost">{s.cta2}</a>
             </div>
           </div>
           <div className="device fade-up" style={{ animationDelay: ".15s" }}>
@@ -118,7 +120,12 @@ export default function Site() {
 
       <section className="section alt" id="safety">
         <div className="section-head"><span className="eyebrow">{locale === "ar" ? "سلامة القرآن" : "Quran safety"}</span><h2>{s.safetyTitle}</h2></div>
-        <div className="principles">{s.safety.map(([b, p], i) => <div key={i}><b>{b}</b><p>{p}</p></div>)}</div>
+        <div className="principles stagger">{s.safety.map(([b, p], i) => (
+          <div key={i} className="principle">
+            <span className="idx">{String(i + 1).padStart(2, "0")}</span>
+            <svg className="star" viewBox="0 0 34 34" fill="none" stroke="currentColor" strokeWidth="1.4"><path d="M17 2l4.2 8.6L30 12l-6.5 6.4L25 28l-8-4.3L9 28l1.5-9.6L4 12l8.8-1.4z" /><circle cx="17" cy="16.5" r="3" /></svg>
+            <b>{b}</b><p>{p}</p>
+          </div>))}</div>
       </section>
 
       <section className="section" id="modules">

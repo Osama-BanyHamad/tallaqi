@@ -28,7 +28,7 @@ export function SampleMap({ dark, rows = [24, 25, 26, 27, 28, 29, 30], compact }
       {rows.map((j) => (
         <div key={j} style={{ display: "grid", gridTemplateColumns: "44px 1fr", gap: 10, alignItems: "center" }}>
           <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: dark ? "var(--night-muted)" : "var(--ink-3)" }}>Juz {j}</span>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(20, 1fr)", gap: 3 }}>
+          <div style={{ display: "grid", gridTemplateColumns: `repeat(${pages.filter((p) => p.juz === j).length}, 1fr)`, gap: 3 }}>
             {pages.filter((p) => p.juz === j).map((p) => (
               <span key={p.page} style={{ height: compact ? 12 : 18, borderRadius: 3, background: p.state ? COLS[p.state] : dark ? "rgba(255,255,255,.08)" : "var(--s-none)" }} />
             ))}
