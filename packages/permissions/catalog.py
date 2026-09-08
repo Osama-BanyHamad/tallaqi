@@ -91,9 +91,9 @@ SYSTEM_ROLES: dict[str, dict] = {
         "people.students.read", "ops.halaqat.read", "ops.attendance.read", "ops.attendance.mark",
         "hifz.journey.read", "hifz.memory_map.read", "hifz.planner.read", "hifz.tasmee.read", "quran.core.read"]},
     "student": {"name_ar": "طالب", "name_en": "Student", "permissions": [
-        "hifz.journey.read", "hifz.memory_map.read", "hifz.planner.read", "hifz.practice.use", "hifz.asr.use", "live.classroom.join", "quran.core.read"]},
+        "hifz.journey.read", "hifz.memory_map.read", "hifz.planner.read", "hifz.practice.use", "hifz.asr.use", "hifz.tasmee.read", "live.classroom.join", "quran.core.read"]},
     "guardian": {"name_ar": "ولي أمر", "name_en": "Guardian", "permissions": [
-        "people.students.read", "hifz.journey.read", "hifz.memory_map.read", "hifz.planner.read", "ops.attendance.read",
+        "people.students.read", "hifz.journey.read", "hifz.memory_map.read", "hifz.planner.read", "hifz.tasmee.read", "ops.attendance.read",
         "parent.portal.use", "quran.core.read"]},
     "finance": {"name_ar": "موظف مالية", "name_en": "Finance", "permissions": [
         "people.students.read", "people.guardians.read", "finance.fees.read", "finance.fees.write",

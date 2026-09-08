@@ -16,7 +16,7 @@ class WeeklyScreen extends StatelessWidget {
     return Scaffold(
       body: Fetch<Map<String, dynamic>>(
         future: () async {
-          final r = await Future.wait([Api.I.get('/students/$studentId/weekly'), Api.I.get('/students/$studentId/attendance?days=30')]);
+          final r = await Future.wait([Api.I.get('/students/$studentId/weekly'), Api.I.get('/students/$studentId/attendance?days=30').catchError((_) => <String, dynamic>{'records': []})]);
           return {'w': r[0], 'att': r[1]};
         },
         builder: (context, d, refresh) {
@@ -41,7 +41,7 @@ class WeeklyScreen extends StatelessWidget {
                 onRefresh: () async => refresh(),
                 child: ListView(padding: const EdgeInsets.all(18), children: [
                   GridView.count(
-                    crossAxisCount: 2, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), mainAxisSpacing: 10, crossAxisSpacing: 10, childAspectRatio: 1.75,
+                    crossAxisCount: 2, shrinkWrap: true, physics: const NeverScrollableScrollPhysics(), mainAxisSpacing: 10, crossAxisSpacing: 10, childAspectRatio: 1.5,
                     children: [
                       Kpi(label: 'هل حضر؟', value: '${arDigits(att['present'])} / ${arDigits(att['total'])}', accent: true, icon: Icons.event_available_rounded),
                       Kpi(label: 'ماذا حفظ؟', value: '${arDigits(w['new_pages'])} صفحة', icon: Icons.auto_stories_rounded),

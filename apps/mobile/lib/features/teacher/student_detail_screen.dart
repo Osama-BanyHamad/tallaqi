@@ -29,8 +29,8 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> with SingleTi
     final r = await Future.wait([
       Api.I.get('/journeys/${widget.journeyId}'),
       Api.I.get('/journeys/${widget.journeyId}/plan'),
-      Api.I.get('/journeys/${widget.journeyId}/sessions'),
-      Api.I.get('/journeys/${widget.journeyId}/timeline'),
+      Api.I.get('/journeys/${widget.journeyId}/sessions').catchError((_) => <String, dynamic>{'results': []}),
+      Api.I.get('/journeys/${widget.journeyId}/timeline').catchError((_) => <dynamic>[]),
     ]);
     final sess = r[2];
     return {'journey': r[0], 'plan': r[1], 'sessions': sess is Map ? sess['results'] : sess, 'timeline': r[3]};
