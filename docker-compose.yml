@@ -69,7 +69,7 @@ services:
       DOMAIN: ${DOMAIN:-tallaqi.com}
       SERVER_IP: ${SERVER_IP:-67.205.146.18}
     ports: ["80:80", "443:443", "443:443/udp"]
-    volumes: ["./infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro", "caddy-data:/data", "caddy-config:/config"]
+    volumes: ["./infra/caddy/Caddyfile:/etc/caddy/Caddyfile:ro", "./downloads:/srv/downloads:ro", "caddy-data:/data", "caddy-config:/config"]
     depends_on: [web, api]
     restart: unless-stopped
 

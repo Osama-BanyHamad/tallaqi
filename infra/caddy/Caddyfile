@@ -6,6 +6,12 @@
 		reverse_proxy api:8000
 	}
 
+	# Static downloads (Android APK etc.), uploaded to /opt/talaqqi/downloads on the host
+	handle_path /downloads/* {
+		root * /srv/downloads
+		file_server
+	}
+
 	handle {
 		reverse_proxy web:3000
 	}

@@ -21,3 +21,4 @@ build/
 apps/mobile/android/local.properties
 apps/mobile/android/.gradle/
 apps/admin-web/tsconfig.tsbuildinfo
+downloads/
