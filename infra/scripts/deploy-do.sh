@@ -29,6 +29,7 @@ if [ ! -f .env ]; then
 DEBUG=false
 SECRET_KEY=$SECRET
 DOMAIN=$DOMAIN
+SERVER_IP=$(curl -fs https://api.ipify.org || hostname -I | awk '{print $1}')
 ALLOWED_HOSTS=$DOMAIN,www.$DOMAIN,api,localhost
 CORS_ALLOWED_ORIGINS=https://$DOMAIN,https://www.$DOMAIN
 CSRF_TRUSTED_ORIGINS=https://$DOMAIN,https://www.$DOMAIN

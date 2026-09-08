@@ -1,4 +1,4 @@
-{$DOMAIN:tallaqi.com}, www.{$DOMAIN:tallaqi.com} {
+(app) {
 	encode zstd gzip
 
 	@api path /api/* /healthz /readyz
@@ -9,10 +9,18 @@
 	handle {
 		reverse_proxy web:3000
 	}
+}
 
+{$DOMAIN:tallaqi.com}, www.{$DOMAIN:tallaqi.com} {
+	import app
 	header {
 		Strict-Transport-Security "max-age=2592000"
 		X-Content-Type-Options nosniff
 		Referrer-Policy strict-origin-when-cross-origin
 	}
+}
+
+# Plain HTTP by IP (staging / before DNS points here)
+http://{$SERVER_IP:67.205.146.18} {
+	import app
 }
