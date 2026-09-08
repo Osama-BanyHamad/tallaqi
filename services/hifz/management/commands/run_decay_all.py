@@ -1,5 +1,5 @@
 """Daily retention decay + plan generation for every journey (run by cron/worker)."""
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from django.core.management.base import BaseCommand
 
@@ -12,7 +12,7 @@ class Command(BaseCommand):
     help = "Apply retention decay and generate today's plan for all journeys across tenants."
 
     def handle(self, *args, **opts):
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         n = 0
         with context.platform_admin("daily-decay"):
             ids = list(QuranJourney.objects.unsafe_all().values_list("id", "tenant_id"))

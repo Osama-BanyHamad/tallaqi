@@ -15,10 +15,28 @@ from .models import AttendanceRecord, Enrollment, Guardian, GuardianLink, Halaqa
 
 
 class PersonSerializer(serializers.ModelSerializer):
+    display_name_ar = serializers.CharField(required=False, allow_blank=True)
+    display_name_en = serializers.CharField(required=False, allow_blank=True)
+
     class Meta:
         model = Person
         fields = ["id", "first_name", "last_name", "display_name_ar", "display_name_en", "date_of_birth", "gender", "phone", "email", "status"]
         read_only_fields = ["id"]
+
+    def validate(self, attrs):
+        """Display names default to "first last" so forms only need the two name parts."""
+        first, last = attrs.get("first_name", ""), attrs.get("last_name", "")
+        if not attrs.get("display_name_ar") and (first or last or self.instance is None):
+            attrs["display_name_ar"] = f"{first} {last}".strip() or (self.instance.display_name_ar if self.instance else "")
+        return attrs
+
+
+class GuardianIn(serializers.Serializer):
+    display_name_ar = serializers.CharField()
+    phone = serializers.CharField(required=False, allow_blank=True, default="")
+    email = serializers.EmailField(required=False, allow_blank=True, default="")
+    relationship = serializers.CharField(required=False, default="parent")
+    gender = serializers.CharField(required=False, allow_blank=True, default="")
 
 
 class StudentSerializer(serializers.ModelSerializer):
@@ -26,11 +44,15 @@ class StudentSerializer(serializers.ModelSerializer):
     branch_name = serializers.CharField(source="branch.name", read_only=True)
     halaqah = serializers.SerializerMethodField()
     journey_summary = serializers.SerializerMethodField()
+    halaqah_id = serializers.UUIDField(write_only=True, required=False, allow_null=True)
+    guardian = GuardianIn(write_only=True, required=False)
 
     class Meta:
         model = Student
-        fields = ["id", "person", "branch", "branch_name", "student_code", "level", "status", "is_minor", "notes", "halaqah", "journey_summary", "created_at"]
+        fields = ["id", "person", "branch", "branch_name", "student_code", "level", "status", "is_minor", "notes", "halaqah", "journey_summary", "created_at",
+                  "halaqah_id", "guardian"]
         read_only_fields = ["id", "created_at"]
+        extra_kwargs = {"student_code": {"required": False, "allow_blank": True}}
 
     def get_halaqah(self, obj):
         e = next((e for e in obj.enrollments.all() if e.status == "active"), None)
@@ -42,21 +64,47 @@ class StudentSerializer(serializers.ModelSerializer):
             return None
         return {"id": j.id, "status": j.status, "memorized_ayat": j.memorized_ayat, "avg_retention": j.avg_retention,
                 "weak_ayat": j.weak_ayat, "critical_ayat": j.critical_ayat, "memorized_pages": len(j.memorized_pages_order or []),
-                "juz_map": j.juz_map, "current_ayah_index": j.current_ayah_index, "status": j.status}
+                "juz_map": j.juz_map, "current_ayah_index": j.current_ayah_index}
 
     @transaction.atomic
     def create(self, validated):
-        person = Person.objects.create(**validated.pop("person"))
-        return Student.objects.create(person=person, **validated)
+        halaqah_id = validated.pop("halaqah_id", None)
+        gdata = validated.pop("guardian", None)
+        pdata = validated.pop("person")
+        if not pdata.get("display_name_ar"):
+            pdata["display_name_ar"] = f"{pdata.get('first_name', '')} {pdata.get('last_name', '')}".strip()
+        person = Person.objects.create(**pdata)
+        if not validated.get("student_code"):
+            validated["student_code"] = f"S{1000 + Student.objects.count() + 1}"
+        student = Student.objects.create(person=person, **validated)
+        if halaqah_id:
+            h = Halaqah.objects.get(pk=halaqah_id)
+            Enrollment.objects.create(student=student, halaqah=h, start_date=date.today())
+        if gdata:
+            gp = Person.objects.create(first_name=gdata["display_name_ar"].split(" ")[0], display_name_ar=gdata["display_name_ar"],
+                                       phone=gdata.get("phone", ""), email=gdata.get("email", ""), gender=gdata.get("gender", ""))
+            g = Guardian.objects.create(person=gp)
+            GuardianLink.objects.create(guardian=g, student=student, relationship=gdata.get("relationship", "parent"))
+        return student
 
     @transaction.atomic
     def update(self, instance, validated):
+        validated.pop("guardian", None)
+        halaqah_id = validated.pop("halaqah_id", "__unset__")
         pdata = validated.pop("person", None)
         if pdata:
             for k, v in pdata.items():
                 setattr(instance.person, k, v)
             instance.person.save()
-        return super().update(instance, validated)
+        obj = super().update(instance, validated)
+        if halaqah_id != "__unset__":
+            current = obj.enrollments.filter(status="active").first()
+            if halaqah_id and (current is None or str(current.halaqah_id) != str(halaqah_id)):
+                obj.enrollments.filter(status="active").update(status="ended", end_date=date.today(), reason="moved")
+                Enrollment.objects.create(student=obj, halaqah_id=halaqah_id, start_date=date.today())
+            elif not halaqah_id and current:
+                obj.enrollments.filter(status="active").update(status="ended", end_date=date.today(), reason="unenrolled")
+        return obj
 
 
 class StudentViewSet(viewsets.ModelViewSet):
@@ -65,7 +113,7 @@ class StudentViewSet(viewsets.ModelViewSet):
     required_module = "people.students"
     required_permission = {"list": "people.students.read", "retrieve": "people.students.read", "create": "people.students.write",
                            "update": "people.students.write", "partial_update": "people.students.write", "destroy": "people.students.write",
-                           "guardians": "people.guardians.read", "weekly": "hifz.journey.read"}
+                           "guardians": "people.guardians.read", "weekly": "hifz.journey.read", "attendance_history": "ops.attendance.read"}
     filterset_fields = ["status", "branch", "level"]
     search_fields = ["person__display_name_ar", "person__display_name_en", "student_code", "person__phone"]
     ordering_fields = ["created_at", "student_code"]
@@ -128,29 +176,81 @@ class StudentViewSet(viewsets.ModelViewSet):
                         if j and j.current_ayah_index else None),
         })
 
-    @action(detail=True, methods=["get"])
+    @action(detail=True, methods=["get", "post"])
     def guardians(self, request, pk=None):
         st = self.get_object()
+        if request.method == "POST":
+            check(request, "people.guardians.link", "people.guardians")
+            g = GuardianIn(data=request.data)
+            g.is_valid(raise_exception=True)
+            d = g.validated_data
+            gp = Person.objects.create(first_name=d["display_name_ar"].split(" ")[0], display_name_ar=d["display_name_ar"], phone=d["phone"], email=d["email"], gender=d["gender"])
+            guardian = Guardian.objects.create(person=gp)
+            GuardianLink.objects.create(guardian=guardian, student=st, relationship=d["relationship"], primary=not GuardianLink.objects.filter(student=st).exists())
+            AuditLog.record(request, "guardian.linked", "Student", st.id, after={"guardian": str(guardian.id)})
         links = GuardianLink.objects.filter(student=st, active=True).select_related("guardian__person")
-        return Response([{"id": l.guardian_id, "name": l.guardian.person.display_name_ar, "phone": l.guardian.person.phone,
-                          "relationship": l.relationship, "primary": l.primary} for l in links])
+        return Response([{"id": lk.guardian_id, "name": lk.guardian.person.display_name_ar, "phone": lk.guardian.person.phone, "email": lk.guardian.person.email,
+                          "relationship": lk.relationship, "primary": lk.primary} for lk in links])
+
+    @action(detail=True, methods=["get"], url_path="attendance")
+    def attendance_history(self, request, pk=None):
+        from datetime import timedelta
+        st = self.get_object()
+        days = int(request.query_params.get("days", 60))
+        since = date.today() - timedelta(days=days)
+        rows = AttendanceRecord.objects.filter(student=st, on_date__gte=since).select_related("halaqah").order_by("-on_date")
+        counts = {}
+        for r in rows:
+            counts[r.status] = counts.get(r.status, 0) + 1
+        return Response({"since": since, "counts": counts, "records": [{"date": r.on_date, "status": r.status, "halaqah": r.halaqah.name, "reason": r.reason} for r in rows]})
 
 
 class StaffSerializer(serializers.ModelSerializer):
     person = PersonSerializer()
     halaqat = serializers.SerializerMethodField()
+    halaqah_ids = serializers.ListField(child=serializers.UUIDField(), write_only=True, required=False)
+    account_email = serializers.SerializerMethodField()
 
     class Meta:
         model = Staff
-        fields = ["id", "person", "branch", "staff_type", "qualifications", "riwayat", "max_load", "is_active", "halaqat"]
+        fields = ["id", "person", "branch", "staff_type", "qualifications", "riwayat", "max_load", "is_active", "halaqat", "halaqah_ids", "account_email"]
 
     def get_halaqat(self, obj):
         return [{"id": a.halaqah_id, "name": a.halaqah.name, "role": a.role} for a in obj.halaqah_assignments.all()]
 
+    def get_account_email(self, obj):
+        m = obj.person.memberships.first()
+        return m.account.email if m else None
+
+    def _sync(self, staff, ids):
+        HalaqahStaff.objects.filter(staff=staff).exclude(halaqah_id__in=ids).delete()
+        for hid in ids:
+            HalaqahStaff.objects.get_or_create(halaqah_id=hid, staff=staff, role="teacher" if staff.staff_type == "teacher" else "assistant")
+
     @transaction.atomic
     def create(self, validated):
-        person = Person.objects.create(**validated.pop("person"))
-        return Staff.objects.create(person=person, **validated)
+        ids = validated.pop("halaqah_ids", None)
+        pdata = validated.pop("person")
+        if not pdata.get("display_name_ar"):
+            pdata["display_name_ar"] = f"{pdata.get('first_name', '')} {pdata.get('last_name', '')}".strip()
+        person = Person.objects.create(**pdata)
+        staff = Staff.objects.create(person=person, **validated)
+        if ids is not None:
+            self._sync(staff, ids)
+        return staff
+
+    @transaction.atomic
+    def update(self, instance, validated):
+        ids = validated.pop("halaqah_ids", None)
+        pdata = validated.pop("person", None)
+        if pdata:
+            for k, v in pdata.items():
+                setattr(instance.person, k, v)
+            instance.person.save()
+        obj = super().update(instance, validated)
+        if ids is not None:
+            self._sync(obj, ids)
+        return obj
 
 
 class StaffViewSet(viewsets.ModelViewSet):
@@ -171,11 +271,32 @@ class HalaqahSerializer(serializers.ModelSerializer):
     branch_name = serializers.CharField(source="branch.name", read_only=True)
     teachers = serializers.SerializerMethodField()
     student_count = serializers.SerializerMethodField()
+    teacher_id = serializers.UUIDField(write_only=True, required=False, allow_null=True)
 
     class Meta:
         model = Halaqah
         fields = ["id", "branch", "branch_name", "name", "kind", "gender_policy", "capacity", "riwayah", "mushaf_type", "policy_key",
-                  "schedule_summary", "status", "teachers", "student_count"]
+                  "schedule_summary", "status", "teachers", "student_count", "teacher_id"]
+
+    def _set_teacher(self, h, tid):
+        HalaqahStaff.objects.filter(halaqah=h, role="teacher").exclude(staff_id=tid).delete()
+        if tid:
+            HalaqahStaff.objects.get_or_create(halaqah=h, staff_id=tid, role="teacher")
+
+    @transaction.atomic
+    def create(self, validated):
+        tid = validated.pop("teacher_id", None)
+        h = super().create(validated)
+        self._set_teacher(h, tid)
+        return h
+
+    @transaction.atomic
+    def update(self, instance, validated):
+        tid = validated.pop("teacher_id", "__unset__")
+        h = super().update(instance, validated)
+        if tid != "__unset__":
+            self._set_teacher(h, tid)
+        return h
 
     def get_teachers(self, obj):
         return [{"id": a.staff_id, "name": a.staff.person.display_name_ar, "role": a.role} for a in obj.staff_assignments.all()]
@@ -190,7 +311,7 @@ class HalaqahViewSet(viewsets.ModelViewSet):
     required_module = "ops.halaqat"
     required_permission = {"list": "ops.halaqat.read", "retrieve": "ops.halaqat.read", "create": "ops.halaqat.write", "update": "ops.halaqat.write",
                            "partial_update": "ops.halaqat.write", "destroy": "ops.halaqat.write", "today": "ops.halaqat.read",
-                           "attendance": "ops.attendance.mark", "enroll": "ops.halaqat.enroll"}
+                           "attendance": "ops.attendance.mark", "enroll": "ops.halaqat.enroll", "attendance_matrix": "ops.attendance.read"}
     filterset_fields = ["branch", "kind", "status"]
     search_fields = ["name"]
 
@@ -240,6 +361,21 @@ class HalaqahViewSet(viewsets.ModelViewSet):
         AuditLog.record(request, "attendance.recorded", "Halaqah", h.id, after={"date": str(d), "count": len(out)})
         return Response({"date": d, "records": out})
 
+    @action(detail=True, methods=["get"], url_path="attendance-history")
+    def attendance_matrix(self, request, pk=None):
+        from datetime import timedelta
+        h = self.get_object()
+        days = int(request.query_params.get("days", 30))
+        since = date.today() - timedelta(days=days)
+        recs = AttendanceRecord.objects.filter(halaqah=h, on_date__gte=since)
+        by = {}
+        for r in recs:
+            by.setdefault(str(r.student_id), {})[str(r.on_date)] = r.status
+        dates = sorted({str(r.on_date) for r in recs})
+        students = [{"id": e.student_id, "name": e.student.person.display_name_ar, "days": by.get(str(e.student_id), {})}
+                    for e in Enrollment.objects.filter(halaqah=h, status="active").select_related("student__person")]
+        return Response({"since": since, "dates": dates, "students": students})
+
     @action(detail=True, methods=["post"])
     def enroll(self, request, pk=None):
         h = self.get_object()
@@ -259,7 +395,7 @@ class DashboardView(viewsets.ViewSet):
     def list(self, request):
         from datetime import timedelta
 
-        from django.db.models import Count, Q
+        from django.db.models import Count
         from django.utils import timezone as tz
 
         from services.hifz.models import QuranJourney, RecitationSession

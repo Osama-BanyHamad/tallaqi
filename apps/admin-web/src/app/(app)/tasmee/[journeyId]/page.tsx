@@ -37,11 +37,12 @@ export default function TasmeePage({ params }: { params: Promise<{ journeyId: st
   const [mistakes, setMistakes] = useState<Mistake[]>([]);
   const [picking, setPicking] = useState<{ ayah_index: number; word_position: number } | null>(null);
   const [note, setNote] = useState("");
+  const [grade, setGrade] = useState<number | "">("");
   const [done, setDone] = useState<string | null>(null);
   const idem = useMemo(() => `${journeyId}-${from}-${to}-${Date.now()}`, [journeyId, from, to]);
 
   const save = useMutation({
-    mutationFn: (outcome: "pass" | "repeat" | "partial") => api(`/recitations`, { method: "POST", json: { journey: journeyId, purpose, from_ayah_index: from, to_ayah_index: to, outcome, mistakes, note, plan_segment: segment, halaqah, idempotency_key: idem } }),
+    mutationFn: (outcome: "pass" | "repeat" | "partial") => api(`/recitations`, { method: "POST", json: { journey: journeyId, purpose, from_ayah_index: from, to_ayah_index: to, outcome, mistakes, note, plan_segment: segment, halaqah, idempotency_key: idem, grade: purpose === "assessment" && grade !== "" ? grade : undefined, source: purpose === "assessment" ? "assessment" : "in_person" } }),
     onSuccess: (_d, outcome) => { setDone(outcome); setTimeout(() => router.back(), 900); },
   });
 
@@ -117,6 +118,13 @@ export default function TasmeePage({ params }: { params: Promise<{ journeyId: st
               {range.data!.ayat.map((a) => { const s = stateOf.get(a.ayah_index); return <div key={a.key} className="row" style={{ fontSize: 12.5, gap: 8, flexWrap: "nowrap" }}><span className="num" style={{ minWidth: 44 }}>{a.key}</span><StatePill state={s?.state ?? "not_memorized"} />{s?.retention_score != null && <span className="num muted">{Math.round(s.retention_score * 100)}%</span>}</div>; })}
             </div>
           </div>
+          {purpose === "assessment" && (
+            <label className="stack" style={{ gap: 6 }}>
+              <h3>{locale === "ar" ? "الدرجة (من ١٠٠)" : "Grade (of 100)"}</h3>
+              <input className="input" type="number" min={0} max={100} value={grade} onChange={(e) => setGrade(e.target.value === "" ? "" : Number(e.target.value))} />
+              <span className="muted" style={{ fontSize: 12 }}>{locale === "ar" ? `اقتراح: ${Math.max(0, 100 - major * 5 - (mistakes.length - major) * 2)} حسب الأخطاء` : `Suggested: ${Math.max(0, 100 - major * 5 - (mistakes.length - major) * 2)} from mistakes`}</span>
+            </label>
+          )}
           <label className="stack" style={{ gap: 6 }}>
             <h3>{t("note")}</h3>
             <textarea className="input" rows={3} value={note} onChange={(e) => setNote(e.target.value)} />

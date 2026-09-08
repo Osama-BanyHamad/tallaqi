@@ -19,6 +19,15 @@ export function getLocale(): "ar" | "en" {
 }
 export function setLocale(l: "ar" | "en") { try { localStorage.setItem("talaqqi.locale", l); } catch { /* ignore */ } }
 
+/** Flatten DRF validation detail ({field: [msg]} / nested objects / lists) into one readable line. */
+function describeError(d: unknown, prefix = ""): string {
+  if (d == null) return "";
+  if (typeof d === "string") return prefix ? `${prefix}: ${d}` : d;
+  if (Array.isArray(d)) return d.map((x) => describeError(x, prefix)).filter(Boolean).join(" · ");
+  if (typeof d === "object") return Object.entries(d as Record<string, unknown>).map(([k, v]) => describeError(v, k === "non_field_errors" ? prefix : k)).filter(Boolean).join(" · ");
+  return String(d);
+}
+
 export class ApiError extends Error {
   constructor(public status: number, public code: string, message: string, public body?: unknown) { super(message); }
 }
@@ -48,7 +57,7 @@ export async function api<T = unknown>(path: string, init: RequestInit & { json?
   if (!r.ok) {
     let body: { code?: string; detail?: unknown } = {};
     try { body = await r.json(); } catch { /* not json */ }
-    throw new ApiError(r.status, body.code ?? "error", typeof body.detail === "string" ? body.detail : r.statusText, body);
+    throw new ApiError(r.status, body.code ?? "error", describeError(body.detail) || r.statusText, body);
   }
   if (r.status === 204) return undefined as T;
   return (await r.json()) as T;

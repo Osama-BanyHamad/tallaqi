@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from django.db import models
-
 from django.core.serializers.json import DjangoJSONEncoder
+from django.db import models
 
 from services.common import context
 from services.common.models import TenantModel

@@ -16,7 +16,7 @@ import hashlib
 import json
 import sys
 import xml.etree.ElementTree as ET
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -162,7 +162,7 @@ def build(text_path: Path, meta_path: Path) -> dict:
              "license": "CC-BY (Tanzil.info)", "sha256": sha256(meta_path.read_text(encoding="utf-8"))},
         ],
         "reviewers": [],
-        "built_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "built_at": datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "version": "0.1.0",
     }
     (HERE / "data" / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")

@@ -1,18 +1,39 @@
 """Domain services for the Quran learning loop. Views call these; workers call these. No business logic in views."""
 from __future__ import annotations
 
-from dataclasses import asdict
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 
 from django.db import transaction
 
-from packages.hifz_engine import (ENGINE_VERSION, PLANNER_VERSION, TEMPLATES, AyahSnapshot, AyahState, LearningPolicy, Mistake,
-                                  RecallEvent, RetentionPolicy, apply_recall, decay, explain, generate)
+from packages.hifz_engine import (
+    ENGINE_VERSION,
+    PLANNER_VERSION,
+    TEMPLATES,
+    AyahSnapshot,
+    AyahState,
+    LearningPolicy,
+    Mistake,
+    RecallEvent,
+    RetentionPolicy,
+    apply_recall,
+    decay,
+    explain,
+    generate,
+)
 from packages.quran_core import get_core
 from services.common.exceptions import DomainError
 
-from .models import (AyahStateEvent, DailyPlan, JourneyEvent, MistakeEvent, PlanAction, PlanSegment, QuranJourney,
-                     RecitationSession, StudentAyahState)
+from .models import (
+    AyahStateEvent,
+    DailyPlan,
+    JourneyEvent,
+    MistakeEvent,
+    PlanAction,
+    PlanSegment,
+    QuranJourney,
+    RecitationSession,
+    StudentAyahState,
+)
 
 MEMORIZED = {"recent", "strong", "needs_revision", "weak", "critical", "mastered"}
 
@@ -61,7 +82,7 @@ def record_recitation(journey: QuranJourney, *, teacher=None, halaqah=None, purp
         existing = RecitationSession.objects.filter(idempotency_key=idempotency_key).first()
         if existing:
             return existing
-    at = at or datetime.now(timezone.utc)
+    at = at or datetime.now(UTC)
     policy = policy_for(journey)
     rp = retention_policy_for(policy)
     session = RecitationSession.objects.create(
@@ -229,7 +250,7 @@ def recompute_milestones(journey: QuranJourney, now: datetime) -> None:
 # ---- decay / daily ---------------------------------------------------------------------------
 @transaction.atomic
 def run_decay(journey: QuranJourney, now: datetime | None = None) -> int:
-    now = now or datetime.now(timezone.utc)
+    now = now or datetime.now(UTC)
     rp = retention_policy_for(policy_for(journey))
     rows = list(StudentAyahState.objects.filter(journey=journey, memorized_at__isnull=False))
     changed, events = [], []
@@ -252,7 +273,7 @@ def run_decay(journey: QuranJourney, now: datetime | None = None) -> int:
 # ---- memory map projections -----------------------------------------------------------------
 def memory_map(journey: QuranJourney, level: str = "juz", number: int | None = None, now: datetime | None = None) -> dict:
     core = get_core(journey.riwayah)
-    now = now or datetime.now(timezone.utc)
+    now = now or datetime.now(UTC)
     rows = {r.ayah_index: r for r in StudentAyahState.objects.filter(journey=journey)}
 
     def agg(first: int, last: int) -> dict:
@@ -319,7 +340,7 @@ def ayah_detail(core, r: StudentAyahState | None, idx: int, now: datetime) -> di
 # ---- planning --------------------------------------------------------------------------------
 @transaction.atomic
 def generate_plan(journey: QuranJourney, plan_date: date, now: datetime | None = None, *, regenerate=False) -> DailyPlan:
-    now = now or datetime.now(timezone.utc)
+    now = now or datetime.now(UTC)
     existing = DailyPlan.objects.filter(journey=journey, plan_date=plan_date).first()
     if existing and not (regenerate and existing.status == "proposed"):
         return existing
@@ -378,7 +399,7 @@ def plan_action(plan: DailyPlan, action: str, actor, *, segments: list[dict] | N
 # ---- overrides -------------------------------------------------------------------------------
 @transaction.atomic
 def override_ayah_state(journey: QuranJourney, first: int, last: int, state: str | None, actor, reason: str) -> int:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     rows = {r.ayah_index: r for r in StudentAyahState.objects.filter(journey=journey, ayah_index__gte=first, ayah_index__lte=last)}
     n = 0
     for idx in range(first, last + 1):

@@ -2,7 +2,6 @@
 without an intentional, reviewed release (manifest + snapshot updated together)."""
 import hashlib
 import json
-from pathlib import Path
 
 import pytest
 
@@ -69,6 +68,7 @@ def test_manifest_matches_files(core):
 def test_tampering_is_detected(tmp_path, monkeypatch):
     """Simulate a modified ayat file: loading must refuse."""
     import shutil
+
     import packages.quran_core as qc
     fake = tmp_path / "data"
     shutil.copytree(DATA_DIR, fake)

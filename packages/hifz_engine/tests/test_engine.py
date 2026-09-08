@@ -1,11 +1,21 @@
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 
-from packages.hifz_engine import (AyahSnapshot, AyahState, Mistake, RecallEvent, RetentionPolicy, TEMPLATES, apply_recall,
-                                  decay, explain, generate)
+from packages.hifz_engine import (
+    TEMPLATES,
+    AyahSnapshot,
+    AyahState,
+    Mistake,
+    RecallEvent,
+    RetentionPolicy,
+    apply_recall,
+    decay,
+    explain,
+    generate,
+)
 from packages.hifz_engine.retention import retention_at
 from packages.quran_core import get_core
 
-T0 = datetime(2026, 1, 1, tzinfo=timezone.utc)
+T0 = datetime(2026, 1, 1, tzinfo=UTC)
 P = RetentionPolicy()
 
 

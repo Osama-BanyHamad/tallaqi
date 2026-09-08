@@ -47,6 +47,7 @@ MODULES: dict[str, Module] = {m.key: m for m in [
     Module("intel.reports", "التقارير", "Reports", permissions=("intel.reports.read", "intel.reports.export")),
     Module("finance.fees", "الرسوم", "Fees", default_enabled=False, permissions=("finance.fees.read", "finance.fees.write")),
     Module("finance.invoicing", "الفواتير", "Invoicing", default_enabled=False, requires=("finance.fees",), permissions=("finance.invoicing.read", "finance.invoicing.issue")),
+    Module("finance.payments", "المدفوعات", "Payments", default_enabled=False, requires=("finance.invoicing",), permissions=("finance.payments.read", "finance.payments.record", "finance.payments.refund")),
     Module("live.classroom", "الفصل المباشر", "Live Classroom", default_enabled=False, requires=("ops.halaqat",), permissions=("live.classroom.host", "live.classroom.join", "live.classroom.manage")),
 ]}
 
@@ -68,7 +69,8 @@ SYSTEM_ROLES: dict[str, dict] = {
     "owner": {"name_ar": "مالك المؤسسة", "name_en": "Organization Owner",
               "permissions": sorted(p for p in ALL_PERMISSIONS if p != "hifz.ijazah.grant")},
     "center_admin": {"name_ar": "مدير المركز", "name_en": "Center Admin", "permissions": sorted(
-        p for p in ALL_PERMISSIONS if not p.startswith("finance.") and p not in ("hifz.ijazah.grant", "platform.rbac.manage_roles"))},
+        [p for p in ALL_PERMISSIONS if not p.startswith("finance.") and p not in ("hifz.ijazah.grant", "platform.rbac.manage_roles")]
+        + ["finance.payments.read", "finance.payments.record"])},
     "branch_manager": {"name_ar": "مدير الفرع", "name_en": "Branch Manager", "permissions": sorted(
         p for p in ALL_PERMISSIONS if not p.startswith("finance.") and not p.startswith("platform.tenancy.manage") and p not in ("hifz.ijazah.grant", "platform.rbac.manage_roles"))},
     "quran_supervisor": {"name_ar": "مشرف القرآن", "name_en": "Quran Supervisor", "permissions": [
@@ -94,7 +96,8 @@ SYSTEM_ROLES: dict[str, dict] = {
         "parent.portal.use", "quran.core.read"]},
     "finance": {"name_ar": "موظف مالية", "name_en": "Finance", "permissions": [
         "people.students.read", "people.guardians.read", "finance.fees.read", "finance.fees.write",
-        "finance.invoicing.read", "finance.invoicing.issue", "intel.reports.read"]},
+        "finance.invoicing.read", "finance.invoicing.issue", "finance.payments.read", "finance.payments.record",
+        "finance.payments.refund", "intel.reports.read"]},
     "support": {"name_ar": "دعم", "name_en": "Support", "permissions": [
         "people.students.read", "people.guardians.read", "people.staff.read", "ops.halaqat.read", "platform.audit.read", "platform.rbac.read"]},
 }

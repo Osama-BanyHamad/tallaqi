@@ -39,6 +39,7 @@ class TenantContextMiddleware:
         path = request.path
         if path.startswith("/api/v1/") and not path.startswith("/api/v1/auth/"):
             from rest_framework_simplejwt.authentication import JWTAuthentication
+
             from services.tenants.models import Membership
 
             try:

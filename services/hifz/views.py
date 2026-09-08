@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date, datetime, timezone
+from datetime import date
 
 from django.utils.dateparse import parse_date
 from rest_framework import serializers, status, viewsets
@@ -14,7 +14,16 @@ from services.common.permissions import CapabilityPermission, check, scoped
 from services.people.models import Halaqah, Staff
 
 from . import services
-from .models import STANDARD_MISTAKE_TYPES, DailyPlan, JourneyEvent, MistakeEvent, MistakeType, PlanSegment, QuranJourney, RecitationSession
+from .models import (
+    STANDARD_MISTAKE_TYPES,
+    DailyPlan,
+    JourneyEvent,
+    MistakeEvent,
+    MistakeType,
+    PlanSegment,
+    QuranJourney,
+    RecitationSession,
+)
 
 
 def _journeys(request):
@@ -224,6 +233,10 @@ class RecitationViewSet(viewsets.GenericViewSet):
             qs = qs.filter(halaqah_id=request.query_params["halaqah"])
         if request.query_params.get("date"):
             qs = qs.filter(started_at__date=parse_date(request.query_params["date"]))
+        if request.query_params.get("purpose"):
+            qs = qs.filter(purpose=request.query_params["purpose"])
+        if request.query_params.get("journey"):
+            qs = qs.filter(journey_id=request.query_params["journey"])
         page = self.paginate_queryset(qs)
         return self.get_paginated_response(SessionSerializer(page, many=True).data)
 

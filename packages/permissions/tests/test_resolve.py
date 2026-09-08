@@ -1,4 +1,4 @@
-from packages.permissions.catalog import MODULES, SYSTEM_ROLES, ALL_PERMISSIONS, validate_enable
+from packages.permissions.catalog import ALL_PERMISSIONS, MODULES, SYSTEM_ROLES, validate_enable
 from packages.permissions.resolve import AssignmentSnapshot, ScopeAttrs, can, module_enabled
 
 

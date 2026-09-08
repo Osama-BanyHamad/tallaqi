@@ -40,7 +40,8 @@ def check(request, permission: str, module: str | None = None, obj=None) -> Deci
     mod = module or permission.rsplit(".", 1)[0]
     if not module_enabled(mod, enabled_modules(request)):
         raise CapabilityDisabled(f"Module '{mod}' is disabled for this tenant.")
-    d = can(_assignments(request), permission, obj)
+    me = getattr(request, "membership", None)
+    d = can(_assignments(request), permission, obj, subject_person_id=str(me.person_id) if me and me.person_id else None)
     if not d.allowed:
         raise PermissionDenied(d.reason)
     return d

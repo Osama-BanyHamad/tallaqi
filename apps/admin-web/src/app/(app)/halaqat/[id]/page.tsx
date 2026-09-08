@@ -6,12 +6,14 @@ import { api } from "@/lib/api";
 import { useI18n, type Key } from "@/lib/i18n";
 import { fmtNum } from "@/lib/quran";
 import { Avatar, ErrorBox, JuzStrip, Kpi, Loading, Num, PageHead, RetentionBar, fmtDate } from "@/components/ui";
+import { EnrollDialog, HalaqahForm } from "@/components/HalaqahManage";
+import { useCapabilities } from "@/components/Shell";
 
 type Seg = { id: string; purpose: string; from_ayah_index: number; to_ayah_index: number; from_key: { surah_name: string; ayah: number }; to_key: { surah_name: string; ayah: number }; completion: string };
 type Row = { student_id: string; journey_id: string | null; name: string; code: string; attendance: string | null;
   journey: { memorized_ayat: number; avg_retention: number; weak_ayat: number; critical_ayat: number; memorized_pages: number; juz_map: [number, number | null, string][] } | null;
   plan: { status: string; paused_new: boolean; segments: Seg[] } | null; last_session: { started_at: string; outcome: string; purpose: string } | null };
-type Today = { halaqah: { id: string; name: string; branch_name: string; schedule_summary: string; teachers: { name: string }[] }; date: string; roster: Row[] };
+type Today = { halaqah: { id: string; name: string; branch: string; branch_name: string; kind: string; gender_policy: string; capacity: number; policy_key: string; schedule_summary: string; teachers: { id: string; name: string }[] }; date: string; roster: Row[] };
 const ATT = ["present", "late", "absent", "excused"] as const;
 
 export default function HalaqahToday({ params }: { params: Promise<{ id: string }> }) {
@@ -19,6 +21,10 @@ export default function HalaqahToday({ params }: { params: Promise<{ id: string 
   const { t, locale } = useI18n();
   const qc = useQueryClient();
   const [toast, setToast] = useState<string | null>(null);
+  const [editing, setEditing] = useState(false);
+  const [enrolling, setEnrolling] = useState(false);
+  const caps = useCapabilities();
+  const can = (p: string) => caps.data?.permissions.includes(p);
   const q = useQuery({ queryKey: ["today", id], queryFn: () => api<Today>(`/halaqat/${id}/today`) });
   const mark = useMutation({
     mutationFn: (v: { student_id: string; status: string }) => api(`/halaqat/${id}/attendance`, { method: "POST", json: { records: [v] } }),
@@ -31,7 +37,14 @@ export default function HalaqahToday({ params }: { params: Promise<{ id: string 
   const pending = d.roster.reduce((n, r) => n + (r.plan?.segments.filter((s) => s.completion !== "verified").length ?? 0), 0);
   return (
     <>
-      <PageHead eyebrow={`${t("today_title")} · ${fmtDate(d.date, locale)}`} title={d.halaqah.name} sub={`${d.halaqah.branch_name} · ${d.halaqah.schedule_summary} · ${d.halaqah.teachers.map((x) => x.name).join("، ")}`} />
+      <PageHead eyebrow={`${t("today_title")} · ${fmtDate(d.date, locale)}`} title={d.halaqah.name} sub={`${d.halaqah.branch_name} · ${d.halaqah.schedule_summary} · ${d.halaqah.teachers.map((x) => x.name).join("، ")}`}
+        actions={<>
+          <Link className="btn" href={`/halaqat/${id}/attendance`}>{locale === "ar" ? "سجل الحضور" : "Attendance history"}</Link>
+          {can("ops.halaqat.enroll") && <button className="btn" onClick={() => setEnrolling(true)}>+ {locale === "ar" ? "إضافة طالب" : "Enroll"}</button>}
+          {can("ops.halaqat.write") && <button className="btn" onClick={() => setEditing(true)}>{locale === "ar" ? "إعدادات الحلقة" : "Settings"}</button>}
+        </>} />
+      {editing && <HalaqahForm initial={{ id: d.halaqah.id, name: d.halaqah.name, branch: d.halaqah.branch, kind: d.halaqah.kind, gender_policy: d.halaqah.gender_policy, capacity: d.halaqah.capacity, policy_key: d.halaqah.policy_key, schedule_summary: d.halaqah.schedule_summary, teachers: d.halaqah.teachers }} onClose={() => setEditing(false)} onSaved={() => { setEditing(false); qc.invalidateQueries({ queryKey: ["today", id] }); qc.invalidateQueries({ queryKey: ["halaqat"] }); }} />}
+      {enrolling && <EnrollDialog halaqahId={id} onClose={() => setEnrolling(false)} onDone={() => { setEnrolling(false); qc.invalidateQueries({ queryKey: ["today", id] }); }} />}
       <div className="kpis stagger" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(160px, 220px))" }}>
         <Kpi accent label={t("attendance")} value={<><Num v={present} /><small>/ {fmtNum(d.roster.length, locale)}</small></>} />
         <Kpi label={locale === "ar" ? "مقاطع بانتظار التسميع" : "Segments awaiting Tasmee'"} value={<Num v={pending} />} />

@@ -1,13 +1,12 @@
 from __future__ import annotations
 
 from rest_framework import serializers, viewsets
-from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from packages.permissions.catalog import MODULES, validate_enable
 from services.common.exceptions import DomainError
-from services.common.permissions import CapabilityPermission, check, enabled_modules, scoped
+from services.common.permissions import CapabilityPermission, enabled_modules, scoped
 
 from .models import Branch, Tenant, TenantModule
 

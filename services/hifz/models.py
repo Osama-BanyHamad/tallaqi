@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from django.db import models
 
-from packages.permissions.resolve import ScopeAttrs
 from services.common.models import TenantModel
 
 

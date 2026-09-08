@@ -7,6 +7,7 @@ import { useI18n, type Key } from "@/lib/i18n";
 import { fmtNum } from "@/lib/quran";
 import { MemoryMap, PageDetail } from "@/components/MemoryMap";
 import { Avatar, ErrorBox, JuzStrip, Kpi, Loading, Num, Pct, RetentionBar, fmtDate } from "@/components/ui";
+import { AssessmentLauncher } from "@/components/AssessmentLauncher";
 
 type Journey = { id: string; student: string; student_name: string; student_code: string; riwayah: string; policy_key: string; status: string; started_at: string; current_ayah_index: number | null;
   current_key: { key: string; surah: number; ayah: number; page: number; surah_name: string } | null; level: string; memorized_ayat: number; strong_ayat: number; needs_revision_ayat: number; weak_ayat: number; critical_ayat: number; mastered_ayat: number; avg_retention: number; memorized_pages: number; juz_map: [number, number | null, string][] };
@@ -41,7 +42,11 @@ export default function JourneyPage({ params }: { params: Promise<{ id: string }
             <p style={{ marginTop: 4 }}><span className="num" dir="ltr">{d.student_code}</span> · حفص عن عاصم · {d.policy_key.replaceAll("_", " ")}</p>
           </div>
         </div>
-        {d.current_key && <Link className="btn gold" href={`/tasmee/${d.id}?purpose=new&from=${d.current_ayah_index}&to=${Math.min(d.current_ayah_index! + 7, 6236)}`}>{t("start_tasmee")}</Link>}
+        <div className="row">
+          <Link className="btn" href={`/students/${d.student}`}>{locale === "ar" ? "الملف" : "Profile"}</Link>
+          <AssessmentLauncher journeyId={d.id} />
+          {d.current_key && <Link className="btn gold" href={`/tasmee/${d.id}?purpose=new&from=${d.current_ayah_index}&to=${Math.min(d.current_ayah_index! + 7, 6236)}`}>{t("start_tasmee")}</Link>}
+        </div>
       </div>
       <div className="surface pad fade-up" style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: 28, alignItems: "center", marginBottom: 26 }}>
         <div className="ring" style={{ ["--p" as string]: pct }}><div>{fmtNum(pct, locale)}٪<small>{t("avg_retention")}</small></div></div>

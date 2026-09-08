@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import random
-from datetime import date, datetime, timedelta, timezone
+from datetime import UTC, date, datetime, timedelta
 
 from django.core.management.base import BaseCommand
 from django.db import transaction
@@ -13,7 +13,17 @@ from services.common import context
 from services.hifz import services as hifz
 from services.hifz.models import QuranJourney
 from services.identity.models import Account
-from services.people.models import AttendanceRecord, Enrollment, Guardian, GuardianLink, Halaqah, HalaqahStaff, Person, Staff, Student
+from services.people.models import (
+    AttendanceRecord,
+    Enrollment,
+    Guardian,
+    GuardianLink,
+    Halaqah,
+    HalaqahStaff,
+    Person,
+    Staff,
+    Student,
+)
 from services.rbac.services import assign, ensure_system_roles
 from services.tenants.models import Branch, Membership, Tenant, TenantModule
 
@@ -93,7 +103,7 @@ class Command(BaseCommand):
             teachers.append(st)
             halaqat.append(h)
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         code_no = 1000
         parent_accounts_left = 2
         for h_i, h in enumerate(halaqat):
