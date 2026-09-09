@@ -8,6 +8,7 @@ import '../../core/theme.dart';
 import '../../widgets/common.dart';
 import '../../widgets/mushaf_page.dart';
 import '../../widgets/recite_check.dart';
+import '../../widgets/asr_result.dart';
 
 /// Tasmee': the teacher's eyes stay on the Mushaf. Tap a word → pick a type → Pass. Designed for one hand on a phone.
 /// The AI recitation check is a helper: its candidates are gold underlines until the teacher adopts them.
@@ -230,7 +231,7 @@ class _TasmeeScreenState extends State<TasmeeScreen> {
                       padding: const EdgeInsets.fromLTRB(14, 14, 14, 130),
                       children: [
                         ReciteCheck(from: widget.from, to: widget.to, journeyId: widget.journeyId, compact: true, controller: _rc, onResult: (r) => setState(() { _asr = r; _adopted = false; })),
-                        if (_asr != null) ...[const SizedBox(height: 10), AsrSummary(_asr!, onAdopt: _adopt, adopted: _adopted)],
+                        if (_asr != null) ...[const SizedBox(height: 10), AsrReport(_asr!, onAdopt: _adopt, adopted: _adopted, onRetry: () => setState(() { _asr = null; _adopted = false; }))],
                         const SizedBox(height: 12),
                         MushafPage(page: _page!, surahNames: _surahs, inRange: _inRange, stateOf: (i) => _states[i], marks: marks, flags: flags, onWordTap: _tapWord, fontSize: _font),
                         const SizedBox(height: 14),

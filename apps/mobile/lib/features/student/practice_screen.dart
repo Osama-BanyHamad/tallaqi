@@ -8,6 +8,7 @@ import '../../core/quran.dart';
 import '../../core/theme.dart';
 import '../../widgets/common.dart';
 import '../../widgets/recite_check.dart';
+import '../../widgets/asr_result.dart';
 import '../../core/audio.dart';
 import '../../widgets/ayah_audio.dart';
 
@@ -33,14 +34,24 @@ class _PracticeScreenState extends State<PracticeScreen> {
   int _hints = 0;
   Map<String, dynamic>? _asr;
   final _rc = ReciteController();
+  final Map<int, GlobalKey> _keys = {};
+  int? _focus;
+  void _reread(int idx) {
+    setState(() { _hideAll = false; _revealed.add(idx); _focus = idx; });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final c = _keys[idx]?.currentContext;
+      if (c != null) Scrollable.ensureVisible(c, duration: const Duration(milliseconds: 400), curve: Curves.easeOutCubic, alignment: .15);
+    });
+    Future.delayed(const Duration(seconds: 4), () { if (mounted && _focus == idx) setState(() => _focus = null); });
+  }
   double _font = 24;
   void _bumpFont() { setState(() => _font = _font >= 30 ? 20 : _font + 3); Prefs.I.setFontSize(_font); }
 
   Set<int> get _flaggedAyat => {for (final a in ((_asr?['ayat'] as List?) ?? const []).cast<Map<String, dynamic>>()) if (a['status'] == 'issues') a['ayah_index'] as int};
-  Set<String> get _flaggedWords => {
+  Map<String, String> get _flaggedWords => {
         for (final a in ((_asr?['ayat'] as List?) ?? const []).cast<Map<String, dynamic>>())
           for (final w in (a['words'] as List).cast<Map<String, dynamic>>())
-            if (w['status'] != 'ok') '${a['ayah_index']}:${w['position']}',
+            if (w['status'] != 'ok') '${a['ayah_index']}:${w['position']}': w['status'] as String,
       };
 
   @override
@@ -84,7 +95,8 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     if (acc >= .9) { HapticFeedback.heavyImpact(); toast(context, 'ما شاء الله — ${arDigits((acc * 100).round())}٪ مطابقة. أخبر معلمك أنك جاهز للتسميع.'); }
                   }
                 }),
-                if (_asr != null) ...[const SizedBox(height: 10), AsrSummary(_asr!)],
+                if (_asr != null) ...[const SizedBox(height: 10), AsrReport(_asr!, onReread: _reread, onRetry: () => setState(() => _asr = null),
+                    onListenAll: () async { try { await AyahAudio.I.load(); await AyahAudio.I.playAll([for (final a in ayat) (a['surah'] as int, a['ayah'] as int)]); } catch (_) {} })],
                 const SizedBox(height: 10),
                 Row(children: [
                   Expanded(child: OutlinedButton.icon(
@@ -107,7 +119,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                   decoration: BoxDecoration(color: T.paper, borderRadius: BorderRadius.circular(8), border: Border.all(color: T.gold.withValues(alpha: .55)),
                       boxShadow: [BoxShadow(color: T.ink.withValues(alpha: .08), blurRadius: 24, offset: const Offset(0, 10))]),
                   child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                    for (final a in ayat) _ayah(a),
+                    for (final a in ayat) KeyedSubtree(key: _keys.putIfAbsent(a['ayah_index'] as int, GlobalKey.new), child: _ayah(a)),
                     const SizedBox(height: 8),
                     Center(child: Text(d['attribution'] ?? '', style: T.body(size: 10.5, color: T.ink3))),
                   ]),
@@ -133,7 +145,8 @@ class _PracticeScreenState extends State<PracticeScreen> {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-        decoration: BoxDecoration(color: flagged ? T.sNeeds.withValues(alpha: .14) : null, borderRadius: BorderRadius.circular(6)),
+        decoration: BoxDecoration(color: _focus == idx ? T.lapis.withValues(alpha: .12) : flagged ? T.sNeeds.withValues(alpha: .14) : null, borderRadius: BorderRadius.circular(6),
+            border: _focus == idx ? Border.all(color: T.lapis.withValues(alpha: .5)) : null),
         child: Directionality(
           textDirection: TextDirection.rtl,
           child: hidden
@@ -148,7 +161,11 @@ class _PracticeScreenState extends State<PracticeScreen> {
                   for (var i = 0; i < words.length; i++)
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 2),
-                      decoration: fw.contains('$idx:${i + 1}') ? const BoxDecoration(border: Border(bottom: BorderSide(color: T.gold, width: 3))) : null,
+                      decoration: switch (fw['$idx:${i + 1}']) {
+                        'missing' => BoxDecoration(color: T.sWeak.withValues(alpha: .14), borderRadius: BorderRadius.circular(4), border: const Border(bottom: BorderSide(color: T.sWeak, width: 3))),
+                        'substituted' => BoxDecoration(color: T.sNeeds.withValues(alpha: .16), borderRadius: BorderRadius.circular(4), border: const Border(bottom: BorderSide(color: T.sNeeds, width: 3))),
+                        _ => null,
+                      },
                       child: Text(words[i], style: T.quran(size: _font)),
                     ),
                   Text(' ﴿${arDigits(a['ayah'])}﴾ ', style: T.quran(size: _font - 4, color: T.gold)),

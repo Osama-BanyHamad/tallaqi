@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { ApiError, getLocale, getSession } from "@/lib/api";
 import { useT2 } from "@/lib/t2";
+import { useAyahAudio } from "@/components/Wird";
 import { useCapabilities } from "@/components/Shell";
 
 export type AsrWord = { position: number; expected: string; status: "ok" | "missing" | "substituted"; heard: string | null };
@@ -100,30 +101,103 @@ export function ReciteCheck({ from, to, journeyId, onResult, compact }: { from: 
   );
 }
 
-/** Result summary: accuracy, per-Ayah status, and the list of candidates with what was heard (in muted text, never styled as Quran). */
-export function AsrSummary({ r, onAdopt, adopted }: { r: AsrResult; onAdopt?: (c: AsrCandidate[]) => void; adopted?: boolean }) {
+/** The AI report, written for the reciter: a verdict in words, each ayah with the exact words highlighted,
+ *  and tappable recommendations (listen to the ayah with the chosen reciter, re-read it). "Heard" text is muted, never styled as Quran. */
+export function AsrSummary({ r, onAdopt, adopted, onReread, onRetry }: { r: AsrResult; onAdopt?: (c: AsrCandidate[]) => void; adopted?: boolean; onReread?: (ayahIndex: number) => void; onRetry?: () => void }) {
   const tr = useT2();
+  const audio = useAyahAudio();
+  const nothing = (r as AsrResult & { nothing_heard?: boolean }).nothing_heard === true || !r.transcript?.trim();
+  const issues = r.ayat.filter((a) => a.status === "issues");
+  const missing = issues.reduce((n, a) => n + a.words.filter((w) => w.status === "missing").length, 0);
+  const substituted = issues.reduce((n, a) => n + a.words.filter((w) => w.status === "substituted").length, 0);
+  const total = missing + substituted;
   const pct = Math.round(r.accuracy * 100);
-  const tone = pct >= 95 ? "var(--s-strong)" : pct >= 85 ? "var(--s-needs)" : "var(--s-weak)";
-  const label = (c: AsrCandidate) => c.kind === "omission" ? tr("إسقاط", "Omitted") : c.kind === "addition" ? tr("زيادة", "Added") : tr("إبدال", "Substituted");
+  const [verdict, tone] = nothing ? [tr("لم نسمع تلاوة واضحة", "No clear recitation was heard"), "var(--ink-3)"]
+    : total === 0 ? [tr("ما شاء الله — تلاوة مطابقة", "Excellent, a matching recitation"), "var(--s-strong)"]
+    : r.accuracy >= 0.9 ? [tr("جيد جدًا — مواضع قليلة", "Very good, a few spots"), "var(--s-strong)"]
+    : r.accuracy >= 0.75 ? [tr("جيد — يحتاج تثبيتًا", "Good, needs consolidation"), "var(--s-needs)"]
+    : [tr("يحتاج مراجعة قبل التسميع", "Needs revision before Tasmee'"), "var(--s-weak)"];
+  const parts = [missing > 0 && tr(`${missing} منسية`, `${missing} missing`), substituted > 0 && tr(`${substituted} مبدّلة`, `${substituted} substituted`), r.extra.length > 0 && tr(`${r.extra.length} زائدة`, `${r.extra.length} extra`)].filter(Boolean).join(" · ");
+  const summary = nothing ? tr("قرّب الميكروفون واقرأ بصوت واضح، ثم أعد التسجيل.", "Move closer to the microphone, read clearly, then record again.")
+    : total === 0 ? tr(`كل كلمات المقطع (${r.expected_words}) سُمعت في موضعها.`, `All ${r.expected_words} words were heard in place.`)
+    : tr(`${total} ${total === 1 ? "كلمة تحتاج" : "كلمات تحتاج"} انتباهك في ${issues.length} ${issues.length === 1 ? "آية" : "آيات"}: ${parts}.`, `${total} word(s) need attention in ${issues.length} ayah(s): ${parts}.`);
+  const key = (a: AsrAyah) => a.key.split(":").map(Number) as [number, number];
+  const recos: { icon: string; text: string; onClick?: () => void; tone?: string }[] = [];
+  if (nothing) recos.push({ icon: "🎙", text: tr("أعد التسجيل: اقترب من الميكروفون واقرأ بصوت واضح دون ضجيج.", "Record again: closer to the microphone, clear voice, no background noise."), onClick: onRetry });
+  else if (issues.length === 0) recos.push({ icon: "✓", text: tr("سمّع المقطع لمعلمك (أو لمن يسمّع لك) ليُعتمد ويرتفع ثباته.", "Recite it to your teacher or listener so it is verified and retention rises."), tone: "var(--s-strong)" });
+  else {
+    for (const a of issues.slice(0, 3)) {
+      const [s, n] = key(a);
+      const sub = a.words.find((w) => w.status === "substituted" && w.heard);
+      const miss = a.words.filter((w) => w.status === "missing");
+      if (audio.available) recos.push({ icon: "▶", text: tr(`استمع للآية ${a.key} بصوت القارئ ثم أعد قراءتها ثلاث مرات.`, `Listen to ayah ${a.key}, then re-read it three times.`), onClick: () => audio.play(s, n) });
+      else if (onReread) recos.push({ icon: "↺", text: tr(`أعد قراءة الآية ${a.key} ثلاث مرات.`, `Re-read ayah ${a.key} three times.`), onClick: () => onReread(a.ayah_index) });
+      if (sub) recos.push({ icon: "⇄", text: tr(`انتبه للفرق: الصحيح «${sub.expected}» وسُمع «${sub.heard}».`, `Mind the difference: expected “${sub.expected}”, heard “${sub.heard}”.`) });
+      if (miss.length >= 2) recos.push({ icon: "👁", text: tr(`الآية ${a.key} فيها ${miss.length} كلمات منسية: اقرأها ثم أخفِ النص واسترجعها.`, `Ayah ${a.key} has ${miss.length} missing words: read it, hide, recall.`), onClick: onReread ? () => onReread(a.ayah_index) : undefined });
+    }
+    if (issues.length >= 3 && audio.available) recos.push({ icon: "≡", text: tr("المواضع متفرّقة: استمع للمقطع كاملًا ثم سمّعه مرة أخرى.", "Spots are spread out: listen to the whole range, then recite again."), onClick: () => audio.playAll(r.ayat.map(key)) });
+    if (r.accuracy < 0.75) recos.push({ icon: "⏳", text: tr("ثبّت المقطع اليوم وأجّل التسميع للمعلم إلى الغد.", "Consolidate today; postpone the teacher's Tasmee' to tomorrow."), tone: "var(--s-weak)" });
+    else recos.push({ icon: "🎙", text: tr("بعد الإصلاح، سجّل مرة أخرى للتأكد ثم سمّع لمعلمك.", "After fixing, record again to confirm, then recite to your teacher."), onClick: onRetry });
+  }
   return (
-    <div className="surface pad" style={{ borderColor: "color-mix(in srgb, var(--gold) 45%, var(--rule))", background: "var(--gold-tint)" }}>
-      <div className="row" style={{ justifyContent: "space-between" }}>
-        <div><span className="eyebrow">{tr("كشف آلي", "AI check")} · YELLOW</span><div style={{ fontFamily: "var(--font-display)", fontSize: 30, fontWeight: 700, color: tone, lineHeight: 1.1, marginTop: 4 }}>{pct}%</div><div className="muted" style={{ fontSize: 12.5 }}>{r.matched} / {r.expected_words} {tr("كلمة مطابقة", "words matched")}</div></div>
-        {onAdopt && r.candidates.length > 0 && <button type="button" className="btn primary sm" disabled={adopted} onClick={() => onAdopt(r.candidates)}>{adopted ? tr("أُضيفت ✓", "Added ✓") : tr(`اعتمد ${r.candidates.length} اقتراحًا`, `Adopt ${r.candidates.length} candidates`)}</button>}
+    <div className="surface pad" style={{ borderColor: `color-mix(in srgb, ${tone} 45%, var(--rule))` }}>
+      <div className="row" style={{ gap: 14, alignItems: "flex-start" }}>
+        <div style={{ textAlign: "center", minWidth: 64 }}>
+          <div className="num" style={{ fontFamily: "var(--font-display)", fontSize: 28, fontWeight: 700, color: tone, lineHeight: 1.1 }}>{nothing ? "—" : `${pct}%`}</div>
+          <div className="muted" style={{ fontSize: 11 }}>{tr("مطابقة", "match")}</div>
+        </div>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: 16, fontWeight: 700, color: tone }}>{verdict}</div>
+          <div style={{ fontSize: 13.5, color: "var(--ink-2)", marginTop: 2 }}>{summary}</div>
+        </div>
+        {onAdopt && total > 0 && <button type="button" className="btn primary sm" disabled={adopted} onClick={() => onAdopt(r.candidates)}>{adopted ? tr("أُضيفت ✓", "Added ✓") : tr(`اعتمد ${r.candidates.length} موضعًا كأخطاء`, `Adopt ${r.candidates.length} as mistakes`)}</button>}
       </div>
-      {r.candidates.length === 0 ? <p style={{ margin: "10px 0 0", fontSize: 14 }}>{tr("لا فروق مسموعة عن النص الموثّق في هذا المقطع.", "No audible differences from the verified text in this range.")}</p> : (
-        <div className="stack" style={{ gap: 4, marginTop: 10 }}>
-          {r.candidates.slice(0, 12).map((c, i) => (
-            <div key={i} className="row" style={{ fontSize: 13, gap: 8, justifyContent: "space-between" }}>
-              <span><span className="chip" style={{ padding: "1px 8px", fontSize: 11 }}>{label(c)}</span> <span className="num muted">{r.ayat.find((a) => a.ayah_index === c.ayah_index)?.key} · {c.word_position}</span></span>
-              <span className="muted" style={{ fontSize: 12 }}>{c.expected && <>{tr("المتوقع", "expected")}: <b style={{ fontFamily: "var(--font-quran)" }}>{c.expected}</b></>}{c.heard && <> · {tr("سُمع", "heard")}: {c.heard}</>}</span>
-            </div>
-          ))}
-          {r.candidates.length > 12 && <span className="muted" style={{ fontSize: 12 }}>+{r.candidates.length - 12}</span>}
+      {issues.length > 0 && (
+        <div style={{ marginTop: 14 }}>
+          <div style={{ fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 700, marginBottom: 6 }}>{tr("ما يحتاج انتباهك", "What needs attention")}</div>
+          <div className="stack" style={{ gap: 8 }}>
+            {issues.slice(0, 8).map((a) => {
+              const [s, n] = key(a);
+              const subs = a.words.filter((w) => w.status === "substituted" && w.heard);
+              const m = a.words.filter((w) => w.status === "missing").length;
+              return (
+                <div key={a.ayah_index} style={{ background: "var(--paper)", border: "1px solid var(--rule)", borderRadius: 12, padding: "10px 12px" }}>
+                  <div className="row" style={{ gap: 6, fontSize: 12.5 }}>
+                    <b style={{ color: "var(--lapis)" }}>{tr("الآية", "Ayah")} {a.key}</b>
+                    {m > 0 && <span className="chip" style={{ background: "color-mix(in srgb, var(--s-weak) 15%, transparent)", color: "var(--s-weak)", fontSize: 11 }}>{tr(`${m} منسية`, `${m} missing`)}</span>}
+                    {subs.length > 0 && <span className="chip" style={{ background: "color-mix(in srgb, var(--s-needs) 18%, transparent)", color: "var(--s-needs)", fontSize: 11 }}>{tr(`${subs.length} مبدّلة`, `${subs.length} substituted`)}</span>}
+                  </div>
+                  <div dir="rtl" style={{ fontFamily: "var(--font-quran)", fontSize: 24, lineHeight: 2, marginTop: 4 }}>
+                    {a.words.map((w) => (
+                      <span key={w.position} title={w.status === "missing" ? tr(`لم تُسمع «${w.expected}»`, `“${w.expected}” was not heard`) : w.status === "substituted" ? tr(`الصحيح «${w.expected}»${w.heard ? ` — سُمع «${w.heard}»` : ""}`, `Expected “${w.expected}”${w.heard ? `, heard “${w.heard}”` : ""}`) : undefined}
+                        style={w.status === "ok" ? undefined : { background: `color-mix(in srgb, ${w.status === "missing" ? "var(--s-weak)" : "var(--s-needs)"} 16%, transparent)`, borderBottom: `3px solid ${w.status === "missing" ? "var(--s-weak)" : "var(--s-needs)"}`, borderRadius: 4, padding: "0 3px", color: w.status === "missing" ? "var(--s-weak)" : undefined, cursor: "help" }}>{w.expected} </span>
+                    ))}
+                    <span style={{ color: "var(--gold)", fontSize: 18 }}>﴿{n}﴾</span>
+                  </div>
+                  {subs.length > 0 && <div className="muted" style={{ fontSize: 12 }}>{subs.map((w) => tr(`«${w.expected}» سُمعت «${w.heard}»`, `“${w.expected}” heard as “${w.heard}”`)).join(" · ")}</div>}
+                  <div className="row" style={{ gap: 6, marginTop: 6 }}>
+                    {audio.available && <button type="button" className="btn sm" onClick={() => audio.play(s, n)}>▶ {tr("استمع", "Listen")}</button>}
+                    {onReread && <button type="button" className="btn sm" onClick={() => onReread(a.ayah_index)}>{tr("أعد قراءتها", "Re-read")}</button>}
+                  </div>
+                </div>
+              );
+            })}
+            {issues.length > 8 && <span className="muted" style={{ fontSize: 12 }}>+{issues.length - 8}</span>}
+          </div>
         </div>
       )}
-      <p className="muted" style={{ margin: "10px 0 0", fontSize: 11.5 }}>{r.disclaimer} · {r.model}</p>
+      {r.extra.length > 0 && <p style={{ margin: "10px 0 0", fontSize: 12.5, color: "var(--ink-2)" }}>{tr("كلمات زائدة سُمعت:", "Extra words heard:")} {r.extra.slice(0, 6).map((e) => `«${e.heard}»`).join(" ")}</p>}
+      <div style={{ marginTop: 14 }}>
+        <div style={{ fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 700, marginBottom: 4 }}>{tr("التوصيات", "Recommendations")}</div>
+        {recos.map((x, i) => (
+          <div key={i} role={x.onClick ? "button" : undefined} onClick={x.onClick} className="row" style={{ gap: 10, padding: "6px 2px", cursor: x.onClick ? "pointer" : "default", alignItems: "flex-start" }}>
+            <span style={{ width: 28, height: 28, borderRadius: 8, display: "grid", placeItems: "center", background: `color-mix(in srgb, ${x.tone ?? "var(--lapis)"} 12%, transparent)`, color: x.tone ?? "var(--lapis)", fontSize: 13, flex: "none" }}>{x.icon}</span>
+            <span style={{ fontSize: 13.5 }}>{x.text}</span>
+          </div>
+        ))}
+      </div>
+      {audio.current && <button type="button" className="btn sm" style={{ marginTop: 8 }} onClick={audio.stop}>■ {tr("إيقاف الصوت", "Stop audio")}</button>}
+      <p className="muted" style={{ margin: "10px 0 0", fontSize: 11.5 }}>{tr("كشف آلي يساعد ولا يقرّر: يقارن صوتك بالنص الموثّق ويقترح؛ الإنسان هو من يعتمد.", "Assistive detection: compares your voice with the verified text and suggests; a human decides.")}</p>
     </div>
   );
 }
