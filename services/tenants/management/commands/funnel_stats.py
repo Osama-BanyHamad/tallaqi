@@ -21,7 +21,7 @@ class Command(BaseCommand):
         with context.platform_admin("funnel"):
             tenants = dict(Tenant.objects.values_list("kind").annotate(n=Count("id")).values_list("kind", "n"))
             accounts = Account.objects.count()
-            signups = {"24h": Account.objects.filter(date_joined__gte=d1).count(), "7d": Account.objects.filter(date_joined__gte=d7).count(), "30d": Account.objects.filter(date_joined__gte=d30).count()}
+            signups = {"24h": Account.objects.filter(created_at__gte=d1).count(), "7d": Account.objects.filter(created_at__gte=d7).count(), "30d": Account.objects.filter(created_at__gte=d30).count()}
             solo = Tenant.objects.filter(kind="solo").count()
             solo_signups_7d = Tenant.objects.filter(kind="solo", created_at__gte=d7).count() if hasattr(Tenant, "created_at") else None
             journeys = QuranJourney.objects.unsafe_all().count()
