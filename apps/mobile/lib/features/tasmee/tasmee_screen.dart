@@ -138,11 +138,51 @@ class _TasmeeScreenState extends State<TasmeeScreen> {
       });
       if (!mounted) return;
       HapticFeedback.heavyImpact();
-      toast(context, 'حُفظ التقييم — ${outcomeAr[outcome]}');
-      Navigator.pop(context, true);
+      await _resultSheet(outcome);
+      if (mounted) Navigator.pop(context, true);
     } catch (e) {
       setState(() { _saving = false; _error = e; });
     }
+  }
+
+  /// A short, calm summary after saving: outcome, mistakes by type, what the engine will do next.
+  Future<void> _resultSheet(String outcome) {
+    final color = outcome == 'pass' ? T.sStrong : outcome == 'partial' ? T.sNeeds : T.sWeak;
+    final byType = <String, int>{};
+    for (final m in _mistakes) {
+      byType[m['mistake_type']] = (byType[m['mistake_type']] ?? 0) + 1;
+    }
+    return showModalBottomSheet(
+      context: context, backgroundColor: T.surface, isDismissible: true, showDragHandle: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (_) => Padding(
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 28),
+        child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            TweenAnimationBuilder<double>(tween: Tween(begin: 0, end: 1), duration: const Duration(milliseconds: 500), curve: Curves.elasticOut,
+                builder: (_, v, ch) => Transform.scale(scale: v, child: ch),
+                child: Container(width: 56, height: 56, decoration: BoxDecoration(color: color.withValues(alpha: .14), shape: BoxShape.circle),
+                    child: Icon(outcome == 'pass' ? Icons.check_rounded : outcome == 'partial' ? Icons.remove_rounded : Icons.replay_rounded, color: color, size: 30))),
+            const SizedBox(width: 14),
+            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text('حُفظ التقييم — ${outcomeAr[outcome]}', style: T.display(size: 18)),
+              Text('${widget.studentName} · ${purposeAr[widget.purpose] ?? widget.purpose}', style: T.body(size: 13, color: T.ink3)),
+            ])),
+          ]),
+          const SizedBox(height: 16),
+          if (byType.isEmpty) Text('بلا أخطاء مسجّلة — سيرتفع ثبات آيات هذا المقطع.', style: T.body(size: 14, color: T.sStrong))
+          else Wrap(spacing: 6, runSpacing: 6, children: [
+            for (final e in byType.entries)
+              Chip2('${_types.firstWhere((t) => t['key'] == e.key, orElse: () => {'name_ar': e.key})['name_ar']} × ${arDigits(e.value)}', color: T.sWeak, filled: true),
+          ]),
+          const SizedBox(height: 12),
+          Text(outcome == 'repeat' ? 'سيعود هذا المقطع في خطة الغد بوصفه مراجعة قريبة.' : outcome == 'partial' ? 'تُحدَّث الخريطة جزئيًا وتُقترح مراجعة قريبة للآيات المتعثّرة.' : 'تُحدَّث خريطة الحفظ الآن، وتُحسب المراجعة القادمة من الثبات.',
+              style: T.body(size: 13, color: T.ink2)),
+          const SizedBox(height: 18),
+          FilledButton(onPressed: () => Navigator.pop(context), child: const Text('التالي')),
+        ]),
+      ),
+    );
   }
 
   @override
@@ -168,7 +208,13 @@ class _TasmeeScreenState extends State<TasmeeScreen> {
           child: Row(children: [
             _Pill('${arDigits(_mistakes.length)} خطأ', major > 0 ? T.sWeak : T.sStrong),
             const SizedBox(width: 8),
+            if (major > 0) _Pill('${arDigits(major)} جسيم', T.sWeak),
+            if (major > 0) const SizedBox(width: 8),
             if (_asr != null) _Pill('كشف آلي ${arDigits(((_asr!['accuracy'] as num) * 100).round())}٪', T.gold2),
+            const Spacer(),
+            if (_mistakes.isNotEmpty)
+              TextButton.icon(onPressed: () => setState(() => _mistakes.removeLast()), style: TextButton.styleFrom(foregroundColor: T.nightMuted, padding: EdgeInsets.zero, minimumSize: const Size(0, 30)),
+                  icon: const Icon(Icons.undo_rounded, size: 16), label: Text('تراجع', style: T.body(size: 12, color: T.nightMuted))),
           ]),
         ),
         Expanded(

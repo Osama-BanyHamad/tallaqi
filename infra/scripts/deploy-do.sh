@@ -53,6 +53,9 @@ for i in $(seq 1 60); do
 done
 docker compose --profile prod exec -T api curl -s http://localhost:8000/readyz; echo
 
+echo "==> Syncing system roles with the permission catalog"
+docker compose --profile prod exec -T api python apps/api/manage.py sync_roles || true
+
 if [ "$SEED" = "1" ]; then
   echo "==> Seeding demo tenant + users (idempotent; use SEED=0 to skip)"
   docker compose --profile prod exec -T api python apps/api/manage.py seed_demo || true

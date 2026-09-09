@@ -81,11 +81,13 @@ class AiViewSet(viewsets.ViewSet):
             if journey is None:
                 return Response({"code": "not_found", "detail": "journey not found"}, status=404)
         provider = get_provider()
+        prompt = "تلاوة قرآنية مرتّلة باللغة العربية الفصحى."
         try:
-            transcript = provider.transcribe(f.read(), f.name or "audio.webm", f.content_type or "application/octet-stream",
-                                             language="ar", prompt="تلاوة قرآنية مرتّلة باللغة العربية الفصحى.")
+            transcript = provider.transcribe(f.read(), f.name or "audio.webm", f.content_type or "application/octet-stream", language="ar", prompt=prompt)
         except AiUnavailable as e:
             return Response({"code": "ai_unavailable", "detail": str(e)}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        if transcript.strip().rstrip(".") == prompt.strip().rstrip("."):
+            transcript = ""  # silent / unintelligible audio: the model echoes the prompt; treat as nothing heard
         result = asr.check_recitation(transcript, frm, to)
         result.update({"source": "ai", "provider": provider.name, "model": provider.asr_model, "safety": "YELLOW", "disclaimer": ASR_DISCLAIMER,
                        "from_ayah_index": frm, "to_ayah_index": to})

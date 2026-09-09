@@ -43,6 +43,7 @@ def sanitize(text: str) -> str:
     text = _AYAH_BRACKETS.sub("", text)
     text = _BASMALAH.sub("", text)
     text = _HEAVY_TASHKEEL.sub("[…]", text)
+    text = re.sub(r"\*\*|__|^#+\s*", "", text, flags=re.M)  # plain text only: no markdown emphasis or headings
     return re.sub(r"[ \t]+", " ", text).strip()
 
 

@@ -10,6 +10,7 @@ const AR = {
   h1: "نظام تشغيل مفتوح المصدر لتعليم القرآن",
   lede: "ليس برنامج إدارة مركز. تَلَقِّي يتابع رحلة الطالب مع القرآن آيةً آية: ما حُفظ، وما ثبت، وما يُراجَع اليوم — ويربط الطالب والمعلم وولي الأمر والمشرف والمركز حول هذه الرحلة.",
   cta1: "جرّب العرض التجريبي", cta2: "الكود على GitHub", cta3: "حمّل تطبيق Android",
+  videoTitle: "دقيقة واحدة تشرح كل شيء", videoLede: "رحلة الطالب، والتسميع من المصحف، ولوحة المشرف، وبوابة ولي الأمر، والتطبيق — كما تعمل فعلًا.",
   appTitle: "التطبيق في جيب الطالب والمعلم وولي الأمر",
   appLede: "تطبيق واحد بثلاث واجهات: المعلم يسجّل الحضور ويسمّع من المصحف، والطالب يرى خطة اليوم ويتدرّب باسترجاع النص الموثّق، وولي الأمر يرى الإجابات الست الأسبوعية. النسخة الحالية تجريبية لأندرويد؛ iOS قريبًا.",
   appNote: "ملف APK مباشر (٥١ م.ب) — عند التثبيت اسمح بالتثبيت من مصدر خارجي. الدخول بحسابات العرض التجريبي نفسها.",
@@ -44,6 +45,7 @@ const EN: typeof AR = {
   h1: "An open-source operating system for Quran education",
   lede: "Not a center management program. Talaqqi follows the student's Quran journey Ayah by Ayah: what was memorized, what stays strong, what to revise today — and connects student, teacher, parent, supervisor, and center around it.",
   cta1: "Try the demo", cta2: "Code on GitHub", cta3: "Get the Android app",
+  videoTitle: "One minute that explains everything", videoLede: "The student journey, Tasmee' on the Mushaf, the supervisor dashboard, the parent portal, and the app — as they really work.",
   appTitle: "The app in the pocket of student, teacher, and parent",
   appLede: "One app, three faces: the teacher marks attendance and runs Tasmee' from the Mushaf, the student sees today's plan and practices recall on verified text, the parent gets the six weekly answers. The current build is an Android beta; iOS is coming.",
   appNote: "Direct APK (51 MB). Allow installation from an external source when prompted. Sign in with the same demo accounts.",
@@ -112,6 +114,15 @@ export default function Site() {
           </div>
         </div>
       </header>
+
+      <section className="section alt" id="video" style={{ paddingTop: 56, paddingBottom: 56 }}>
+        <div className="section-head" style={{ marginBottom: 22 }}><span className="eyebrow">{locale === "ar" ? "الفيديو" : "Video"}</span><h2>{s.videoTitle}</h2><p>{s.videoLede}</p></div>
+        <div className="video-frame">
+          <video controls playsInline preload="metadata" poster="/promo-poster.jpg" style={{ width: "100%", display: "block", background: "var(--night)" }}>
+            <source src="/downloads/talaqqi-promo.mp4" type="video/mp4" />
+          </video>
+        </div>
+      </section>
 
       <section className="section" id="idea">
         <div className="section-head"><span className="eyebrow">{locale === "ar" ? "الحلقة الأهم" : "The loop that matters"}</span><h2>{locale === "ar" ? "كل شيء في المنصة يخدم هذه الحلقة" : "Everything in the platform serves this loop"}</h2></div>

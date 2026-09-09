@@ -44,7 +44,7 @@ services:
   api:
     <<: *api
     profiles: [prod]
-    command: sh -c "python apps/api/manage.py migrate --noinput && python apps/api/manage.py load_quran_core && gunicorn -c infra/docker/gunicorn.conf.py --chdir apps/api talaqqi.wsgi:application"
+    command: sh -c "python apps/api/manage.py migrate --noinput && python apps/api/manage.py load_quran_core && python apps/api/manage.py sync_roles && gunicorn -c infra/docker/gunicorn.conf.py --chdir apps/api talaqqi.wsgi:application"
     expose: ["8000"]
 
   worker:
