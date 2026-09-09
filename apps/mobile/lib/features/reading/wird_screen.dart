@@ -44,7 +44,7 @@ class _WirdScreenState extends State<WirdScreen> {
             NightHeader(
               eyebrow: 'الورد اليومي',
               title: done ? 'أتممت وردك اليوم' : 'ورد اليوم',
-              subtitle: '${today['from_surah']} ${today['from_key'].toString().split(':').last} ← ${today['to_surah']} ${today['to_key'].toString().split(':').last} · الجزء ${arDigits(today['juz'])}',
+              subtitle: '${today['from_surah']} ${arDigits(today['from_key'].toString().split(':').last)} ← ${today['to_surah']} ${arDigits(today['to_key'].toString().split(':').last)} · الجزء ${arDigits(today['juz'])}',
               trailing: RetentionRing(progress, size: 66, light: true, label: 'الختمة', stroke: 5),
               child: Row(children: [
                 Expanded(child: _Stat(arDigits('${today['from_page']}–${today['to_page']}'), 'صفحات اليوم')),

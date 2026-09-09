@@ -1,7 +1,7 @@
 name: talaqqi
 description: Talaqqi — student, teacher, and parent app for the Quran learning journey (Arabic-first).
 publish_to: "none"
-version: 0.5.0+6
+version: 0.5.1+7
 
 environment:
   sdk: ">=3.4.0 <4.0.0"
