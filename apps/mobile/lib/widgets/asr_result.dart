@@ -124,14 +124,14 @@ class AsrReport extends StatelessWidget {
       final subs = ((a['words'] as List).cast<Map<String, dynamic>>()).where((w) => w['status'] == 'substituted').toList();
       final miss = ((a['words'] as List).cast<Map<String, dynamic>>()).where((w) => w['status'] == 'missing').toList();
       if (audio) {
-        add(Icons.play_circle_rounded, 'استمع للآية ${a['key']} بصوت القارئ ثم أعد قراءتها ثلاث مرات.', onTap: () => AyahAudio.I.play(s, n));
+        add(Icons.play_circle_rounded, 'استمع للآية ${arDigits(a['key'])} بصوت القارئ ثم أعد قراءتها ثلاث مرات.', onTap: () => AyahAudio.I.play(s, n));
       } else if (onReread != null) {
-        add(Icons.replay_rounded, 'أعد قراءة الآية ${a['key']} ثلاث مرات من المصحف.', onTap: () => onReread!(a['ayah_index'] as int));
+        add(Icons.replay_rounded, 'أعد قراءة الآية ${arDigits(a['key'])} ثلاث مرات من المصحف.', onTap: () => onReread!(a['ayah_index'] as int));
       }
       for (final w in subs.take(1)) {
         if (w['heard'] != null) add(Icons.compare_arrows_rounded, 'انتبه للفرق: الصحيح «${w['expected']}» وسُمع «${w['heard']}».');
       }
-      if (miss.length >= 2) add(Icons.visibility_off_rounded, 'الآية ${a['key']} فيها ${arDigits(miss.length)} كلمات منسية: اقرأها ثم أخفِ النص واسترجعها.', onTap: onReread == null ? null : () => onReread!(a['ayah_index'] as int));
+      if (miss.length >= 2) add(Icons.visibility_off_rounded, 'الآية ${arDigits(a['key'])} فيها ${arDigits(miss.length)} كلمات منسية: اقرأها ثم أخفِ النص واسترجعها.', onTap: onReread == null ? null : () => onReread!(a['ayah_index'] as int));
     }
     if (issues.length >= 3 && onListenAll != null) add(Icons.playlist_play_rounded, 'المواضع متفرّقة: استمع للمقطع كاملًا ثم سمّعه مرة أخرى.', onTap: onListenAll);
     if (acc < .75) {
@@ -158,7 +158,7 @@ class _AyahCard extends StatelessWidget {
       decoration: BoxDecoration(color: T.paper, borderRadius: BorderRadius.circular(12), border: Border.all(color: T.rule)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          Text('الآية ${a['key']}', style: T.body(size: 12.5, weight: FontWeight.w700, color: T.lapis)),
+          Text('الآية ${arDigits(a['key'])}', style: T.body(size: 12.5, weight: FontWeight.w700, color: T.lapis)),
           const SizedBox(width: 8),
           if ((a['missing'] ?? 0) > 0) Chip2('${arDigits(a['missing'])} منسية', color: T.sWeak, filled: true),
           if ((a['missing'] ?? 0) > 0) const SizedBox(width: 4),

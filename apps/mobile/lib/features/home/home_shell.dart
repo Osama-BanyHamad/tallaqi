@@ -119,7 +119,7 @@ class _AccountPage extends StatelessWidget {
           if (context.mounted) Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) => const LoginScreen()), (_) => false);
         }, icon: const Icon(Icons.logout_rounded, size: 18), label: const Text('تسجيل الخروج')),
         const SizedBox(height: 20),
-        Text('نص القرآن: مشروع تنزيل — tanzil.net · tallaqi.com · v0.5.1', style: T.body(size: 12, color: T.ink3), textAlign: TextAlign.center),
+        Text('نص القرآن: مشروع تنزيل — tanzil.net · tallaqi.com · v0.5.2', style: T.body(size: 12, color: T.ink3), textAlign: TextAlign.center),
       ])),
     ]);
   }

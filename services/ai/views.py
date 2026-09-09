@@ -87,8 +87,10 @@ class AiViewSet(viewsets.ViewSet):
             return Response({"code": "quota_exceeded", "detail": f"وصلت إلى الحد اليومي للتسميع الذكي ({quota}). يعود غدًا."}, status=429)
         provider = get_provider()
         prompt = "تلاوة قرآنية مرتّلة باللغة العربية الفصحى."
+        # The offline fake provider derives a plausible recitation from the expected text (demo/tests only).
+        hint = " ".join(w.display for w in asr.expected_words(frm, to)) if provider.name == "fake" else prompt
         try:
-            transcript = provider.transcribe(f.read(), f.name or "audio.webm", f.content_type or "application/octet-stream", language="ar", prompt=prompt)
+            transcript = provider.transcribe(f.read(), f.name or "audio.webm", f.content_type or "application/octet-stream", language="ar", prompt=hint)
         except AiUnavailable as e:
             return Response({"code": "ai_unavailable", "detail": str(e)}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
         if transcript.strip().rstrip(".") == prompt.strip().rstrip("."):
