@@ -53,6 +53,14 @@ for i in $(seq 1 60); do
 done
 docker compose --profile prod exec -T api curl -s http://localhost:8000/readyz; echo
 
+echo "==> Visit statistics: hourly GoAccess report from the Caddy access log (/stats/, basic auth from STATS_USER/STATS_HASH in .env)"
+mkdir -p "$DIR/logs/caddy" "$DIR/stats"; chmod +x "$DIR/infra/scripts/stats.sh"
+( crontab -l 2>/dev/null | grep -v "stats.sh"; echo "17 * * * * DIR=$DIR bash $DIR/infra/scripts/stats.sh >> /var/log/talaqqi-stats.log 2>&1" ) | crontab -
+bash "$DIR/infra/scripts/stats.sh" || true
+
+echo "==> Syncing system roles with the permission catalog"
+docker compose --profile prod exec -T api python apps/api/manage.py sync_roles || true
+
 if [ "$SEED" = "1" ]; then
   echo "==> Seeding demo tenant + users (idempotent; use SEED=0 to skip)"
   docker compose --profile prod exec -T api python apps/api/manage.py seed_demo || true
