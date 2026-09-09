@@ -312,6 +312,8 @@ tr:last-child td { border-bottom: 0; }
   .login-form { padding: 28px 20px 40px; align-items: start; }
 }
 
+.video-frame { border-radius: 18px; overflow: hidden; box-shadow: 0 50px 100px -40px rgba(13,18,48,.7), 0 0 0 1px rgba(13,18,48,.08); max-width: 1100px; margin: 0 auto; aspect-ratio: 16 / 9; }
+
 /* ---------- App section (site) ---------- */
 .app-section { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(260px, .9fr); gap: 56px; align-items: center; }
 .app-section .stores { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
