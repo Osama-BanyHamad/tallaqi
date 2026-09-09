@@ -10,6 +10,7 @@ import '../core/api.dart';
 import '../core/recording.dart';
 import '../core/theme.dart';
 import 'common.dart';
+import 'tips.dart';
 
 /// Records the reciter and asks the server to compare the speech against the verified text (module hifz.asr, YELLOW).
 /// The transcript is never shown as Quran; only candidate mismatches positioned on the verified words come back.
@@ -44,6 +45,7 @@ class _ReciteCheckState extends State<ReciteCheck> with SingleTickerProviderStat
   Future<void> _start() async {
     setState(() { _msg = null; });
     widget.onResult(null);
+    if (!mounted || !await explainMicrophone(context)) return;
     if (!await _rec.hasPermission()) {
       setState(() { _state = 'error'; _msg = 'لم يُسمح باستخدام الميكروفون.'; });
       return;

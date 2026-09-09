@@ -9,7 +9,10 @@ const AR = {
   nav: ["الفكرة", "الوحدات", "سلامة القرآن", "التطبيق", "لمن", "مفتوح المصدر"],
   h1: "نظام تشغيل مفتوح المصدر لتعليم القرآن",
   lede: "ليس برنامج إدارة مركز. تَلَقِّي يتابع رحلة الطالب مع القرآن آيةً آية: ما حُفظ، وما ثبت، وما يُراجَع اليوم — ويربط الطالب والمعلم وولي الأمر والمشرف والمركز حول هذه الرحلة.",
-  cta1: "جرّب العرض التجريبي", cta2: "الكود على GitHub", cta3: "حمّل تطبيق Android",
+  cta1: "جرّب العرض التجريبي", cta2: "الكود على GitHub", cta3: "حمّل تطبيق Android", cta0: "ابدأ رحلتك مجانًا",
+  howTitle: "كيف يعمل؟ اختر دورك", howLede: "كل دور يرى ما يحتاجه فقط. جرّب بلمسة واحدة، بلا تسجيل.",
+  how: [["معلم", "حلقة اليوم: حضور بنقرة، ثم تسميع من المصحف بأربع نقرات، وخطة الغد تُقترح تلقائيًا.", "teacher"], ["طالب", "خطة اليوم، تدريب بإخفاء النص، تسميع ذكي يقارن صوتك بالنص الموثّق، وخريطة حفظ تتلوّن.", "student"], ["ولي أمر", "ست إجابات كل أسبوع: هل حضر؟ ماذا حفظ؟ ماذا راجع؟ هل يتحسّن؟ ماذا يوصي المعلم؟ ما المطلوب اليوم؟", "parent"], ["مدير مركز", "لوحة صحة التعلّم بالأسباب، الحلقات والمعلمون، الرسوم والفواتير، التقارير، وسجل التدقيق.", "owner"]],
+  soloTitle: "تحفظ وحدك؟ ابدأ الآن بلا مركز", soloLede: "أنشئ رحلتك الخاصة في دقيقة: هدفك، وما تحفظه، ووقتك اليومي. تحصل على خطة كل يوم، وخريطة حفظ، وتدريب ذاتي، وتسميع ذكي — وتدعو والدك أو صديقك ليسمّع لك من هاتفه.",
   videoTitle: "دقيقة واحدة تشرح كل شيء", videoLede: "رحلة الطالب، والتسميع من المصحف، ولوحة المشرف، وبوابة ولي الأمر، والتطبيق — كما تعمل فعلًا.",
   appTitle: "التطبيق في جيب الطالب والمعلم وولي الأمر",
   appLede: "تطبيق واحد بثلاث واجهات: المعلم يسجّل الحضور ويسمّع من المصحف، والطالب يرى خطة اليوم ويتدرّب باسترجاع النص الموثّق، وولي الأمر يرى الإجابات الست الأسبوعية. النسخة الحالية تجريبية لأندرويد؛ iOS قريبًا.",
@@ -44,7 +47,10 @@ const EN: typeof AR = {
   nav: ["Idea", "Modules", "Quran safety", "The app", "For whom", "Open source"],
   h1: "An open-source operating system for Quran education",
   lede: "Not a center management program. Talaqqi follows the student's Quran journey Ayah by Ayah: what was memorized, what stays strong, what to revise today — and connects student, teacher, parent, supervisor, and center around it.",
-  cta1: "Try the demo", cta2: "Code on GitHub", cta3: "Get the Android app",
+  cta1: "Try the demo", cta2: "Code on GitHub", cta3: "Get the Android app", cta0: "Start your free journey",
+  howTitle: "How it works: pick your role", howLede: "Each role sees only what it needs. Try it with one click, no sign-up.",
+  how: [["Teacher", "Today's Halaqah: attendance in a tap, Tasmee' from the Mushaf in four taps, tomorrow's plan proposed automatically.", "teacher"], ["Student", "Today's plan, hide-and-recall practice, an AI check that compares your voice to the verified text, and a map that fills with color.", "student"], ["Parent", "Six answers every week: attended? memorized? revised? improving? teacher's advice? due today?", "parent"], ["Center owner", "Learning-health dashboard with reasons, Halaqat and teachers, fees and invoices, reports, and the audit log.", "owner"]],
+  soloTitle: "Memorizing alone? Start now, no center needed", soloLede: "Create your own journey in a minute: your goal, what you know, your daily time. You get a plan every day, a memory map, self-practice, an AI check, and you can invite a parent or friend to listen from their phone.",
   videoTitle: "One minute that explains everything", videoLede: "The student journey, Tasmee' on the Mushaf, the supervisor dashboard, the parent portal, and the app — as they really work.",
   appTitle: "The app in the pocket of student, teacher, and parent",
   appLede: "One app, three faces: the teacher marks attendance and runs Tasmee' from the Mushaf, the student sees today's plan and practices recall on verified text, the parent gets the six weekly answers. The current build is an Android beta; iOS is coming.",
@@ -100,7 +106,8 @@ export default function Site() {
             <h1 className="display">{s.h1}</h1>
             <p className="lede">{s.lede}</p>
             <div className="row" style={{ gap: 14 }}>
-              <Link href="/login" className="pill-cta lg">{s.cta1}</Link>
+              <Link href="/start" className="pill-cta lg">{s.cta0}</Link>
+              <Link href="/login" className="pill-cta lg ghost">{s.cta1}</Link>
               <a href={APK_URL} className="pill-cta lg ghost"><IconAndroid />{s.cta3}</a>
               <a href="https://github.com/Osama-BanyHamad/tallaqi" className="pill-cta lg ghost">{s.cta2}</a>
             </div>
@@ -114,6 +121,22 @@ export default function Site() {
           </div>
         </div>
       </header>
+
+      <section className="section" id="how">
+        <div className="section-head"><span className="eyebrow">{locale === "ar" ? "ابدأ من هنا" : "Start here"}</span><h2>{s.howTitle}</h2><p>{s.howLede}</p></div>
+        <div className="pillars stagger">
+          {s.how.map(([role, text, key], i) => (
+            <Link key={i} href={`/login?demo=${key}`} className="pillar" style={{ color: "inherit" }}>
+              <div className="row" style={{ justifyContent: "space-between" }}><h3>{role}</h3><span className="chip">{locale === "ar" ? "جرّب" : "Try"} ←</span></div>
+              <p>{text}</p>
+            </Link>
+          ))}
+        </div>
+        <div className="surface pad" style={{ marginTop: 22, display: "grid", gridTemplateColumns: "minmax(0, 1fr) auto", gap: 20, alignItems: "center", background: "var(--gold-tint)", borderColor: "color-mix(in srgb, var(--gold) 45%, var(--rule))" }}>
+          <div><h3 style={{ fontSize: 20 }}>{s.soloTitle}</h3><p style={{ margin: "6px 0 0", color: "var(--ink-2)" }}>{s.soloLede}</p></div>
+          <Link href="/start" className="pill-cta lg">{s.cta0}</Link>
+        </div>
+      </section>
 
       <section className="section alt" id="video" style={{ paddingTop: 56, paddingBottom: 56 }}>
         <div className="section-head" style={{ marginBottom: 22 }}><span className="eyebrow">{locale === "ar" ? "الفيديو" : "Video"}</span><h2>{s.videoTitle}</h2><p>{s.videoLede}</p></div>

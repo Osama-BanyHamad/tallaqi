@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../core/api.dart';
+import '../../core/prefs.dart';
 import '../../core/progress.dart';
 import '../../core/quran.dart';
 import '../../core/theme.dart';
@@ -21,11 +22,14 @@ class PracticeScreen extends StatefulWidget {
 }
 
 class _PracticeScreenState extends State<PracticeScreen> {
+  @override
+  void initState() { super.initState(); Prefs.I.fontSize().then((v) { if (mounted) setState(() => _font = v); }); }
   final Set<int> _revealed = {};
   bool _hideAll = false;
   int _hints = 0;
   Map<String, dynamic>? _asr;
   double _font = 24;
+  void _bumpFont() { setState(() => _font = _font >= 30 ? 20 : _font + 3); Prefs.I.setFontSize(_font); }
 
   Set<int> get _flaggedAyat => {for (final a in ((_asr?['ayat'] as List?) ?? const []).cast<Map<String, dynamic>>()) if (a['status'] == 'issues') a['ayah_index'] as int};
   Set<String> get _flaggedWords => {
@@ -47,7 +51,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
               eyebrow: 'تدريب ذاتي · ${widget.title}', title: '${ayat.first['key']} ← ${ayat.last['key']}',
               subtitle: 'اقرأ، ثم أخفِ النص واسترجع، ثم اكشف للتحقق — أو سمّع بصوتك ليقارن النظام تلاوتك بالنص الموثّق.',
               trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-                IconButton(onPressed: () => setState(() => _font = _font >= 30 ? 20 : _font + 3), icon: const Icon(Icons.format_size_rounded, color: T.nightMuted)),
+                IconButton(onPressed: _bumpFont, icon: const Icon(Icons.format_size_rounded, color: T.nightMuted)),
                 IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close_rounded, color: T.nightInk)),
               ]),
               child: Row(children: [

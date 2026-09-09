@@ -251,6 +251,8 @@ class RecitationViewSet(viewsets.GenericViewSet):
         if j is None:
             return Response({"code": "not_found", "detail": "Journey not found."}, status=404)
         check(request, "hifz.tasmee.record", "hifz.tasmee", j)
+        if request.membership and request.membership.person_id and j.student.person_id == request.membership.person_id:
+            return Response({"code": "self_tasmee", "detail": "لا يُسجَّل التسميع للنفس؛ ادعُ مُسمِّعًا أو استخدم التدريب الذاتي."}, status=403)
         if d["idempotency_key"]:
             replay = RecitationSession.objects.filter(idempotency_key=d["idempotency_key"]).first()
             if replay:

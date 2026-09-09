@@ -88,7 +88,7 @@ REST_FRAMEWORK = {
     "EXCEPTION_HANDLER": "services.common.exceptions.exception_handler",
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"] + (["rest_framework.renderers.BrowsableAPIRenderer"] if DEBUG else []),
     "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.UserRateThrottle", "rest_framework.throttling.AnonRateThrottle"],
-    "DEFAULT_THROTTLE_RATES": {"user": "600/min", "anon": "60/min"},
+    "DEFAULT_THROTTLE_RATES": {"user": "600/min", "anon": "60/min", "login": "20/min", "signup": "10/hour"},
 }
 
 SIMPLE_JWT = {
@@ -109,6 +109,7 @@ OPENAI_API_KEY = env.str("OPENAI_API_KEY", default="")
 OPENAI_MODEL = env.str("OPENAI_MODEL", default="gpt-4o-mini")
 OPENAI_ASR_MODEL = env.str("OPENAI_ASR_MODEL", default="gpt-4o-mini-transcribe")
 OPENAI_BASE_URL = env.str("OPENAI_BASE_URL", default="https://api.openai.com/v1")
+ASR_DAILY_QUOTA = env.int("ASR_DAILY_QUOTA", default=60)   # recitation checks per account per day (cost control)
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Talaqqi API",

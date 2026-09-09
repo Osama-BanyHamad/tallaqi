@@ -52,6 +52,10 @@ The same accounts work in the Android app (teacher, student, and parent shells).
 4. `planner/v1` regenerates tomorrow's segments (new / near / far), pausing new memorization when the revision backlog is too large.
 5. The parent portal and the supervisor dashboard read the same records, so everybody sees one truth.
 
+## Independent learners (تَلَقِّي للأفراد)
+
+Anyone can start alone at https://tallaqi.com/start: pick a goal, tap the Juz already memorized, choose a daily time budget, and the planner produces a daily plan. The learner gets the memory map, self-practice, and the AI recitation check, and can invite a **listener** (parent, friend, remote teacher) who records Tasmee' from the app. Technically this is a one-person tenant (`kind = solo`) with the `solo_learner` role, so isolation and every feature work unchanged, and the journey can later move to a center.
+
 ## Status
 
 Phase 9 bootstrap + first vertical slice of the core loop:
@@ -99,6 +103,13 @@ packages/*        pure Python: quran_core, hifz_engine, permissions (no Django, 
 docs/design       design package · docs/research sourced research
 infra/            docker, compose profiles, caddy, garage
 ```
+
+## Operations
+
+- **Backups**: `infra/scripts/backup.sh` dumps PostgreSQL nightly (cron installed by the deploy script), 14-day retention in `/opt/talaqqi/backups`.
+- **Statistics**: `https://<domain>/stats/` (basic auth) — visitors, page views, app downloads, and a product funnel from the database; see `docs/deployment/digitalocean.md`.
+- **Rate limits**: sign-in 20/min and sign-up 10/hour per IP; the AI recitation check has a per-account daily quota (`ASR_DAILY_QUOTA`).
+- **Roles** are synced from the permission catalog on every deploy (`manage.py sync_roles`).
 
 ## Contributing
 

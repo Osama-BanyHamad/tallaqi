@@ -49,7 +49,7 @@ class _StudentHomeState extends State<StudentHome> {
               eyebrow: 'اليوم',
               title: '$greet، ${(j['student_name'] ?? '').toString().split(' ').first}',
               subtitle: cur != null ? 'موضع الحفظ الجديد: ${cur['surah_name']} ${arDigits(cur['ayah'])} · صفحة ${arDigits(cur['page'])}' : 'في المراجعة الطويلة',
-              trailing: RetentionRing((j['avg_retention'] as num?)?.toDouble(), size: 66, light: true, label: 'الثبات', stroke: 5),
+              trailing: RetentionRing((j['avg_retention'] as num?)?.toDouble(), size: 66, light: true, label: T.stateWord((j['avg_retention'] as num?)?.toDouble()), stroke: 5),
               child: Column(children: [
                 Row(children: [
                   Expanded(child: _HeaderStat(arDigits(j['memorized_pages'] ?? 0), 'صفحة محفوظة')),

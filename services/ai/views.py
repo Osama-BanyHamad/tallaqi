@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.utils import timezone
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
@@ -80,6 +81,10 @@ class AiViewSet(viewsets.ViewSet):
             journey = self._journey(request)
             if journey is None:
                 return Response({"code": "not_found", "detail": "journey not found"}, status=404)
+        quota = int(getattr(settings, "ASR_DAILY_QUOTA", 60))
+        used = AuditLog.objects.filter(actor=request.user, action="ai.asr_check", created_at__gte=timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)).count()
+        if used >= quota:
+            return Response({"code": "quota_exceeded", "detail": f"وصلت إلى الحد اليومي للتسميع الذكي ({quota}). يعود غدًا."}, status=429)
         provider = get_provider()
         prompt = "تلاوة قرآنية مرتّلة باللغة العربية الفصحى."
         try:

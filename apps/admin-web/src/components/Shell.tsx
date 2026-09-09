@@ -24,7 +24,8 @@ export function useCapabilities() {
 export function homeFor(c: Capabilities): string {
   const can = (p: string) => c.permissions.includes(p);
   const mod = (m: string) => c.modules[m]?.enabled;
-  if (c.roles.includes("student")) return "/me";
+  if (c.roles.includes("student") || c.roles.includes("solo_learner")) return "/me";
+  if (c.roles.includes("listener")) return "/students";
   if (c.roles.includes("guardian")) return "/parent";
   if (can("intel.supervisor.read") && mod("intel.supervisor")) return "/dashboard";
   if (can("ops.halaqat.read")) return "/halaqat";
@@ -57,15 +58,15 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const tr = (ar: string, en: string) => (locale === "en" ? en : ar);
 
   const items = [
-    { href: "/me", label: tr("اليوم", "Today"), Icon: IconBook, show: roles.includes("student") },
+    { href: "/me", label: tr("اليوم", "Today"), Icon: IconBook, show: roles.includes("student") || roles.includes("solo_learner") },
     { href: "/parent", label: tr("أبنائي", "My children"), Icon: IconFamily, show: roles.includes("guardian") && mod("parent.portal") },
     { href: "/dashboard", label: t("nav_dashboard"), Icon: IconCompass, show: can("intel.supervisor.read") && mod("intel.supervisor") },
     { href: "/halaqat", label: t("nav_halaqat"), Icon: IconCircle, show: can("ops.halaqat.read") && mod("ops.halaqat") && !roles.includes("guardian") },
-    { href: "/students", label: t("nav_students"), Icon: IconStudents, show: can("people.students.read") && !roles.includes("guardian") && !roles.includes("student") },
+    { href: "/students", label: roles.includes("listener") ? tr("من أسمّع له", "Who I listen to") : t("nav_students"), Icon: IconStudents, show: can("people.students.read") && !roles.includes("guardian") && !roles.includes("student") && !roles.includes("solo_learner") },
     { href: "/staff", label: t("nav_staff"), Icon: IconTeacher, show: can("people.staff.read") && mod("people.staff") },
     { href: "/finance", label: tr("المالية", "Finance"), Icon: IconCoins, show: (can("finance.invoicing.read") || can("finance.fees.read")) && mod("finance.fees") },
     { href: "/reports", label: tr("التقارير", "Reports"), Icon: IconReport, show: can("intel.reports.read") && mod("intel.reports") },
-    { href: "/settings", label: tr("الإعدادات", "Settings"), Icon: IconSettings, show: can("platform.tenancy.read") || can("platform.rbac.read") },
+    { href: "/settings", label: tr("الإعدادات", "Settings"), Icon: IconSettings, show: (can("platform.tenancy.read") || can("platform.rbac.read")) && !roles.includes("solo_learner") },
   ].filter((i) => i.show);
 
   useEffect(() => {
@@ -74,7 +75,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
     if (rule && !caps.data.permissions.includes(rule[1])) router.replace(homeFor(caps.data));
   }, [caps.data, path, router]);
 
-  const roleLabel: Record<string, string> = { owner: "مالك المؤسسة", quran_supervisor: "مشرف القرآن", teacher: "معلم", assistant_teacher: "معلم مساعد", guardian: "ولي أمر", finance: "مالية", center_admin: "مدير المركز", student: "طالب", support: "دعم", branch_manager: "مدير الفرع" };
+  const roleLabel: Record<string, string> = { owner: "مالك المؤسسة", quran_supervisor: "مشرف القرآن", teacher: "معلم", assistant_teacher: "معلم مساعد", guardian: "ولي أمر", finance: "مالية", center_admin: "مدير المركز", student: "طالب", support: "دعم", branch_manager: "مدير الفرع", solo_learner: "متعلّم مستقل", listener: "مُسمِّع" };
   const accent = caps.data?.tenant.branding?.accent;
 
   return (

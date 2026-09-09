@@ -21,6 +21,8 @@ docker run --rm -i \
   --html-report-title="تَلَقِّي · Visit statistics" \
   -o /out/full.html - < /tmp/talaqqi-access.json
 rm -f /tmp/talaqqi-access.json
+# Product funnel from the database (counts only, no personal data)
+( cd "$DIR" && docker compose --profile prod exec -T api python apps/api/manage.py funnel_stats > "$OUT/funnel.json" ) || true
 # Branded summary (app downloads, visitors, pages, referrers) on top of the full GoAccess report
 python3 "$DIR/infra/scripts/stats_page.py" "$LOGS" "$OUT/index.html"
 echo "stats written: $OUT/index.html + full.html ($(date -u +%FT%TZ))"

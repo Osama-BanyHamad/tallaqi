@@ -1,7 +1,7 @@
 name: talaqqi
 description: Talaqqi — student, teacher, and parent app for the Quran learning journey (Arabic-first).
 publish_to: "none"
-version: 0.3.0+4
+version: 0.4.0+5
 
 environment:
   sdk: ">=3.4.0 <4.0.0"
@@ -20,6 +20,7 @@ dependencies:
   http_parser: ^4.1.2
   share_plus: ^13.3.0
   flutter_native_splash: ^2.4.8
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:

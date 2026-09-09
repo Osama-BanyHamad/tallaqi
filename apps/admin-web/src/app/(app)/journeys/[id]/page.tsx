@@ -9,6 +9,7 @@ import { MemoryMap, PageDetail } from "@/components/MemoryMap";
 import { Avatar, ErrorBox, JuzStrip, Kpi, Loading, Num, Pct, RetentionBar, fmtDate } from "@/components/ui";
 import { AssessmentLauncher } from "@/components/AssessmentLauncher";
 import { AiExplain } from "@/components/Ai";
+import { usePolicyNames } from "@/components/Empty";
 
 type Journey = { id: string; student: string; student_name: string; student_code: string; riwayah: string; policy_key: string; status: string; started_at: string; current_ayah_index: number | null;
   current_key: { key: string; surah: number; ayah: number; page: number; surah_name: string } | null; level: string; memorized_ayat: number; strong_ayat: number; needs_revision_ayat: number; weak_ayat: number; critical_ayat: number; mastered_ayat: number; avg_retention: number; memorized_pages: number; juz_map: [number, number | null, string][] };
@@ -22,6 +23,7 @@ const STATUS: Record<string, string> = { memorizing: "في الحفظ", retainin
 
 export default function JourneyPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
+  const policyName = usePolicyNames();
   const { t, locale } = useI18n();
   const [page, setPage] = useState<number | null>(null);
   const j = useQuery({ queryKey: ["journey", id], queryFn: () => api<Journey>(`/journeys/${id}`) });
@@ -40,7 +42,7 @@ export default function JourneyPage({ params }: { params: Promise<{ id: string }
           <div>
             <span className="eyebrow">{t("journey")} · {STATUS[d.status] ?? d.status}</span>
             <h1 style={{ marginTop: 6 }}>{d.student_name}</h1>
-            <p style={{ marginTop: 4 }}><span className="num" dir="ltr">{d.student_code}</span> · حفص عن عاصم · {d.policy_key.replaceAll("_", " ")}</p>
+            <p style={{ marginTop: 4 }}>{locale === "ar" ? "حفص عن عاصم" : "Hafs 'an 'Asim"} · {policyName(d.policy_key, locale)}</p>
           </div>
         </div>
         <div className="row">

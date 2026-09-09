@@ -58,6 +58,10 @@ mkdir -p "$DIR/logs/caddy" "$DIR/stats"; chmod +x "$DIR/infra/scripts/stats.sh"
 ( crontab -l 2>/dev/null | grep -v "stats.sh"; echo "17 * * * * DIR=$DIR bash $DIR/infra/scripts/stats.sh >> /var/log/talaqqi-stats.log 2>&1" ) | crontab -
 bash "$DIR/infra/scripts/stats.sh" || true
 
+echo "==> Nightly database backup (14-day retention) in cron"
+mkdir -p "$DIR/backups"; chmod +x "$DIR/infra/scripts/backup.sh"
+( crontab -l 2>/dev/null | grep -v "backup.sh"; echo "10 3 * * * DIR=$DIR bash $DIR/infra/scripts/backup.sh >> /var/log/talaqqi-backup.log 2>&1" ) | crontab -
+
 echo "==> Syncing system roles with the permission catalog"
 docker compose --profile prod exec -T api python apps/api/manage.py sync_roles || true
 

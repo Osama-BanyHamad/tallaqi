@@ -8,6 +8,7 @@ import { useT2 } from "@/lib/t2";
 import { Avatar, ErrorBox, JuzStrip, Loading, Num, PageHead, RetentionBar } from "@/components/ui";
 import { StudentForm } from "@/components/StudentForm";
 import { useCapabilities } from "@/components/Shell";
+import { EmptyState } from "@/components/Empty";
 
 type Student = { id: string; person: { display_name_ar: string; display_name_en: string }; student_code: string; branch_name: string; status: string; level: string;
   halaqah: { id: string; name: string } | null; journey_summary: { id: string; memorized_ayat: number; avg_retention: number; weak_ayat: number; critical_ayat: number; memorized_pages: number; juz_map: [number, number | null, string][] } | null };
@@ -27,7 +28,9 @@ export default function StudentsPage() {
           {caps.data?.permissions.includes("people.students.write") && <button className="btn primary" onClick={() => setAdding(true)}>+ {tr("طالب جديد", "New student")}</button>}
         </>} />
       {adding && <StudentForm onClose={() => setAdding(false)} onSaved={(s) => { setAdding(false); window.location.href = `/students/${s.id}`; }} />}
-      {q.isLoading ? <Loading /> : q.error ? <ErrorBox e={q.error} /> : (
+      {q.isLoading ? <Loading /> : q.error ? <ErrorBox e={q.error} /> : q.data!.results.length === 0 ? (
+        <EmptyState title={search ? tr("لا نتائج", "No results") : tr("لا طلاب بعد", "No students yet")} body={search ? undefined : tr("أضف الطالب، اختر حلقته وولي أمره، وتُنشأ رحلته مع القرآن تلقائيًا.", "Add a student, choose their Halaqah and guardian, and their Quran journey is created automatically.")} action={!search && caps.data?.permissions.includes("people.students.write") ? tr("أضف أول طالب", "Add the first student") : undefined} onAction={() => setAdding(true)} />
+      ) : (
         <div className="list stagger">
           {q.data!.results.map((s) => {
             const j = s.journey_summary;

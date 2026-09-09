@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../core/api.dart';
+import '../../core/prefs.dart';
 import '../../core/quran.dart';
 import '../../core/theme.dart';
 import '../../widgets/common.dart';
@@ -34,12 +35,14 @@ class _TasmeeScreenState extends State<TasmeeScreen> {
   Object? _error;
   bool _saving = false;
   double _font = 24;
+  void _bumpFont() { setState(() => _font = _font >= 30 ? 20 : _font + 3); Prefs.I.setFontSize(_font); }
   final _note = TextEditingController();
   late final String _idem = '${widget.journeyId}-${widget.from}-${widget.to}-${DateTime.now().millisecondsSinceEpoch}';
 
   @override
   void initState() {
     super.initState();
+    Prefs.I.fontSize().then((v) { if (mounted) setState(() => _font = v); });
     _load();
   }
 
@@ -202,7 +205,7 @@ class _TasmeeScreenState extends State<TasmeeScreen> {
           title: widget.studentName,
           subtitle: _page == null ? null : 'صفحة ${arDigits(_page!['page'])} · الجزء ${arDigits(_page!['juz'])} — انقر الكلمة لتسجيل خطأ',
           trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-            IconButton(tooltip: 'حجم الخط', onPressed: () => setState(() => _font = _font >= 30 ? 20 : _font + 3), icon: const Icon(Icons.format_size_rounded, color: T.nightMuted)),
+            IconButton(tooltip: 'حجم الخط', onPressed: _bumpFont, icon: const Icon(Icons.format_size_rounded, color: T.nightMuted)),
             IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close_rounded, color: T.nightInk)),
           ]),
           child: Row(children: [

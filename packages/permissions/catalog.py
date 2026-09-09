@@ -95,6 +95,13 @@ SYSTEM_ROLES: dict[str, dict] = {
     "guardian": {"name_ar": "ولي أمر", "name_en": "Guardian", "permissions": [
         "people.students.read", "hifz.journey.read", "hifz.memory_map.read", "hifz.planner.read", "hifz.tasmee.read", "ops.attendance.read",
         "parent.portal.use", "quran.core.read"]},
+    "solo_learner": {"name_ar": "متعلّم مستقل", "name_en": "Independent learner", "permissions": [
+        "hifz.journey.read", "hifz.journey.write", "hifz.memory_map.read", "hifz.planner.read", "hifz.planner.approve", "hifz.planner.override",
+        "hifz.practice.use", "hifz.asr.use", "hifz.tasmee.read", "hifz.tasmee.record", "hifz.assessments.read", "people.students.read", "quran.core.read",
+        "platform.tenancy.read", "platform.rbac.read", "platform.rbac.assign", "platform.audit.read"]},
+    "listener": {"name_ar": "مُسمِّع", "name_en": "Listener", "permissions": [
+        "people.students.read", "hifz.journey.read", "hifz.memory_map.read", "hifz.planner.read", "hifz.tasmee.read", "hifz.tasmee.record",
+        "hifz.assessments.read", "hifz.asr.use", "quran.core.read"]},
     "finance": {"name_ar": "موظف مالية", "name_en": "Finance", "permissions": [
         "people.students.read", "people.guardians.read", "finance.fees.read", "finance.fees.write",
         "finance.invoicing.read", "finance.invoicing.issue", "finance.payments.read", "finance.payments.record",

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../../core/api.dart';
 import '../../core/theme.dart';
+import '../../core/prefs.dart';
 import '../../widgets/common.dart';
+import '../../widgets/tips.dart';
 import '../auth/login_screen.dart';
 import '../parent/children_screen.dart';
 import '../student/student_home.dart';
@@ -25,12 +27,15 @@ class _HomeShellState extends State<HomeShell> {
       future: () => Api.I.caps(),
       builder: (context, caps, _) {
         final roles = List<String>.from(caps['roles'] ?? const []);
-        final staff = roles.any((r) => ['teacher', 'assistant_teacher', 'quran_supervisor', 'owner', 'center_admin', 'branch_manager'].contains(r));
+        final staff = roles.any((r) => ['teacher', 'assistant_teacher', 'quran_supervisor', 'owner', 'center_admin', 'branch_manager', 'listener'].contains(r));
+        final learner = roles.contains('student') || roles.contains('solo_learner');
+        final tipRole = roles.contains('solo_learner') ? 'solo_learner' : roles.contains('student') ? 'student' : roles.contains('guardian') ? 'guardian' : staff ? 'teacher' : '';
+        if (tipRole.isNotEmpty && Prefs.I.session.add('tips.$tipRole')) WidgetsBinding.instance.addPostFrameCallback((_) { if (context.mounted) showWelcomeTips(context, role: tipRole); });
         final tabs = <({String label, IconData icon, IconData active, Widget page})>[
-          if (staff) (label: 'حلقاتي', icon: Icons.radio_button_unchecked_rounded, active: Icons.radio_button_checked_rounded, page: const HalaqatScreen()),
-          if (staff) (label: 'طلابي', icon: Icons.people_outline_rounded, active: Icons.people_rounded, page: const StudentsScreen()),
-          if (roles.contains('student')) (label: 'اليوم', icon: Icons.today_outlined, active: Icons.today_rounded, page: const StudentHome()),
-          if (roles.contains('student')) (label: 'رحلتي', icon: Icons.map_outlined, active: Icons.map_rounded, page: const _MyJourney()),
+          if (staff && !roles.contains('listener')) (label: 'حلقاتي', icon: Icons.radio_button_unchecked_rounded, active: Icons.radio_button_checked_rounded, page: const HalaqatScreen()),
+          if (staff) (label: roles.contains('listener') ? 'من أسمّع له' : 'طلابي', icon: Icons.people_outline_rounded, active: Icons.people_rounded, page: const StudentsScreen()),
+          if (learner) (label: 'اليوم', icon: Icons.today_outlined, active: Icons.today_rounded, page: const StudentHome()),
+          if (learner) (label: 'رحلتي', icon: Icons.map_outlined, active: Icons.map_rounded, page: const _MyJourney()),
           if (roles.contains('guardian')) (label: 'أبنائي', icon: Icons.family_restroom_outlined, active: Icons.family_restroom_rounded, page: const ChildrenScreen()),
           (label: 'حسابي', icon: Icons.person_outline_rounded, active: Icons.person_rounded, page: _AccountPage(caps: caps)),
         ];

@@ -89,8 +89,29 @@ def ar(n):
     return str(n).translate(str.maketrans("0123456789", "٠١٢٣٤٥٦٧٨٩"))
 
 
+def load_funnel():
+    f = OUT.parent / "funnel.json"
+    try:
+        return json.loads(f.read_text(encoding="utf-8")) if f.exists() else None
+    except ValueError:
+        return None
+
+
 def render(s):
     e = html.escape
+    fn = load_funnel()
+    funnel = ""
+    if fn:
+        t = fn.get("tenants", {})
+        funnel = f"""<h2>الاستخدام الفعلي (من قاعدة البيانات)</h2>
+<div class="kpis">
+ <div class="kpi accent"><div class="l">حسابات مسجّلة</div><div class="v">{ar(fn.get('accounts', 0))}</div><div class="s">جديدة آخر ٧ أيام: {ar(fn.get('signups', {}).get('7d', 0))} · آخر ٢٤ ساعة: {ar(fn.get('signups', {}).get('24h', 0))}</div></div>
+ <div class="kpi gold"><div class="l">متعلّمون مستقلون</div><div class="v">{ar(fn.get('solo_tenants', 0))}</div><div class="s">رحلات فردية أُنشئت من الموقع</div></div>
+ <div class="kpi"><div class="l">متعلّمون نشطون (٧ أيام)</div><div class="v">{ar(fn.get('active_learners_7d', 0))}</div><div class="s">رحلة فيها تسميع خلال الأسبوع · من {ar(fn.get('journeys', 0))} رحلة</div></div>
+ <div class="kpi"><div class="l">تسميعات مسجّلة (٧ أيام)</div><div class="v">{ar(fn.get('recitations', {}).get('7d', 0))}</div><div class="s">آخر ٢٤ ساعة: {ar(fn.get('recitations', {}).get('24h', 0))}</div></div>
+ <div class="kpi"><div class="l">تسميع ذكي (٧ أيام)</div><div class="v">{ar(fn.get('ai', {}).get('asr_7d', 0))}</div><div class="s">مسودات ذكية: {ar(fn.get('ai', {}).get('drafts_7d', 0))}</div></div>
+ <div class="kpi"><div class="l">مؤسسات</div><div class="v">{ar(sum(v for k, v in t.items() if k != 'solo'))}</div><div class="s">{', '.join(f'{k}: {v}' for k, v in t.items()) or '—'}</div></div>
+</div>"""
     rows = "".join(f"<tr><td class=num>{e(d)}</td><td class=num>{ar(v)}</td><td class=num>{ar(p)}</td><td class=num>{ar(a)}</td><td class=num><b>{ar(k)}</b></td></tr>" for d, v, p, a, k in s["table"])
     files = "".join(f"<tr><td dir=ltr class=num>{e(k)}</td><td class=num><b>{ar(n)}</b></td></tr>" for k, n in s["downloads_by_file"]) or "<tr><td colspan=2 class=muted>لا تحميلات بعد</td></tr>"
     pages = "".join(f"<tr><td dir=ltr class=num>{e(u)}</td><td class=num>{ar(n)}</td></tr>" for u, n in s["pages"]) or "<tr><td colspan=2 class=muted>—</td></tr>"
@@ -125,6 +146,7 @@ a.btn{{display:inline-block;margin-top:22px;padding:10px 18px;border-radius:10px
  <div><h2>التحميلات حسب الملف</h2><table><thead><tr><th>الملف</th><th>تحميلات فريدة</th></tr></thead><tbody>{files}</tbody></table></div>
  <div><h2>مصادر الزيارات (مُحيلات خارجية)</h2><table><thead><tr><th>المصدر</th><th>زيارات</th></tr></thead><tbody>{refs}</tbody></table></div>
 </div>
+{funnel}
 <h2>حسب اليوم</h2>
 <table><thead><tr><th>اليوم</th><th>زوّار</th><th>مشاهدات صفحات</th><th>طلبات API</th><th>تحميلات APK</th></tr></thead><tbody>{rows}</tbody></table>
 <h2>أكثر الصفحات زيارة</h2>

@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 
 import '../../core/api.dart';
 import '../../core/theme.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import '../../widgets/common.dart';
 import '../home/home_shell.dart';
 
@@ -98,6 +100,17 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(height: 10),
             Text('كلمة المرور لحسابات العرض: Talaqqi@2026 · البيانات تجريبية وقد تُعاد تهيئتها.', style: T.body(size: 11.5, color: T.ink3)),
+            const SizedBox(height: 18),
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(color: T.goldTint, borderRadius: BorderRadius.circular(14), border: Border.all(color: T.gold.withValues(alpha: .4))),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text('تحفظ وحدك؟', style: T.display(size: 15)),
+                Text('أنشئ رحلتك الخاصة مجانًا في دقيقة، ثم سجّل الدخول هنا بحسابك.', style: T.body(size: 13, color: T.ink2)),
+                const SizedBox(height: 8),
+                GoldButton(compact: true, icon: Icons.open_in_new_rounded, label: 'ابدأ رحلتك على tallaqi.com', onPressed: () => launchUrl(Uri.parse('https://tallaqi.com/start'), mode: LaunchMode.externalApplication)),
+              ]),
+            ),
           ]),
         ),
       ]),

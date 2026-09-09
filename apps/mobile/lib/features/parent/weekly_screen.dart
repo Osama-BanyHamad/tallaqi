@@ -36,7 +36,7 @@ class WeeklyScreen extends StatelessWidget {
               subtitle: '${arDigits(w['week']['from'])} → ${arDigits(w['week']['to'])}',
               trailing: Row(mainAxisSize: MainAxisSize.min, children: [
                 IconButton(tooltip: 'مشاركة التقرير', onPressed: () => _share(w, segs), icon: const Icon(Icons.ios_share_rounded, color: T.nightMuted)),
-                RetentionRing((w['retention'] as num?)?.toDouble(), size: 62, light: true, label: 'الثبات', stroke: 5),
+                RetentionRing((w['retention'] as num?)?.toDouble(), size: 62, light: true, label: T.stateWord((w['retention'] as num?)?.toDouble()), stroke: 5),
               ]),
               child: JuzStrip(w['juz_map'] as List?, height: 12),
             ),

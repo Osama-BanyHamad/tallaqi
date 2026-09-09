@@ -76,6 +76,11 @@ def record_recitation(journey: QuranJourney, *, teacher=None, halaqah=None, purp
                       grade: float | None = None, plan_segment: PlanSegment | None = None, source="in_person",
                       idempotency_key: str = "", recorded_by=None, at: datetime | None = None, refresh: bool = True) -> RecitationSession:
     core = get_core(journey.riwayah)
+    if halaqah is not None and source == "in_person":
+        # A student who recites in the halaqah is present; save the teacher a tap (never overrides an explicit record).
+        from services.people.models import AttendanceRecord
+        AttendanceRecord.objects.get_or_create(halaqah=halaqah, student=journey.student, on_date=(at or datetime.now(UTC)).date(),
+                                               defaults={"tenant": journey.tenant, "status": "present", "marked_by": recorded_by})
     if not (1 <= from_ayah_index <= to_ayah_index <= core.ayah_count):
         raise DomainError("Invalid ayah range.")
     if idempotency_key:
