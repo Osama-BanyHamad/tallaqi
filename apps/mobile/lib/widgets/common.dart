@@ -305,10 +305,57 @@ class EmptyState extends StatelessWidget {
       ])));
 }
 
-class LoadingBox extends StatelessWidget {
-  const LoadingBox({super.key});
+/// Skeleton placeholder: a night header block and card outlines with a soft shimmer, instead of a bare spinner.
+class LoadingBox extends StatefulWidget {
+  const LoadingBox({super.key, this.header = true});
+  final bool header;
   @override
-  Widget build(BuildContext context) => const Center(child: Padding(padding: EdgeInsets.all(40), child: CircularProgressIndicator(color: T.gold, strokeWidth: 2.5)));
+  State<LoadingBox> createState() => _LoadingBoxState();
+}
+
+class _LoadingBoxState extends State<LoadingBox> with SingleTickerProviderStateMixin {
+  late final _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 1300))..repeat();
+  @override
+  void dispose() { _c.dispose(); super.dispose(); }
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _c,
+      builder: (_, __) {
+        final t = _c.value;
+        Widget bone(double w, double h, {Color? c, double r = 8}) => Container(width: w, height: h, decoration: BoxDecoration(borderRadius: BorderRadius.circular(r),
+            gradient: LinearGradient(begin: Alignment(-1 + 3 * t, 0), end: Alignment(0 + 3 * t, 0), colors: [c ?? T.ground2, (c ?? T.ground2).withValues(alpha: .45), c ?? T.ground2])));
+        return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          if (widget.header)
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.fromLTRB(20, MediaQuery.paddingOf(context).top + 24, 20, 24),
+              decoration: const BoxDecoration(gradient: LinearGradient(colors: [T.night2, T.night], begin: Alignment.topRight, end: Alignment.bottomLeft), border: Border(bottom: BorderSide(color: T.gold, width: 1))),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                bone(90, 10, c: Colors.white.withValues(alpha: .12)), const SizedBox(height: 12),
+                bone(220, 22, c: Colors.white.withValues(alpha: .16)), const SizedBox(height: 10),
+                bone(160, 12, c: Colors.white.withValues(alpha: .10)), const SizedBox(height: 18),
+                bone(double.infinity, 12, c: Colors.white.withValues(alpha: .10), r: 3),
+              ]),
+            ),
+          Padding(
+            padding: const EdgeInsets.all(18),
+            child: Column(children: [
+              for (var i = 0; i < 3; i++)
+                Container(
+                  margin: const EdgeInsets.only(bottom: 10), padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(color: T.surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: T.rule)),
+                  child: Row(children: [
+                    bone(44, 44, r: 22), const SizedBox(width: 12),
+                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [bone(140, 14), const SizedBox(height: 8), bone(double.infinity, 10)])),
+                  ]),
+                ),
+            ]),
+          ),
+        ]);
+      },
+    );
+  }
 }
 
 class ErrorBox extends StatelessWidget {

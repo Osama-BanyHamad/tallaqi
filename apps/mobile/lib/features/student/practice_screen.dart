@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../core/api.dart';
+import '../../core/progress.dart';
 import '../../core/quran.dart';
 import '../../core/theme.dart';
 import '../../widgets/common.dart';
@@ -62,8 +63,22 @@ class _PracticeScreenState extends State<PracticeScreen> {
             ),
             Expanded(
               child: ListView(padding: const EdgeInsets.fromLTRB(16, 14, 16, 40), children: [
-                ReciteCheck(from: widget.from, to: widget.to, journeyId: widget.journeyId, onResult: (r) => setState(() => _asr = r)),
+                ReciteCheck(from: widget.from, to: widget.to, journeyId: widget.journeyId, onResult: (r) {
+                  setState(() => _asr = r);
+                  if (r != null) {
+                    final acc = (r['accuracy'] as num).toDouble();
+                    Progress.I.mark(Progress.keyFor(widget.from, widget.to), accuracy: acc, hints: _hints);
+                    if (acc >= .9) { HapticFeedback.heavyImpact(); toast(context, 'ما شاء الله — ${arDigits((acc * 100).round())}٪ مطابقة. أخبر معلمك أنك جاهز للتسميع.'); }
+                  }
+                }),
                 if (_asr != null) ...[const SizedBox(height: 10), AsrSummary(_asr!)],
+                const SizedBox(height: 10),
+                Row(children: [
+                  Expanded(child: OutlinedButton.icon(
+                    onPressed: () async { await Progress.I.mark(Progress.keyFor(widget.from, widget.to), hints: _hints); if (context.mounted) { HapticFeedback.mediumImpact(); toast(context, 'سُجِّل تدريبك اليوم على هذا المقطع (محليًا)'); Navigator.pop(context, true); } },
+                    icon: const Icon(Icons.task_alt_rounded, size: 18), label: const Text('أنهيت التدريب'),
+                  )),
+                ]),
                 const SizedBox(height: 14),
                 Container(
                   padding: const EdgeInsets.all(18),
