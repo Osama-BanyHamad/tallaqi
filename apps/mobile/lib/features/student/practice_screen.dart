@@ -2,10 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../core/api.dart';
+import '../../core/prefs.dart';
+import '../../core/progress.dart';
 import '../../core/quran.dart';
 import '../../core/theme.dart';
 import '../../widgets/common.dart';
 import '../../widgets/recite_check.dart';
+import '../../widgets/asr_result.dart';
+import '../../core/audio.dart';
+import '../../widgets/ayah_audio.dart';
 
 /// Self-practice on a plan segment: read → hide → recall → reveal, plus the AI recitation check.
 /// Every hint is the exact verified text from the Quran Core; nothing generative exists in this path.
@@ -20,23 +25,43 @@ class PracticeScreen extends StatefulWidget {
 }
 
 class _PracticeScreenState extends State<PracticeScreen> {
+  @override
+  void initState() { super.initState(); Prefs.I.fontSize().then((v) { if (mounted) setState(() => _font = v); }); }
+  @override
+  void dispose() { _rc.dispose(); super.dispose(); }
   final Set<int> _revealed = {};
   bool _hideAll = false;
   int _hints = 0;
   Map<String, dynamic>? _asr;
+  final _rc = ReciteController();
+  final Map<int, GlobalKey> _keys = {};
+  int? _focus;
+  void _reread(int idx) {
+    setState(() { _hideAll = false; _revealed.add(idx); _focus = idx; });
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final c = _keys[idx]?.currentContext;
+      if (c != null) Scrollable.ensureVisible(c, duration: const Duration(milliseconds: 400), curve: Curves.easeOutCubic, alignment: .15);
+    });
+    Future.delayed(const Duration(seconds: 4), () { if (mounted && _focus == idx) setState(() => _focus = null); });
+  }
   double _font = 24;
+  void _bumpFont() { setState(() => _font = _font >= 30 ? 20 : _font + 3); Prefs.I.setFontSize(_font); }
 
   Set<int> get _flaggedAyat => {for (final a in ((_asr?['ayat'] as List?) ?? const []).cast<Map<String, dynamic>>()) if (a['status'] == 'issues') a['ayah_index'] as int};
-  Set<String> get _flaggedWords => {
+  Map<String, String> get _flaggedWords => {
         for (final a in ((_asr?['ayat'] as List?) ?? const []).cast<Map<String, dynamic>>())
           for (final w in (a['words'] as List).cast<Map<String, dynamic>>())
-            if (w['status'] != 'ok') '${a['ayah_index']}:${w['position']}',
+            if (w['status'] != 'ok') '${a['ayah_index']}:${w['position']}': w['status'] as String,
       };
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: const SafeArea(child: AudioBar()),
+      floatingActionButton: RecordingPill(_rc),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: Fetch<Map<String, dynamic>>(
+        cacheKey: 'range:${widget.from}-${widget.to}',
         future: () async => (await Api.I.get('/quran/hafs_asim/range?from=${widget.from}&to=${widget.to}')) as Map<String, dynamic>,
         builder: (context, d, _) {
           final ayat = (d['ayat'] as List).cast<Map<String, dynamic>>();
@@ -46,7 +71,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
               eyebrow: 'تدريب ذاتي · ${widget.title}', title: '${ayat.first['key']} ← ${ayat.last['key']}',
               subtitle: 'اقرأ، ثم أخفِ النص واسترجع، ثم اكشف للتحقق — أو سمّع بصوتك ليقارن النظام تلاوتك بالنص الموثّق.',
               trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-                IconButton(onPressed: () => setState(() => _font = _font >= 30 ? 20 : _font + 3), icon: const Icon(Icons.format_size_rounded, color: T.nightMuted)),
+                IconButton(onPressed: _bumpFont, icon: const Icon(Icons.format_size_rounded, color: T.nightMuted)),
                 IconButton(onPressed: () => Navigator.pop(context), icon: const Icon(Icons.close_rounded, color: T.nightInk)),
               ]),
               child: Row(children: [
@@ -62,15 +87,39 @@ class _PracticeScreenState extends State<PracticeScreen> {
             ),
             Expanded(
               child: ListView(padding: const EdgeInsets.fromLTRB(16, 14, 16, 40), children: [
-                ReciteCheck(from: widget.from, to: widget.to, journeyId: widget.journeyId, onResult: (r) => setState(() => _asr = r)),
-                if (_asr != null) ...[const SizedBox(height: 10), AsrSummary(_asr!)],
+                ReciteCheck(from: widget.from, to: widget.to, journeyId: widget.journeyId, controller: _rc, onResult: (r) {
+                  setState(() => _asr = r);
+                  if (r != null) {
+                    final acc = (r['accuracy'] as num).toDouble();
+                    Progress.I.mark(Progress.keyFor(widget.from, widget.to), accuracy: acc, hints: _hints);
+                    if (acc >= .9) { HapticFeedback.heavyImpact(); toast(context, 'ما شاء الله — ${arDigits((acc * 100).round())}٪ مطابقة. أخبر معلمك أنك جاهز للتسميع.'); }
+                  }
+                }),
+                if (_asr != null) ...[const SizedBox(height: 10), AsrReport(_asr!, onReread: _reread, onRetry: () => setState(() => _asr = null),
+                    onListenAll: () async { try { await AyahAudio.I.load(); await AyahAudio.I.playAll([for (final a in ayat) (a['surah'] as int, a['ayah'] as int)]); } catch (_) {} })],
+                const SizedBox(height: 10),
+                Row(children: [
+                  Expanded(child: OutlinedButton.icon(
+                    onPressed: () async { try { await AyahAudio.I.load(); await AyahAudio.I.playAll([for (final a in ayat) (a['surah'] as int, a['ayah'] as int)]); } catch (e) { if (context.mounted) toast(context, 'تعذّر تشغيل الصوت: ${friendlyError(e)}', error: true); } },
+                    icon: const Icon(Icons.play_circle_outline_rounded, size: 18), label: const Text('استمع للمقطع بصوت القارئ'),
+                  )),
+                  const SizedBox(width: 8),
+                  IconButton(tooltip: 'القارئ', onPressed: () => showReciterPicker(context), icon: const Icon(Icons.record_voice_over_rounded, color: T.lapis)),
+                ]),
+                const SizedBox(height: 10),
+                Row(children: [
+                  Expanded(child: OutlinedButton.icon(
+                    onPressed: () async { await Progress.I.mark(Progress.keyFor(widget.from, widget.to), hints: _hints); if (context.mounted) { HapticFeedback.mediumImpact(); toast(context, 'سُجِّل تدريبك اليوم على هذا المقطع (محليًا)'); Navigator.pop(context, true); } },
+                    icon: const Icon(Icons.task_alt_rounded, size: 18), label: const Text('أنهيت التدريب'),
+                  )),
+                ]),
                 const SizedBox(height: 14),
                 Container(
                   padding: const EdgeInsets.all(18),
                   decoration: BoxDecoration(color: T.paper, borderRadius: BorderRadius.circular(8), border: Border.all(color: T.gold.withValues(alpha: .55)),
                       boxShadow: [BoxShadow(color: T.ink.withValues(alpha: .08), blurRadius: 24, offset: const Offset(0, 10))]),
                   child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
-                    for (final a in ayat) _ayah(a),
+                    for (final a in ayat) KeyedSubtree(key: _keys.putIfAbsent(a['ayah_index'] as int, GlobalKey.new), child: _ayah(a)),
                     const SizedBox(height: 8),
                     Center(child: Text(d['attribution'] ?? '', style: T.body(size: 10.5, color: T.ink3))),
                   ]),
@@ -91,11 +140,13 @@ class _PracticeScreenState extends State<PracticeScreen> {
     final flagged = _flaggedAyat.contains(idx);
     final fw = _flaggedWords;
     return InkWell(
-      onTap: hidden ? () { HapticFeedback.selectionClick(); setState(() { _revealed.add(idx); _hints++; }); } : null,
+      onLongPress: () => showAyahSheet(context, surah: a['surah'], ayah: a['ayah'], key: a['key'], preview: a['text_uthmani']),
+      onTap: hidden ? () { HapticFeedback.selectionClick(); setState(() { _revealed.add(idx); _hints++; }); } : () => showAyahSheet(context, surah: a['surah'], ayah: a['ayah'], key: a['key'], preview: a['text_uthmani']),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
-        decoration: BoxDecoration(color: flagged ? T.sNeeds.withValues(alpha: .14) : null, borderRadius: BorderRadius.circular(6)),
+        decoration: BoxDecoration(color: _focus == idx ? T.lapis.withValues(alpha: .12) : flagged ? T.sNeeds.withValues(alpha: .14) : null, borderRadius: BorderRadius.circular(6),
+            border: _focus == idx ? Border.all(color: T.lapis.withValues(alpha: .5)) : null),
         child: Directionality(
           textDirection: TextDirection.rtl,
           child: hidden
@@ -110,7 +161,11 @@ class _PracticeScreenState extends State<PracticeScreen> {
                   for (var i = 0; i < words.length; i++)
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 2),
-                      decoration: fw.contains('$idx:${i + 1}') ? const BoxDecoration(border: Border(bottom: BorderSide(color: T.gold, width: 3))) : null,
+                      decoration: switch (fw['$idx:${i + 1}']) {
+                        'missing' => BoxDecoration(color: T.sWeak.withValues(alpha: .14), borderRadius: BorderRadius.circular(4), border: const Border(bottom: BorderSide(color: T.sWeak, width: 3))),
+                        'substituted' => BoxDecoration(color: T.sNeeds.withValues(alpha: .16), borderRadius: BorderRadius.circular(4), border: const Border(bottom: BorderSide(color: T.sNeeds, width: 3))),
+                        _ => null,
+                      },
                       child: Text(words[i], style: T.quran(size: _font)),
                     ),
                   Text(' ﴿${arDigits(a['ayah'])}﴾ ', style: T.quran(size: _font - 4, color: T.gold)),

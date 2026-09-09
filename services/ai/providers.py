@@ -101,7 +101,17 @@ class FakeProvider(AiProvider):
 
     def transcribe(self, audio, filename, mime, *, language="ar", prompt=""):
         self.audio_calls.append((len(audio), filename, mime))
-        return self.transcript
+        if self.transcript or not prompt:
+            return self.transcript
+        # Offline demo: a plausible recitation derived from the expected text, with a few slips
+        # (every 6th word dropped, every 9th altered) so the report has something to show.
+        words = prompt.split()
+        out = []
+        for i, w in enumerate(words):
+            if i % 6 == 5:
+                continue
+            out.append(w[:-1] + "ه" if i % 9 == 3 and len(w) > 2 else w)
+        return " ".join(out)
 
 
 def get_provider() -> AiProvider:

@@ -76,7 +76,7 @@ class AsrResult:
         candidates += [{"ayah_index": e["after_ayah_index"], "word_position": e["after_position"], "kind": "addition", "mistake_type": None,
                         "severity": "minor", "heard": e["heard"], "expected": None} for e in self.extra]
         return {"transcript": self.transcript, "accuracy": self.accuracy, "expected_words": len(self.words), "matched": self.matched,
-                "ayat": list(by_ayah.values()), "extra": self.extra, "candidates": candidates}
+                "ayat": list(by_ayah.values()), "extra": self.extra, "candidates": candidates, "nothing_heard": not self.transcript.strip()}
 
 
 def expected_words(from_index: int, to_index: int, riwayah: str = "hafs_asim") -> list[ExpectedWord]:

@@ -29,7 +29,7 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> with SingleTi
     final r = await Future.wait([
       Api.I.get('/journeys/${widget.journeyId}'),
       Api.I.get('/journeys/${widget.journeyId}/plan'),
-      Api.I.get('/journeys/${widget.journeyId}/sessions').catchError((_) => <String, dynamic>{'results': []}),
+      Api.I.get('/journeys/${widget.journeyId}/sessions?limit=20').catchError((_) => <String, dynamic>{'results': []}),
       Api.I.get('/journeys/${widget.journeyId}/timeline').catchError((_) => <dynamic>[]),
     ]);
     final sess = r[2];
@@ -54,7 +54,7 @@ class _StudentDetailScreenState extends State<StudentDetailScreen> with SingleTi
             eyebrow: 'رحلة الطالب مع القرآن',
             title: j['student_name'] ?? '',
             subtitle: cur != null ? 'موضع الحفظ الجديد: ${cur['surah_name']} ${arDigits(cur['ayah'])} · صفحة ${arDigits(cur['page'])}' : 'في المراجعة الطويلة',
-            trailing: RetentionRing((j['avg_retention'] as num?)?.toDouble(), size: 64, light: true, label: 'الثبات', stroke: 5),
+            trailing: RetentionRing((j['avg_retention'] as num?)?.toDouble(), size: 64, light: true, label: T.stateWord((j['avg_retention'] as num?)?.toDouble()), stroke: 5),
             child: Column(children: [
               JuzStrip(j['juz_map'] as List?, height: 12),
               const SizedBox(height: 12),

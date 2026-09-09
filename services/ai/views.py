@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.utils import timezone
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
@@ -80,12 +81,20 @@ class AiViewSet(viewsets.ViewSet):
             journey = self._journey(request)
             if journey is None:
                 return Response({"code": "not_found", "detail": "journey not found"}, status=404)
+        quota = int(getattr(settings, "ASR_DAILY_QUOTA", 60))
+        used = AuditLog.objects.filter(actor=request.user, action="ai.asr_check", created_at__gte=timezone.now().replace(hour=0, minute=0, second=0, microsecond=0)).count()
+        if used >= quota:
+            return Response({"code": "quota_exceeded", "detail": f"وصلت إلى الحد اليومي للتسميع الذكي ({quota}). يعود غدًا."}, status=429)
         provider = get_provider()
+        prompt = "تلاوة قرآنية مرتّلة باللغة العربية الفصحى."
+        # The offline fake provider derives a plausible recitation from the expected text (demo/tests only).
+        hint = " ".join(w.display for w in asr.expected_words(frm, to)) if provider.name == "fake" else prompt
         try:
-            transcript = provider.transcribe(f.read(), f.name or "audio.webm", f.content_type or "application/octet-stream",
-                                             language="ar", prompt="تلاوة قرآنية مرتّلة باللغة العربية الفصحى.")
+            transcript = provider.transcribe(f.read(), f.name or "audio.webm", f.content_type or "application/octet-stream", language="ar", prompt=hint)
         except AiUnavailable as e:
             return Response({"code": "ai_unavailable", "detail": str(e)}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        if transcript.strip().rstrip(".") == prompt.strip().rstrip("."):
+            transcript = ""  # silent / unintelligible audio: the model echoes the prompt; treat as nothing heard
         result = asr.check_recitation(transcript, frm, to)
         result.update({"source": "ai", "provider": provider.name, "model": provider.asr_model, "safety": "YELLOW", "disclaimer": ASR_DISCLAIMER,
                        "from_ayah_index": frm, "to_ayah_index": to})

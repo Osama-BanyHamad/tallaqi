@@ -43,15 +43,53 @@ EOF
   echo "    wrote $DIR/.env (secrets generated)"
 fi
 
-echo "==> Build & start (this takes a few minutes the first time)"
-docker compose --profile prod up -d --build --remove-orphans postgres valkey api web caddy
+# --- Safe deploy: build first (no downtime), keep the previous images, swap, health-gate, roll back on failure.
+# The images serving right now become the rollback target (tagged before the build replaces :latest).
+for svc in api web; do
+  if docker image inspect "talaqqi-$svc:latest" >/dev/null 2>&1; then
+    docker tag "talaqqi-$svc:latest" "talaqqi-$svc:previous"
+  fi
+done
+echo "==> Building images (the running site keeps serving during the build)"
+docker compose --profile prod build api web
 
-echo "==> Waiting for the API"
+echo "==> Swapping containers (API restarts once for migrations: ~20 seconds of API 502, the site itself stays up)"
+docker compose --profile prod up -d --remove-orphans postgres valkey api web caddy
+
+healthy() {
+  docker compose --profile prod exec -T api curl -fs http://localhost:8000/readyz >/dev/null 2>&1 \
+  && docker compose --profile prod exec -T caddy wget -qO- --timeout=5 http://web:3000/ 2>/dev/null | grep -q "<html"
+}
+echo "==> Health gate (API readyz + web home page)"
+OK=0
 for i in $(seq 1 60); do
-  if docker compose --profile prod exec -T api curl -fs http://localhost:8000/readyz >/dev/null 2>&1; then break; fi
+  if healthy; then OK=1; break; fi
   sleep 3
 done
+if [ "$OK" != "1" ]; then
+  echo "!!  New release is not healthy after 3 minutes — rolling back to the previous images"
+  docker compose --profile prod logs --tail=40 api web || true
+  for svc in api web; do
+    docker image inspect "talaqqi-$svc:previous" >/dev/null 2>&1 && docker tag "talaqqi-$svc:previous" "talaqqi-$svc:latest"
+  done
+  docker compose --profile prod up -d --no-build api web
+  for i in $(seq 1 40); do healthy && break; sleep 3; done
+  healthy && echo "    rollback complete: previous release is serving again" || echo "    rollback did NOT restore health — investigate: docker compose --profile prod logs api web"
+  exit 1
+fi
 docker compose --profile prod exec -T api curl -s http://localhost:8000/readyz; echo
+
+echo "==> Visit statistics: hourly GoAccess report from the Caddy access log (/stats/, basic auth from STATS_USER/STATS_HASH in .env)"
+mkdir -p "$DIR/logs/caddy" "$DIR/stats"; chmod +x "$DIR/infra/scripts/stats.sh"
+( crontab -l 2>/dev/null | grep -v "stats.sh"; echo "17 * * * * DIR=$DIR bash $DIR/infra/scripts/stats.sh >> /var/log/talaqqi-stats.log 2>&1" ) | crontab -
+bash "$DIR/infra/scripts/stats.sh" || true
+
+echo "==> Nightly database backup (14-day retention) in cron"
+mkdir -p "$DIR/backups"; chmod +x "$DIR/infra/scripts/backup.sh"
+( crontab -l 2>/dev/null | grep -v "backup.sh"; echo "10 3 * * * DIR=$DIR bash $DIR/infra/scripts/backup.sh >> /var/log/talaqqi-backup.log 2>&1" ) | crontab -
+
+echo "==> Syncing system roles with the permission catalog"
+docker compose --profile prod exec -T api python apps/api/manage.py sync_roles || true
 
 if [ "$SEED" = "1" ]; then
   echo "==> Seeding demo tenant + users (idempotent; use SEED=0 to skip)"

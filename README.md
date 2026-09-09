@@ -52,6 +52,10 @@ The same accounts work in the Android app (teacher, student, and parent shells).
 4. `planner/v1` regenerates tomorrow's segments (new / near / far), pausing new memorization when the revision backlog is too large.
 5. The parent portal and the supervisor dashboard read the same records, so everybody sees one truth.
 
+## Independent learners (تَلَقِّي للأفراد)
+
+Anyone can start alone at https://tallaqi.com/start: pick a goal, tap the Juz already memorized, choose a daily time budget, and the planner produces a daily plan. The learner gets the memory map, self-practice, and the AI recitation check, and can invite a **listener** (parent, friend, remote teacher) who records Tasmee' from the app. Technically this is a one-person tenant (`kind = solo`) with the `solo_learner` role, so isolation and every feature work unchanged, and the journey can later move to a center.
+
 ## Status
 
 Phase 9 bootstrap + first vertical slice of the core loop:
@@ -61,7 +65,10 @@ Phase 9 bootstrap + first vertical slice of the core loop:
 - Students, guardians, staff, Halaqat, enrollment, attendance
 - Quran Journey, per-Ayah Memory Map with history, `retention/v1`, Learning Policy templates, `planner/v1`, Tasmee' API, supervisor dashboard
 - Admin web + public site (Next.js, Arabic-first) — `apps/admin-web` (site at `/`, app at `/login`)
-- Mobile app (Flutter, one codebase, role shells: teacher · student · parent) — `apps/mobile`
+- Mobile app (Flutter, one codebase, role shells: teacher · student · parent · independent learner · listener) — `apps/mobile`
+- Daily reading (wird): a personal Mushaf plan by pages (khatmah in N days or pages/day), today's pages, streak, history — `services/reading`, the **الورد** tab in the app and `/read` on the web
+- Ayah audio: tap any ayah to hear it from a reciter registry (`/api/v1/quran/reciters`); audio is streamed per ayah from a configurable host, nothing is bundled or redistributed
+- Reminders: local daily notifications on the phone for the wird, the daily plan, and the Halaqah (no push service, nothing leaves the device)
 
 ## Run locally (Windows/macOS/Linux)
 
@@ -99,6 +106,15 @@ packages/*        pure Python: quran_core, hifz_engine, permissions (no Django, 
 docs/design       design package · docs/research sourced research
 infra/            docker, compose profiles, caddy, garage
 ```
+
+## Operations
+
+- **Backups**: `infra/scripts/backup.sh` dumps PostgreSQL nightly (cron installed by the deploy script), 14-day retention in `/opt/talaqqi/backups`.
+- **Statistics**: `https://<domain>/stats/` (basic auth) — visitors, page views, app downloads, and a product funnel from the database; see `docs/deployment/digitalocean.md`.
+- **Rate limits**: sign-in 20/min and sign-up 10/hour per IP; the AI recitation check has a per-account daily quota (`ASR_DAILY_QUOTA`).
+- **Roles and modules** are synced from the permission catalog on every deploy (`manage.py sync_roles`); new default-on modules are added to existing tenants without overriding operator choices.
+- **Ayah audio**: the reciter registry defaults to verse-by-verse MP3s streamed from everyayah.com; operators can point it at their own licensed host with `AUDIO_RECITERS_JSON` (list of `{key, name_ar, name_en, base}`).
+- **Deploys** build the new images first, keep the previous ones tagged `:previous`, swap, then health-gate the API and the web home page; a failed release rolls back automatically. The API restarts once for migrations (about 20 seconds); the site stays up.
 
 ## Contributing
 

@@ -3,12 +3,18 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'dart:convert';
+
+import '../core/api.dart';
+import '../core/prefs.dart';
 import '../core/theme.dart';
 
 class Avatar extends StatelessWidget {
-  const Avatar(this.name, {super.key, this.size = 44});
+  const Avatar(this.name, {super.key, this.size = 44, this.hero = false});
   final String name;
   final double size;
+  /// Hero flights only where one avatar per name exists in the route (tabs are kept alive, so the default is off).
+  final bool hero;
   static const tones = [T.lapis, T.sStrong, T.sRecent, Color(0xFF7A4A9A), Color(0xFFB0662A), Color(0xFF4A5F8F)];
   @override
   Widget build(BuildContext context) {
@@ -18,14 +24,12 @@ class Avatar extends StatelessWidget {
     for (final c in name.codeUnits) {
       h = (h * 31 + c) & 0x7fffffff;
     }
-    return Hero(
-      tag: 'avatar-$name',
-      child: Container(
-        width: size, height: size, alignment: Alignment.center,
-        decoration: BoxDecoration(color: tones[h % tones.length], shape: BoxShape.circle, boxShadow: [BoxShadow(color: tones[h % tones.length].withValues(alpha: .35), blurRadius: 12, offset: const Offset(0, 6))]),
-        child: Text(initials, style: T.display(size: size * .34, color: Colors.white)),
-      ),
+    final w = Container(
+      width: size, height: size, alignment: Alignment.center,
+      decoration: BoxDecoration(color: tones[h % tones.length], shape: BoxShape.circle, boxShadow: [BoxShadow(color: tones[h % tones.length].withValues(alpha: .35), blurRadius: 12, offset: const Offset(0, 6))]),
+      child: Text(initials, style: T.display(size: size * .34, color: Colors.white)),
     );
+    return hero ? Hero(tag: 'avatar-$name', child: w) : w;
   }
 }
 
@@ -305,10 +309,57 @@ class EmptyState extends StatelessWidget {
       ])));
 }
 
-class LoadingBox extends StatelessWidget {
-  const LoadingBox({super.key});
+/// Skeleton placeholder: a night header block and card outlines with a soft shimmer, instead of a bare spinner.
+class LoadingBox extends StatefulWidget {
+  const LoadingBox({super.key, this.header = true});
+  final bool header;
   @override
-  Widget build(BuildContext context) => const Center(child: Padding(padding: EdgeInsets.all(40), child: CircularProgressIndicator(color: T.gold, strokeWidth: 2.5)));
+  State<LoadingBox> createState() => _LoadingBoxState();
+}
+
+class _LoadingBoxState extends State<LoadingBox> with SingleTickerProviderStateMixin {
+  late final _c = AnimationController(vsync: this, duration: const Duration(milliseconds: 1300))..repeat();
+  @override
+  void dispose() { _c.dispose(); super.dispose(); }
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _c,
+      builder: (_, __) {
+        final t = _c.value;
+        Widget bone(double w, double h, {Color? c, double r = 8}) => Container(width: w, height: h, decoration: BoxDecoration(borderRadius: BorderRadius.circular(r),
+            gradient: LinearGradient(begin: Alignment(-1 + 3 * t, 0), end: Alignment(0 + 3 * t, 0), colors: [c ?? T.ground2, (c ?? T.ground2).withValues(alpha: .45), c ?? T.ground2])));
+        return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          if (widget.header)
+            Container(
+              width: double.infinity,
+              padding: EdgeInsets.fromLTRB(20, MediaQuery.paddingOf(context).top + 24, 20, 24),
+              decoration: const BoxDecoration(gradient: LinearGradient(colors: [T.night2, T.night], begin: Alignment.topRight, end: Alignment.bottomLeft), border: Border(bottom: BorderSide(color: T.gold, width: 1))),
+              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                bone(90, 10, c: Colors.white.withValues(alpha: .12)), const SizedBox(height: 12),
+                bone(220, 22, c: Colors.white.withValues(alpha: .16)), const SizedBox(height: 10),
+                bone(160, 12, c: Colors.white.withValues(alpha: .10)), const SizedBox(height: 18),
+                bone(double.infinity, 12, c: Colors.white.withValues(alpha: .10), r: 3),
+              ]),
+            ),
+          Padding(
+            padding: const EdgeInsets.all(18),
+            child: Column(children: [
+              for (var i = 0; i < 3; i++)
+                Container(
+                  margin: const EdgeInsets.only(bottom: 10), padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(color: T.surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: T.rule)),
+                  child: Row(children: [
+                    bone(44, 44, r: 22), const SizedBox(width: 12),
+                    Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [bone(140, 14), const SizedBox(height: 8), bone(double.infinity, 10)])),
+                  ]),
+                ),
+            ]),
+          ),
+        ]);
+      },
+    );
+  }
 }
 
 class ErrorBox extends StatelessWidget {
@@ -325,24 +376,101 @@ class ErrorBox extends StatelessWidget {
 }
 
 /// Async data helper: keeps screens small. Supports pull-to-refresh via [refresh].
+/// Data loader with a cache that invalidates on writes.
+///  • `cacheKey`: the last good result is kept in memory for the run and on disk across runs, and painted immediately
+///    while a fresh request runs underneath (stale-while-revalidate). Pass a key that identifies the data, e.g. `journey:<id>`.
+///  • Any successful POST/PATCH/DELETE through [Api] calls [Fetch.invalidate]; every mounted Fetch refetches, keeping
+///    its old data on screen until the new data lands. So nothing is ever shown stale after an update.
 class Fetch<D> extends StatefulWidget {
-  const Fetch({super.key, required this.future, required this.builder});
+  const Fetch({super.key, required this.future, required this.builder, this.cacheKey});
   final Future<D> Function() future;
   final Widget Function(BuildContext, D, VoidCallback refresh) builder;
+  final String? cacheKey;
+
+  static final Map<String, Object?> _memo = {};
+  static final ChangeNotifier _bus = _Bus();
+  /// Refetch everything that is mounted (after a write, on app resume, on pull-to-refresh of the shell).
+  static void invalidate() => (_bus as _Bus).ping();
+  /// Forget cached data (on logout, so the next account never sees another person's screens).
+  static Future<void> forget() async {
+    _memo.clear();
+    await Prefs.I.removeWhere('cache.');
+  }
   @override
   State<Fetch<D>> createState() => _FetchState<D>();
 }
 
+class _Bus extends ChangeNotifier {
+  void ping() => notifyListeners();
+}
+
 class _FetchState<D> extends State<Fetch<D>> {
-  late Future<D> _f = widget.future();
-  void _refresh() => setState(() => _f = widget.future());
+  static bool _hooked = false;
+  late Future<D> _f;
+  Object? _cached;
+  bool _busy = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!_hooked) {
+      _hooked = true;
+      Api.I.onMutate = Fetch.invalidate;
+      Api.I.onLogout = Fetch.forget;
+    }
+    final k = widget.cacheKey;
+    if (k != null) {
+      _cached = Fetch._memo[k];
+      if (_cached == null) {
+        Prefs.I.getString('cache.$k').then((raw) {
+          if (raw == null || !mounted || _cached != null) return;
+          try { setState(() => _cached = jsonDecode(raw)); } catch (_) {}
+        });
+      }
+    }
+    _f = _run();
+    Fetch._bus.addListener(_onInvalidate);
+  }
+
+  @override
+  void dispose() {
+    Fetch._bus.removeListener(_onInvalidate);
+    super.dispose();
+  }
+
+  void _onInvalidate() { if (mounted && !_busy) _refresh(); }
+
+  Future<D> _run() async {
+    _busy = true;
+    try {
+      final d = await widget.future();
+      final k = widget.cacheKey;
+      if (k != null) {
+        Fetch._memo[k] = d;
+        _cached = d;
+        if (d is Map || d is List) { try { Prefs.I.setString('cache.$k', jsonEncode(d)); } catch (_) {} }
+      }
+      return d;
+    } finally {
+      _busy = false;
+    }
+  }
+
+  void _refresh() {
+    final f = _run();
+    setState(() { _f = f; });
+  }
+
   @override
   Widget build(BuildContext context) => FutureBuilder<D>(
         future: _f,
         builder: (c, s) {
-          if (s.hasError) return ErrorBox(s.error!, onRetry: _refresh);
-          if (!s.hasData) return const LoadingBox();
-          return widget.builder(c, s.data as D, _refresh);
+          final fallback = _cached;
+          if (s.hasError && fallback == null) return ErrorBox(s.error!, onRetry: _refresh);
+          if (!s.hasData && fallback == null) return const LoadingBox();
+          D data;
+          try { data = (s.hasData ? s.data : fallback) as D; } catch (_) { return s.hasError ? ErrorBox(s.error!, onRetry: _refresh) : const LoadingBox(); }
+          return widget.builder(c, data, _refresh);
         },
       );
 }

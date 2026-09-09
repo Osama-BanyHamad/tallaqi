@@ -7,7 +7,7 @@ from services.common.models import TenantModel, TimeStamped
 
 class Tenant(TimeStamped):
     KINDS = [("center", "مركز"), ("academy", "أكاديمية"), ("institution", "مؤسسة"), ("mosque", "مسجد"),
-             ("organization", "منظمة"), ("individual", "معلم مستقل")]
+             ("organization", "منظمة"), ("individual", "معلم مستقل"), ("solo", "متعلّم مستقل")]
     slug = models.SlugField(unique=True)
     name = models.CharField(max_length=200)
     name_en = models.CharField(max_length=200, blank=True)

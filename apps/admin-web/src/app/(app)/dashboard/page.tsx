@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { useI18n } from "@/lib/i18n";
 import { Avatar, ErrorBox, JuzStrip, Kpi, Loading, Num, PageHead, Pct, RetentionBar } from "@/components/ui";
+import { EmptyState, SetupChecklist } from "@/components/Empty";
 
 type Row = { journey_id: string; student_id: string; name: string; branch: string; avg_retention: number; memorized_ayat: number; weak_ayat: number; critical_ayat: number; sessions_7d: number; absences_14d: number; reasons: string[]; juz_map: [number, number | null, string][]; memorized_pages: number };
 type Dash = { totals: { students: number; on_track: number; behind: number; attention: number; avg_retention: number }; attention: Row[]; behind: Row[]; on_track: Row[];
@@ -36,6 +37,8 @@ export default function Dashboard() {
   return (
     <>
       <PageHead eyebrow={t("nav_dashboard")} title={t("dash_title")} sub={t("dash_sub")} />
+      <SetupChecklist />
+      {d.totals.students === 0 && <EmptyState title={t("empty")} body="لا طلاب بعد. أكمل خطوات الإعداد أعلاه، وستظهر هنا صحة التعلّم لكل طالب مع الأسباب." action="الطلاب" href="/students" />}
       <div className="kpis stagger">
         <Kpi accent label={t("students")} value={<Num v={d.totals.students} />} sub={`${t("avg_retention")} ${Math.round(d.totals.avg_retention * 100)}%`} />
         <Kpi tone="ok" label={t("on_track")} value={<Num v={d.totals.on_track} />} />

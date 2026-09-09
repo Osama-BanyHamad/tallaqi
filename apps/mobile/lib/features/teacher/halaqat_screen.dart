@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/api.dart';
 import '../../core/theme.dart';
+import '../../core/prefs.dart';
 import '../../widgets/common.dart';
 import 'today_screen.dart';
 
@@ -16,6 +17,9 @@ class HalaqatScreen extends StatelessWidget {
       future: () async => (await Api.I.get('/halaqat?page_size=50')) as Map<String, dynamic>,
       builder: (context, d, refresh) {
         final rows = (d['results'] as List).cast<Map<String, dynamic>>();
+        if (rows.length == 1 && Prefs.I.session.add('auto-open')) {
+          WidgetsBinding.instance.addPostFrameCallback((_) { if (context.mounted) Navigator.of(context).push(MaterialPageRoute(builder: (_) => TodayScreen(halaqahId: rows.first['id']))); });
+        }
         final students = rows.fold<int>(0, (a, h) => a + ((h['student_count'] as num?)?.toInt() ?? 0));
         return Column(children: [
           NightHeader(

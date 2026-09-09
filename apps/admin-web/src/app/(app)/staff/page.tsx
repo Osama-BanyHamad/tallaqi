@@ -7,6 +7,7 @@ import { useT2 } from "@/lib/t2";
 import { Avatar, ErrorBox, Loading, PageHead } from "@/components/ui";
 import { Field, Modal, Select, grid2 } from "@/components/forms";
 import { useCapabilities } from "@/components/Shell";
+import { EmptyState } from "@/components/Empty";
 
 type S = { id: string; person: { first_name: string; last_name: string; display_name_ar: string; display_name_en: string; phone: string; email: string; gender: string }; branch: string | null; staff_type: string; riwayat: string[]; halaqat: { id: string; name: string; role: string }[]; is_active: boolean; account_email: string | null };
 type H = { id: string; name: string };
@@ -30,6 +31,7 @@ export default function StaffPage() {
   return (
     <>
       <PageHead eyebrow={t("nav_staff")} title={t("nav_staff")} actions={can("people.staff.write") && <button className="btn primary" onClick={() => setEditing({ person: { first_name: "", last_name: "", display_name_ar: "", display_name_en: "", phone: "", email: "", gender: "male" }, staff_type: "teacher", riwayat: ["hafs_asim"], halaqat: [], is_active: true, branch: null, account_email: null })}>+ {tr("معلم / موظف جديد", "New staff member")}</button>} />
+      {q.data!.results.length === 0 && <EmptyState title={tr("لا معلمين بعد", "No teachers yet")} body={tr("أضف المعلم ثم أنشئ له حساب دخول من الزر المجاور لاسمه؛ سيرى حلقاته فقط.", "Add the teacher, then create their login from the button next to their name; they will see only their Halaqat.")} action={can("people.staff.write") ? tr("أضف أول معلم", "Add the first teacher") : undefined} onAction={() => setEditing({ person: { first_name: "", last_name: "", display_name_ar: "", display_name_en: "", phone: "", email: "", gender: "male" }, staff_type: "teacher", riwayat: ["hafs_asim"], halaqat: [], is_active: true, branch: null, account_email: null })} />}
       <div className="list stagger">
         {q.data!.results.map((s) => {
           const name = locale === "en" && s.person.display_name_en ? s.person.display_name_en : s.person.display_name_ar;

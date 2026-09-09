@@ -126,7 +126,11 @@ class JourneyViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["get"])
     def sessions(self, request, pk=None):
         j = self.get_object()
-        qs = RecitationSession.objects.filter(journey=j).prefetch_related("mistakes").select_related("teacher__person").order_by("-started_at")[:100]
+        try:
+            limit = max(1, min(100, int(request.query_params.get("limit", 100))))
+        except (TypeError, ValueError):
+            limit = 100
+        qs = RecitationSession.objects.filter(journey=j).prefetch_related("mistakes").select_related("teacher__person").order_by("-started_at")[:limit]
         return Response(SessionSerializer(qs, many=True).data)
 
     @action(detail=True, methods=["post"])
@@ -251,6 +255,8 @@ class RecitationViewSet(viewsets.GenericViewSet):
         if j is None:
             return Response({"code": "not_found", "detail": "Journey not found."}, status=404)
         check(request, "hifz.tasmee.record", "hifz.tasmee", j)
+        if request.membership and request.membership.person_id and j.student.person_id == request.membership.person_id:
+            return Response({"code": "self_tasmee", "detail": "لا يُسجَّل التسميع للنفس؛ ادعُ مُسمِّعًا أو استخدم التدريب الذاتي."}, status=403)
         if d["idempotency_key"]:
             replay = RecitationSession.objects.filter(idempotency_key=d["idempotency_key"]).first()
             if replay:

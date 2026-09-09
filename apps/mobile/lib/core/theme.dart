@@ -42,6 +42,12 @@ class T {
         _ => sNone,
       };
 
+  /// The word people understand before the percent.
+  static String stateWord(double? v) {
+    final p = ((v ?? 0) * 100).round();
+    return p >= 95 ? 'متقن' : p >= 85 ? 'متين' : p >= 60 ? 'يحتاج مراجعة' : p >= 35 ? 'ضعيف' : 'حرج';
+  }
+
   static Color retention(double? v) {
     final p = ((v ?? 0) * 100).round();
     return p >= 85 ? sStrong : p >= 60 ? sNeeds : p >= 35 ? sWeak : sCritical;

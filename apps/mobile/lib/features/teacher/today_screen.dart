@@ -27,6 +27,25 @@ class _TodayScreenState extends State<TodayScreen> {
     setState(() => _v++);
   }
 
+  /// One tap marks everyone without a record as present; the teacher then only touches the exceptions.
+  Future<void> _markAllPresent(List<Map<String, dynamic>> roster) async {
+    final pending = roster.where((r) => r['attendance'] == null).map((r) => {'student_id': r['student_id'], 'status': 'present'}).toList();
+    if (pending.isEmpty) { toast(context, 'الحضور مسجّل للجميع'); return; }
+    HapticFeedback.mediumImpact();
+    await Api.I.post('/halaqat/${widget.halaqahId}/attendance', {'records': pending});
+    if (mounted) { toast(context, 'سُجِّل حضور ${arDigits(pending.length)} طالبًا — عدّل الاستثناءات فقط'); setState(() => _v++); }
+  }
+
+  /// Opens Tasmee' on the first segment still waiting for this student.
+  Future<void> _quickTasmee(Map<String, dynamic> row) async {
+    final segs = ((row['plan']?['segments'] as List?) ?? const []).cast<Map<String, dynamic>>();
+    final s = segs.where((x) => x['completion'] != 'verified').firstOrNull ?? segs.firstOrNull;
+    if (s == null || row['journey_id'] == null) return;
+    await Navigator.of(context).push(MaterialPageRoute(builder: (_) => TasmeeScreen(
+        journeyId: row['journey_id'], studentName: row['name'], purpose: s['purpose'], from: s['from_ayah_index'], to: s['to_ayah_index'], segmentId: s['id'], halaqahId: widget.halaqahId)));
+    setState(() => _v++);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -49,10 +68,26 @@ class _TodayScreenState extends State<TodayScreen> {
               eyebrow: 'حلقة اليوم · ${arDigits(d['date'] ?? '')}',
               title: h['name'],
               subtitle: h['schedule_summary'],
-              child: Row(children: [
-                Expanded(child: _Stat(arDigits(present), '/ ${arDigits(roster.length)} حاضر', T.gold2)),
-                Expanded(child: _Stat(arDigits(pending), 'بانتظار التسميع', T.nightInk)),
-                Expanded(child: _Stat(arDigits(roster.where((r) => r['last_session']?['outcome'] == 'pass').length), 'اجتاز آخر مرة', T.sStrong)),
+              child: Column(children: [
+                Row(children: [
+                  Expanded(child: _Stat(arDigits(present), '/ ${arDigits(roster.length)} حاضر', T.gold2)),
+                  Expanded(child: _Stat(arDigits(pending), 'بانتظار التسميع', T.nightInk)),
+                  Expanded(child: _Stat(arDigits(roster.where((r) => r['last_session']?['outcome'] == 'pass').length), 'اجتاز آخر مرة', T.sStrong)),
+                ]),
+                const SizedBox(height: 12),
+                ClipRRect(borderRadius: BorderRadius.circular(4), child: LinearProgressIndicator(value: roster.isEmpty ? 0 : (roster.length - pending) / roster.length, minHeight: 5, backgroundColor: Colors.white.withValues(alpha: .12), color: T.gold2)),
+                const SizedBox(height: 10),
+                Row(children: [
+                  Expanded(child: OutlinedButton.icon(
+                    style: OutlinedButton.styleFrom(foregroundColor: T.nightInk, side: BorderSide(color: Colors.white.withValues(alpha: .25)), minimumSize: const Size(0, 40)),
+                    onPressed: () => _markAllPresent(roster), icon: const Icon(Icons.done_all_rounded, size: 18), label: const Text('الكل حاضر'),
+                  )),
+                  const SizedBox(width: 10),
+                  Expanded(child: GoldButton(compact: true, icon: Icons.mic_rounded, label: 'سمّع التالي', onPressed: () {
+                    final next = roster.where((r) => ((r['plan']?['segments'] as List?) ?? const []).any((s) => s['completion'] != 'verified')).firstOrNull;
+                    if (next != null) { _quickTasmee(next); } else { toast(context, "لا مقاطع بانتظار التسميع"); }
+                  })),
+                ]),
               ]),
             ),
             Container(
@@ -76,7 +111,7 @@ class _TodayScreenState extends State<TodayScreen> {
                         padding: const EdgeInsets.all(16),
                         itemCount: rows.length,
                         separatorBuilder: (_, __) => const SizedBox(height: 10),
-                        itemBuilder: (context, i) => FadeIn(index: i, child: _StudentCard(row: rows[i], halaqahId: widget.halaqahId, onMark: _mark, onDone: () => setState(() => _v++))),
+                        itemBuilder: (context, i) => FadeIn(index: i, child: _StudentCard(row: rows[i], halaqahId: widget.halaqahId, onMark: _mark, onDone: () => setState(() => _v++), onQuick: () => _quickTasmee(rows[i]))),
                       ),
               ),
             ),
@@ -100,11 +135,12 @@ class _Stat extends StatelessWidget {
 }
 
 class _StudentCard extends StatefulWidget {
-  const _StudentCard({required this.row, required this.halaqahId, required this.onMark, required this.onDone});
+  const _StudentCard({required this.row, required this.halaqahId, required this.onMark, required this.onDone, required this.onQuick});
   final Map<String, dynamic> row;
   final String halaqahId;
   final Future<void> Function(String, String) onMark;
   final VoidCallback onDone;
+  final VoidCallback onQuick;
   @override
   State<_StudentCard> createState() => _StudentCardState();
 }
@@ -140,6 +176,8 @@ class _StudentCardState extends State<_StudentCard> {
                 ]),
               ])),
               if (j != null) RetentionRing((j['avg_retention'] as num?)?.toDouble(), size: 46, stroke: 4),
+              if (segs.any((s) => s['completion'] != 'verified'))
+                IconButton(tooltip: 'سمّع المقطع التالي', onPressed: widget.onQuick, style: IconButton.styleFrom(backgroundColor: T.goldTint), icon: const Icon(Icons.mic_rounded, color: T.gold)),
               IconButton(onPressed: () => setState(() => _open = !_open), icon: AnimatedRotation(turns: _open ? .5 : 0, duration: const Duration(milliseconds: 200), child: const Icon(Icons.expand_more_rounded))),
             ]),
           ),

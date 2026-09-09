@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "services.hifz",
     "services.finance",
     "services.ai",
+    "services.reading",
 ]
 
 MIDDLEWARE = [
@@ -88,7 +89,7 @@ REST_FRAMEWORK = {
     "EXCEPTION_HANDLER": "services.common.exceptions.exception_handler",
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"] + (["rest_framework.renderers.BrowsableAPIRenderer"] if DEBUG else []),
     "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.UserRateThrottle", "rest_framework.throttling.AnonRateThrottle"],
-    "DEFAULT_THROTTLE_RATES": {"user": "600/min", "anon": "60/min"},
+    "DEFAULT_THROTTLE_RATES": {"user": "600/min", "anon": "60/min", "login": "20/min", "signup": "10/hour"},
 }
 
 SIMPLE_JWT = {
@@ -109,6 +110,7 @@ OPENAI_API_KEY = env.str("OPENAI_API_KEY", default="")
 OPENAI_MODEL = env.str("OPENAI_MODEL", default="gpt-4o-mini")
 OPENAI_ASR_MODEL = env.str("OPENAI_ASR_MODEL", default="gpt-4o-mini-transcribe")
 OPENAI_BASE_URL = env.str("OPENAI_BASE_URL", default="https://api.openai.com/v1")
+ASR_DAILY_QUOTA = env.int("ASR_DAILY_QUOTA", default=60)   # recitation checks per account per day (cost control)
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "Talaqqi API",
@@ -148,4 +150,16 @@ TALAQQI = {
     "DEFAULT_RIWAYAH": "hafs_asim",
     "DEFAULT_MUSHAF_TYPE": "madani_15_line",
     "QURAN_TEXT_ATTRIBUTION": "Quran text: Tanzil Project — https://tanzil.net",
+    # Reciter registry: per-ayah MP3 streamed from the host below (pattern {surah:03}{ayah:03}.mp3). Operators may replace it
+    # with their own licensed host via AUDIO_RECITERS_JSON; Talaqqi bundles and redistributes no audio.
+    "RECITERS": env.json("AUDIO_RECITERS_JSON", default=[
+        {"key": "alafasy", "name_ar": "مشاري راشد العفاسي", "name_en": "Mishary Alafasy", "base": "https://everyayah.com/data/Alafasy_128kbps/"},
+        {"key": "husary", "name_ar": "محمود خليل الحصري", "name_en": "Mahmoud Al-Husary", "base": "https://everyayah.com/data/Husary_128kbps/"},
+        {"key": "abdulbasit", "name_ar": "عبد الباسط عبد الصمد (مرتّل)", "name_en": "Abdul Basit (Murattal)", "base": "https://everyayah.com/data/Abdul_Basit_Murattal_192kbps/"},
+        {"key": "minshawi", "name_ar": "محمد صديق المنشاوي (مرتّل)", "name_en": "Al-Minshawi (Murattal)", "base": "https://everyayah.com/data/Minshawy_Murattal_128kbps/"},
+        {"key": "sudais", "name_ar": "عبد الرحمن السديس", "name_en": "Abdurrahman As-Sudais", "base": "https://everyayah.com/data/Abdurrahmaan_As-Sudais_192kbps/"},
+        {"key": "ajmi", "name_ar": "أحمد بن علي العجمي", "name_en": "Ahmed Al-Ajmi", "base": "https://everyayah.com/data/Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net/"},
+    ]),
+    "AUDIO_PATTERN": "{surah:03d}{ayah:03d}.mp3",
+    "AUDIO_SOURCE_NOTE": "Audio is streamed from everyayah.com (Verse-by-verse recitations). Talaqqi does not host or redistribute recordings.",
 }

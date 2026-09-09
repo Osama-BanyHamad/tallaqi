@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../core/api.dart';
 import '../../core/quran.dart';
@@ -33,7 +34,10 @@ class WeeklyScreen extends StatelessWidget {
               leadingBack: true,
               eyebrow: 'تقرير الأسبوع', title: w['student']['name'],
               subtitle: '${arDigits(w['week']['from'])} → ${arDigits(w['week']['to'])}',
-              trailing: RetentionRing((w['retention'] as num?)?.toDouble(), size: 62, light: true, label: 'الثبات', stroke: 5),
+              trailing: Row(mainAxisSize: MainAxisSize.min, children: [
+                IconButton(tooltip: 'مشاركة التقرير', onPressed: () => _share(w, segs), icon: const Icon(Icons.ios_share_rounded, color: T.nightMuted)),
+                RetentionRing((w['retention'] as num?)?.toDouble(), size: 62, light: true, label: T.stateWord((w['retention'] as num?)?.toDouble()), stroke: 5),
+              ]),
               child: JuzStrip(w['juz_map'] as List?, height: 12),
             ),
             Expanded(
@@ -85,6 +89,21 @@ class WeeklyScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Plain-text version of the six answers for WhatsApp or a family group.
+void _share(Map<String, dynamic> w, List<Map<String, dynamic>> segs) {
+  final att = w['attendance'] as Map<String, dynamic>;
+  final lines = [
+    'تقرير الأسبوع — ${w['student']['name']} (${w['week']['from']} → ${w['week']['to']})',
+    'الحضور: ${att['present']} من ${att['total']}',
+    'حفظ جديد: ${w['new_pages']} صفحة · مراجعة: ${w['revision_pages']} صفحة',
+    'التسميع: اجتاز ${w['passed']} من ${w['sessions']} · الثبات: ${pct((w['retention'] as num?)?.toDouble())}',
+    if ((w['teacher_note'] ?? '').toString().isNotEmpty) 'ملاحظة المعلم: ${w['teacher_note']}',
+    if (segs.isNotEmpty) 'المطلوب اليوم: ${segs.map((s) => '${purposeAr[s['purpose']]} ${s['from_key']['surah_name']} ${s['from_key']['ayah']}–${s['to_key']['surah_name']} ${s['to_key']['ayah']}').join('؛ ')}',
+    '— تَلَقِّي · tallaqi.com',
+  ];
+  SharePlus.instance.share(ShareParams(text: lines.join('\n')));
 }
 
 const _attAr = {'present': 'حاضر', 'late': 'متأخر', 'absent': 'غائب', 'excused': 'بعذر', 'left_early': 'انصرف مبكرًا'};

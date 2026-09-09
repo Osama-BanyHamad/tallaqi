@@ -25,6 +25,8 @@ MODULES: dict[str, Module] = {m.key: m for m in [
     Module("platform.rbac", "الأدوار والصلاحيات", "Roles & Permissions", core=True, permissions=("platform.rbac.assign", "platform.rbac.manage_roles", "platform.rbac.read")),
     Module("platform.audit", "سجل التدقيق", "Audit Log", core=True, permissions=("platform.audit.read",)),
     Module("quran.core", "نواة القرآن", "Quran Core", core=True, permissions=("quran.core.read",)),
+    Module("quran.reading", "الورد اليومي", "Daily Reading", requires=("quran.core",), permissions=("quran.reading.use",)),
+    Module("quran.audio", "الاستماع للتلاوة", "Ayah Audio", requires=("quran.core",), permissions=("quran.audio.use",)),
     Module("people.students", "الطلاب", "Students", core=True, permissions=("people.students.read", "people.students.read_pii", "people.students.write", "people.students.transfer")),
     Module("people.guardians", "أولياء الأمور", "Guardians", permissions=("people.guardians.read", "people.guardians.write", "people.guardians.link")),
     Module("people.staff", "المعلمون والموظفون", "Teachers & Staff", permissions=("people.staff.read", "people.staff.write")),
@@ -86,15 +88,22 @@ SYSTEM_ROLES: dict[str, dict] = {
         "hifz.journey.read", "hifz.memory_map.read", "hifz.retention.read", "hifz.policy.read",
         "hifz.planner.read", "hifz.planner.approve", "hifz.planner.override", "hifz.tasmee.read", "hifz.tasmee.record",
         "hifz.tasmee.edit_own", "hifz.assessments.read", "hifz.assessments.record", "hifz.review_queue.read",
-        "hifz.review_queue.resolve", "live.classroom.host", "quran.core.read", "ai.assist.use", "hifz.asr.use"]},
+        "hifz.review_queue.resolve", "live.classroom.host", "quran.core.read", "quran.reading.use", "quran.audio.use", "ai.assist.use", "hifz.asr.use"]},
     "assistant_teacher": {"name_ar": "معلم مساعد", "name_en": "Assistant Teacher", "permissions": [
         "people.students.read", "ops.halaqat.read", "ops.attendance.read", "ops.attendance.mark",
-        "hifz.journey.read", "hifz.memory_map.read", "hifz.planner.read", "hifz.tasmee.read", "quran.core.read"]},
+        "hifz.journey.read", "hifz.memory_map.read", "hifz.planner.read", "hifz.tasmee.read", "quran.core.read", "quran.reading.use", "quran.audio.use"]},
     "student": {"name_ar": "طالب", "name_en": "Student", "permissions": [
-        "hifz.journey.read", "hifz.memory_map.read", "hifz.planner.read", "hifz.practice.use", "hifz.asr.use", "hifz.tasmee.read", "live.classroom.join", "quran.core.read"]},
+        "hifz.journey.read", "hifz.memory_map.read", "hifz.planner.read", "hifz.practice.use", "hifz.asr.use", "hifz.tasmee.read", "live.classroom.join", "quran.core.read", "quran.reading.use", "quran.audio.use"]},
     "guardian": {"name_ar": "ولي أمر", "name_en": "Guardian", "permissions": [
         "people.students.read", "hifz.journey.read", "hifz.memory_map.read", "hifz.planner.read", "hifz.tasmee.read", "ops.attendance.read",
-        "parent.portal.use", "quran.core.read"]},
+        "parent.portal.use", "quran.core.read", "quran.reading.use", "quran.audio.use"]},
+    "solo_learner": {"name_ar": "متعلّم مستقل", "name_en": "Independent learner", "permissions": [
+        "hifz.journey.read", "hifz.journey.write", "hifz.memory_map.read", "hifz.planner.read", "hifz.planner.approve", "hifz.planner.override",
+        "hifz.practice.use", "hifz.asr.use", "hifz.tasmee.read", "hifz.tasmee.record", "hifz.assessments.read", "people.students.read", "quran.core.read", "quran.reading.use", "quran.audio.use",
+        "platform.tenancy.read", "platform.rbac.read", "platform.rbac.assign", "platform.audit.read"]},
+    "listener": {"name_ar": "مُسمِّع", "name_en": "Listener", "permissions": [
+        "people.students.read", "hifz.journey.read", "hifz.memory_map.read", "hifz.planner.read", "hifz.tasmee.read", "hifz.tasmee.record",
+        "hifz.assessments.read", "hifz.asr.use", "quran.core.read", "quran.reading.use", "quran.audio.use"]},
     "finance": {"name_ar": "موظف مالية", "name_en": "Finance", "permissions": [
         "people.students.read", "people.guardians.read", "finance.fees.read", "finance.fees.write",
         "finance.invoicing.read", "finance.invoicing.issue", "finance.payments.read", "finance.payments.record",

@@ -36,6 +36,16 @@ class ManifestView(QuranView):
         return Response({"version": m["version"], "riwayat": m["riwayat"], "sources": m["sources"], "attribution": ATTRIBUTION})
 
 
+class RecitersView(QuranView):
+    """Reciter registry for ayah audio (module quran.audio). URLs are built client-side: base + pattern."""
+
+    def get(self, request):
+        from services.common.permissions import check
+        check(request, "quran.audio.use")
+        t = settings.TALAQQI
+        return Response({"reciters": t["RECITERS"], "pattern": t["AUDIO_PATTERN"], "note": t["AUDIO_SOURCE_NOTE"]})
+
+
 class SurahListView(QuranView):
     def get(self, request, riwayah="hafs_asim"):
         core = get_core(riwayah)

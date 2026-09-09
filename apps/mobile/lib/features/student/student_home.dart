@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/api.dart';
+import '../../core/progress.dart';
 import '../../core/quran.dart';
 import '../../core/theme.dart';
 import '../../widgets/common.dart';
@@ -21,15 +22,16 @@ class _StudentHomeState extends State<StudentHome> {
   Widget build(BuildContext context) {
     return Fetch<Map<String, dynamic>>(
       key: ValueKey(_v),
+      cacheKey: 'student-home',
       future: () async {
         // Students cannot list the roster; the journeys endpoint is scoped to self.
         final me = await Api.I.get('/journeys?page_size=1') as Map<String, dynamic>;
         final results = (me['results'] as List).cast<Map<String, dynamic>>();
         if (results.isEmpty) throw ApiException(404, 'no_student', 'لا يوجد ملف طالب مرتبط بهذا الحساب');
         final jid = results.first['id'];
-        final r = await Future.wait([Api.I.get('/journeys/$jid'), Api.I.get('/journeys/$jid/plan'), Api.I.get('/journeys/$jid/sessions').catchError((_) => <String, dynamic>{'results': []})]);
+        final r = await Future.wait([Api.I.get('/journeys/$jid'), Api.I.get('/journeys/$jid/plan'), Api.I.get('/journeys/$jid/sessions?limit=10').catchError((_) => <String, dynamic>{'results': []})]);
         final sess = r[2];
-        return {'journey': r[0], 'plan': r[1], 'sessions': sess is Map ? sess['results'] : sess};
+        return {'journey': r[0], 'plan': r[1], 'sessions': sess is Map ? sess['results'] : sess, 'progress': await Progress.I.all()};
       },
       builder: (context, d, refresh) {
         final j = d['journey'] as Map<String, dynamic>;
@@ -37,7 +39,8 @@ class _StudentHomeState extends State<StudentHome> {
         final segs = ((plan?['segments'] as List?) ?? const []).cast<Map<String, dynamic>>();
         final sessions = ((d['sessions'] as List?) ?? const []).cast<Map<String, dynamic>>();
         final cur = j['current_key'] as Map<String, dynamic>?;
-        final done = segs.where((s) => s['completion'] == 'verified').length;
+        final progress = (d['progress'] as Map<String, dynamic>?) ?? {};
+        final done = segs.where((s) => s['completion'] == 'verified' || progress.containsKey(Progress.keyFor(s['from_ayah_index'], s['to_ayah_index']))).length;
         final hour = DateTime.now().hour;
         final greet = hour < 12 ? 'صباح الخير' : hour < 18 ? 'مساء الخير' : 'مساء النور';
         return RefreshIndicator(
@@ -47,7 +50,7 @@ class _StudentHomeState extends State<StudentHome> {
               eyebrow: 'اليوم',
               title: '$greet، ${(j['student_name'] ?? '').toString().split(' ').first}',
               subtitle: cur != null ? 'موضع الحفظ الجديد: ${cur['surah_name']} ${arDigits(cur['ayah'])} · صفحة ${arDigits(cur['page'])}' : 'في المراجعة الطويلة',
-              trailing: RetentionRing((j['avg_retention'] as num?)?.toDouble(), size: 66, light: true, label: 'الثبات', stroke: 5),
+              trailing: RetentionRing((j['avg_retention'] as num?)?.toDouble(), size: 66, light: true, label: T.stateWord((j['avg_retention'] as num?)?.toDouble()), stroke: 5),
               child: Column(children: [
                 Row(children: [
                   Expanded(child: _HeaderStat(arDigits(j['memorized_pages'] ?? 0), 'صفحة محفوظة')),
@@ -64,7 +67,7 @@ class _StudentHomeState extends State<StudentHome> {
                 SectionTitle('خطة اليوم', top: 0, trailing: Text('${arDigits(segs.length)} مقاطع', style: T.body(size: 12.5, color: T.ink3))),
                 if (segs.isEmpty) const EmptyState(title: 'لا مقاطع اليوم', body: 'استرح، أو راجع من خريطة الحفظ.'),
                 for (var i = 0; i < segs.length; i++)
-                  FadeIn(index: i, child: _PlanCard(segs[i], onTap: () async {
+                  FadeIn(index: i, child: _PlanCard(segs[i], local: progress[Progress.keyFor(segs[i]['from_ayah_index'], segs[i]['to_ayah_index'])] as Map<String, dynamic>?, onTap: () async {
                     final s = segs[i];
                     await Navigator.of(context).push(MaterialPageRoute(builder: (_) => PracticeScreen(journeyId: j['id'], from: s['from_ayah_index'], to: s['to_ayah_index'], title: purposeAr[s['purpose']] ?? '')));
                     setState(() => _v++);
@@ -113,12 +116,15 @@ class _HeaderStat extends StatelessWidget {
 }
 
 class _PlanCard extends StatelessWidget {
-  const _PlanCard(this.s, {required this.onTap});
+  const _PlanCard(this.s, {required this.onTap, this.local});
   final Map<String, dynamic> s;
   final VoidCallback onTap;
+  final Map<String, dynamic>? local;
   @override
   Widget build(BuildContext context) {
     final done = s['completion'] == 'verified';
+    final practiced = local != null;
+    final acc = (local?['accuracy'] as num?)?.toDouble();
     final c = s['purpose'] == 'new' ? T.lapis : s['purpose'] == 'near' ? T.gold : T.sRecent;
     return Card(
       margin: const EdgeInsets.only(bottom: 10),
@@ -137,8 +143,9 @@ class _PlanCard extends StatelessWidget {
               if ((s['reason'] ?? '').toString().isNotEmpty) Text(s['reason'], style: T.body(size: 12, color: T.ink3), maxLines: 1, overflow: TextOverflow.ellipsis),
             ])),
             Column(children: [
-              Icon(Icons.mic_rounded, color: done ? T.ink3 : T.gold, size: 22),
-              Text(done ? 'تم' : 'تدرّب', style: T.body(size: 11, color: done ? T.sStrong : T.gold, weight: FontWeight.w700)),
+              if (acc != null) RetentionRing(acc, size: 38, stroke: 3.5)
+              else Icon(done ? Icons.verified_rounded : practiced ? Icons.task_alt_rounded : Icons.mic_rounded, color: done ? T.sStrong : practiced ? T.sRecent : T.gold, size: 22),
+              Text(done ? 'سمّعت' : practiced ? 'تدرّبت' : 'تدرّب', style: T.body(size: 11, color: done ? T.sStrong : practiced ? T.sRecent : T.gold, weight: FontWeight.w700)),
             ]),
           ]),
         ),
