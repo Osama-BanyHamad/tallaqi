@@ -92,7 +92,7 @@ class ReadingViewSet(viewsets.ViewSet):
         core = get_core(plan.riwayah)
         first, last = _today_range(plan)
         logs_today = list(ReadingLog.objects.filter(plan=plan, on_date=today).order_by("from_page"))
-        read_today = sum(l.to_page - l.from_page + 1 for l in logs_today)
+        read_today = sum(x.to_page - x.from_page + 1 for x in logs_today)
         p1, p2 = core.page(first), core.page(last)
         a1, a2 = core.ayah_by_index(p1.first_ayah_index), core.ayah_by_index(p2.last_ayah_index)
         remaining = MUSHAF_PAGES - plan.current_page + 1

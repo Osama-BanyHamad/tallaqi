@@ -10,9 +10,11 @@ import '../core/prefs.dart';
 import '../core/theme.dart';
 
 class Avatar extends StatelessWidget {
-  const Avatar(this.name, {super.key, this.size = 44});
+  const Avatar(this.name, {super.key, this.size = 44, this.hero = false});
   final String name;
   final double size;
+  /// Hero flights only where one avatar per name exists in the route (tabs are kept alive, so the default is off).
+  final bool hero;
   static const tones = [T.lapis, T.sStrong, T.sRecent, Color(0xFF7A4A9A), Color(0xFFB0662A), Color(0xFF4A5F8F)];
   @override
   Widget build(BuildContext context) {
@@ -22,14 +24,12 @@ class Avatar extends StatelessWidget {
     for (final c in name.codeUnits) {
       h = (h * 31 + c) & 0x7fffffff;
     }
-    return Hero(
-      tag: 'avatar-$name',
-      child: Container(
-        width: size, height: size, alignment: Alignment.center,
-        decoration: BoxDecoration(color: tones[h % tones.length], shape: BoxShape.circle, boxShadow: [BoxShadow(color: tones[h % tones.length].withValues(alpha: .35), blurRadius: 12, offset: const Offset(0, 6))]),
-        child: Text(initials, style: T.display(size: size * .34, color: Colors.white)),
-      ),
+    final w = Container(
+      width: size, height: size, alignment: Alignment.center,
+      decoration: BoxDecoration(color: tones[h % tones.length], shape: BoxShape.circle, boxShadow: [BoxShadow(color: tones[h % tones.length].withValues(alpha: .35), blurRadius: 12, offset: const Offset(0, 6))]),
+      child: Text(initials, style: T.display(size: size * .34, color: Colors.white)),
     );
+    return hero ? Hero(tag: 'avatar-$name', child: w) : w;
   }
 }
 

@@ -108,8 +108,8 @@ class _AccountPage extends StatelessWidget {
         const SizedBox(height: 14),
         Text('القارئ', style: T.display(size: 15)),
         const SizedBox(height: 8),
-        ListenableBuilder(listenable: AyahAudio.I, builder: (context, _) => Container(
-          decoration: BoxDecoration(color: T.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: T.rule)),
+        ListenableBuilder(listenable: AyahAudio.I, builder: (context, _) => Material(
+          color: T.surface, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14), side: const BorderSide(color: T.rule)), clipBehavior: Clip.antiAlias,
           child: ListTile(leading: const Icon(Icons.record_voice_over_rounded, color: T.lapis), title: Text(AyahAudio.I.reciter?['name_ar'] ?? 'اختر القارئ', style: T.body(size: 14.5, weight: FontWeight.w700)),
             subtitle: Text('لسماع الآيات في الورد والتدريب', style: T.body(size: 12, color: T.ink3)), trailing: const Icon(Icons.chevron_left_rounded), onTap: () => showReciterPicker(context)),
         )),

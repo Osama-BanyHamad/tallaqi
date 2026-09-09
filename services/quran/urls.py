@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import RecitersView, AyahView, ManifestView, PageView, RangeView, SurahListView, UnitsView
+from .views import AyahView, ManifestView, PageView, RangeView, RecitersView, SurahListView, UnitsView
 
 urlpatterns = [
     path("manifest", ManifestView.as_view()),
