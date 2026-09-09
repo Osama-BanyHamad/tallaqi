@@ -44,14 +44,14 @@ EOF
 fi
 
 # --- Safe deploy: build first (no downtime), keep the previous images, swap, health-gate, roll back on failure.
+# The images serving right now become the rollback target (tagged before the build replaces :latest).
+for svc in api web; do
+  if docker image inspect "talaqqi-$svc:latest" >/dev/null 2>&1; then
+    docker tag "talaqqi-$svc:latest" "talaqqi-$svc:previous"
+  fi
+done
 echo "==> Building images (the running site keeps serving during the build)"
 docker compose --profile prod build api web
-for svc in api web; do
-  docker image inspect "talaqqi-$svc:previous" >/dev/null 2>&1 && docker rmi -f "talaqqi-$svc:previous" >/dev/null 2>&1 || true
-  # The image that is running right now becomes the rollback target.
-  RUNNING=$(docker inspect --format '{{.Image}}' "talaqqi-$svc-1" 2>/dev/null || true)
-  [ -n "$RUNNING" ] && docker tag "$RUNNING" "talaqqi-$svc:previous" || true
-done
 
 echo "==> Swapping containers (API restarts once for migrations: ~20 seconds of API 502, the site itself stays up)"
 docker compose --profile prod up -d --remove-orphans postgres valkey api web caddy
