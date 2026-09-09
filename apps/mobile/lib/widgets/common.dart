@@ -456,7 +456,10 @@ class _FetchState<D> extends State<Fetch<D>> {
     }
   }
 
-  void _refresh() => setState(() => _f = _run());
+  void _refresh() {
+    final f = _run();
+    setState(() { _f = f; });
+  }
 
   @override
   Widget build(BuildContext context) => FutureBuilder<D>(
