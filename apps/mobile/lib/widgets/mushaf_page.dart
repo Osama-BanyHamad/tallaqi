@@ -6,7 +6,8 @@ import '../core/theme.dart';
 /// A Mushaf page rendered verbatim from the Quran Core API. Word taps are overlays; the text is never modified.
 /// [marks] are the teacher's confirmed mistakes; [flags] are AI candidates (gold underline) awaiting the teacher.
 class MushafPage extends StatelessWidget {
-  const MushafPage({super.key, required this.page, this.surahNames = const {}, this.inRange, this.stateOf, this.marks = const {}, this.flags = const {}, this.onWordTap, this.fontSize = 24});
+  const MushafPage({super.key, required this.page, this.surahNames = const {}, this.inRange, this.stateOf, this.marks = const {}, this.flags = const {}, this.onWordTap, this.fontSize = 24, this.activeAyah});
+  /// ayah_index currently playing (audio); drawn with a lapis wash.
   final Map<String, dynamic> page;
   final Map<int, String> surahNames;
   final bool Function(int ayahIndex)? inRange;
@@ -15,6 +16,7 @@ class MushafPage extends StatelessWidget {
   final Set<String> flags;         // "ayahIndex:word"
   final void Function(int ayahIndex, int wordPosition)? onWordTap;
   final double fontSize;
+  final int? activeAyah;
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +64,7 @@ class MushafPage extends StatelessWidget {
       opacity: dim ? .3 : 1,
       child: Container(
         decoration: BoxDecoration(
-          color: st == 'weak' ? T.sWeak.withValues(alpha: .09) : st == 'critical' ? T.sCritical.withValues(alpha: .11) : null,
+          color: activeAyah == idx ? T.lapis.withValues(alpha: .10) : st == 'weak' ? T.sWeak.withValues(alpha: .09) : st == 'critical' ? T.sCritical.withValues(alpha: .11) : null,
           borderRadius: BorderRadius.circular(6),
         ),
         child: Wrap(

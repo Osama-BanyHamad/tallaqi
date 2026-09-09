@@ -3,6 +3,10 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'dart:convert';
+
+import '../core/api.dart';
+import '../core/prefs.dart';
 import '../core/theme.dart';
 
 class Avatar extends StatelessWidget {
@@ -372,24 +376,98 @@ class ErrorBox extends StatelessWidget {
 }
 
 /// Async data helper: keeps screens small. Supports pull-to-refresh via [refresh].
+/// Data loader with a cache that invalidates on writes.
+///  • `cacheKey`: the last good result is kept in memory for the run and on disk across runs, and painted immediately
+///    while a fresh request runs underneath (stale-while-revalidate). Pass a key that identifies the data, e.g. `journey:<id>`.
+///  • Any successful POST/PATCH/DELETE through [Api] calls [Fetch.invalidate]; every mounted Fetch refetches, keeping
+///    its old data on screen until the new data lands. So nothing is ever shown stale after an update.
 class Fetch<D> extends StatefulWidget {
-  const Fetch({super.key, required this.future, required this.builder});
+  const Fetch({super.key, required this.future, required this.builder, this.cacheKey});
   final Future<D> Function() future;
   final Widget Function(BuildContext, D, VoidCallback refresh) builder;
+  final String? cacheKey;
+
+  static final Map<String, Object?> _memo = {};
+  static final ChangeNotifier _bus = _Bus();
+  /// Refetch everything that is mounted (after a write, on app resume, on pull-to-refresh of the shell).
+  static void invalidate() => (_bus as _Bus).ping();
+  /// Forget cached data (on logout, so the next account never sees another person's screens).
+  static Future<void> forget() async {
+    _memo.clear();
+    await Prefs.I.removeWhere('cache.');
+  }
   @override
   State<Fetch<D>> createState() => _FetchState<D>();
 }
 
+class _Bus extends ChangeNotifier {
+  void ping() => notifyListeners();
+}
+
 class _FetchState<D> extends State<Fetch<D>> {
-  late Future<D> _f = widget.future();
-  void _refresh() => setState(() => _f = widget.future());
+  static bool _hooked = false;
+  late Future<D> _f;
+  Object? _cached;
+  bool _busy = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!_hooked) {
+      _hooked = true;
+      Api.I.onMutate = Fetch.invalidate;
+      Api.I.onLogout = Fetch.forget;
+    }
+    final k = widget.cacheKey;
+    if (k != null) {
+      _cached = Fetch._memo[k];
+      if (_cached == null) {
+        Prefs.I.getString('cache.$k').then((raw) {
+          if (raw == null || !mounted || _cached != null) return;
+          try { setState(() => _cached = jsonDecode(raw)); } catch (_) {}
+        });
+      }
+    }
+    _f = _run();
+    Fetch._bus.addListener(_onInvalidate);
+  }
+
+  @override
+  void dispose() {
+    Fetch._bus.removeListener(_onInvalidate);
+    super.dispose();
+  }
+
+  void _onInvalidate() { if (mounted && !_busy) _refresh(); }
+
+  Future<D> _run() async {
+    _busy = true;
+    try {
+      final d = await widget.future();
+      final k = widget.cacheKey;
+      if (k != null) {
+        Fetch._memo[k] = d;
+        _cached = d;
+        if (d is Map || d is List) { try { Prefs.I.setString('cache.$k', jsonEncode(d)); } catch (_) {} }
+      }
+      return d;
+    } finally {
+      _busy = false;
+    }
+  }
+
+  void _refresh() => setState(() => _f = _run());
+
   @override
   Widget build(BuildContext context) => FutureBuilder<D>(
         future: _f,
         builder: (c, s) {
-          if (s.hasError) return ErrorBox(s.error!, onRetry: _refresh);
-          if (!s.hasData) return const LoadingBox();
-          return widget.builder(c, s.data as D, _refresh);
+          final fallback = _cached;
+          if (s.hasError && fallback == null) return ErrorBox(s.error!, onRetry: _refresh);
+          if (!s.hasData && fallback == null) return const LoadingBox();
+          D data;
+          try { data = (s.hasData ? s.data : fallback) as D; } catch (_) { return s.hasError ? ErrorBox(s.error!, onRetry: _refresh) : const LoadingBox(); }
+          return widget.builder(c, data, _refresh);
         },
       );
 }

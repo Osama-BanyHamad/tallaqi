@@ -9,6 +9,7 @@ import { fmtNum } from "@/lib/quran";
 import { MemoryMap, PageDetail } from "@/components/MemoryMap";
 import { ErrorBox, JuzStrip, Kpi, Loading, Num, PageHead, Pct } from "@/components/ui";
 import { InviteListener } from "@/components/InviteListener";
+import { WirdCard } from "@/components/Wird";
 import { useSearchParams } from "next/navigation";
 
 type Journey = { id: string; student_name: string; memorized_pages: number; memorized_ayat: number; avg_retention: number; juz_map: [number, number | null, string][]; current_key: { surah_name: string; ayah: number; page: number } | null };
@@ -71,6 +72,7 @@ function MeInner() {
               {(plan.data?.rationale ?? []).map((r, i) => <p key={i} style={{ fontSize: 12.5 }}>{r}</p>)}
             </div>
           </div>
+          <WirdCard />
           <InviteListener />
           <div><h3>{t("explanation")}</h3><p>{tr("الثبات مقياس تعليمي يُحسب من تسميعات معلمك. ليس حكمًا شرعيًا على تلاوتك.", "Retention is an educational metric computed from your teacher's recitations, not a religious judgment.")}</p></div>
         </aside>

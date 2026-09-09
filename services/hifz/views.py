@@ -126,7 +126,11 @@ class JourneyViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["get"])
     def sessions(self, request, pk=None):
         j = self.get_object()
-        qs = RecitationSession.objects.filter(journey=j).prefetch_related("mistakes").select_related("teacher__person").order_by("-started_at")[:100]
+        try:
+            limit = max(1, min(100, int(request.query_params.get("limit", 100))))
+        except (TypeError, ValueError):
+            limit = 100
+        qs = RecitationSession.objects.filter(journey=j).prefetch_related("mistakes").select_related("teacher__person").order_by("-started_at")[:limit]
         return Response(SessionSerializer(qs, many=True).data)
 
     @action(detail=True, methods=["post"])

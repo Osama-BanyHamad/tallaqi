@@ -5,9 +5,11 @@ existing tenants only pick it up through this command. Runs on every deploy afte
 """
 from django.core.management.base import BaseCommand
 
+from packages.permissions.catalog import MODULES
 from services.common import context
+from services.identity.signup import SOLO_MODULES
 from services.rbac.services import ensure_system_roles
-from services.tenants.models import Tenant
+from services.tenants.models import Tenant, TenantModule
 
 
 class Command(BaseCommand):
@@ -20,5 +22,11 @@ class Command(BaseCommand):
         for t in tenants:
             with context.tenant(t.id):
                 roles = ensure_system_roles(t)
-            self.stdout.write(f"{t.slug}: {len(roles)} system roles synced")
+                # New default-on modules become available to existing tenants; explicit operator choices are never overridden.
+                have = set(TenantModule.objects.filter(tenant=t).values_list("module_key", flat=True))
+                added = [m.key for m in MODULES.values() if m.default_enabled and not m.core and m.key not in have
+                         and (t.kind != "solo" or m.key in SOLO_MODULES)]
+                for key in added:
+                    TenantModule.objects.create(tenant=t, module_key=key, enabled=True)
+            self.stdout.write(f"{t.slug}: {len(roles)} system roles synced" + (f", modules added: {', '.join(added)}" if added else ""))
         self.stdout.write(self.style.SUCCESS(f"synced {len(tenants)} tenant(s)"))

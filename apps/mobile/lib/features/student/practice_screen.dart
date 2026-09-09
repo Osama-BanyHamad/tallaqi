@@ -8,6 +8,8 @@ import '../../core/quran.dart';
 import '../../core/theme.dart';
 import '../../widgets/common.dart';
 import '../../widgets/recite_check.dart';
+import '../../core/audio.dart';
+import '../../widgets/ayah_audio.dart';
 
 /// Self-practice on a plan segment: read → hide → recall → reveal, plus the AI recitation check.
 /// Every hint is the exact verified text from the Quran Core; nothing generative exists in this path.
@@ -24,10 +26,13 @@ class PracticeScreen extends StatefulWidget {
 class _PracticeScreenState extends State<PracticeScreen> {
   @override
   void initState() { super.initState(); Prefs.I.fontSize().then((v) { if (mounted) setState(() => _font = v); }); }
+  @override
+  void dispose() { _rc.dispose(); super.dispose(); }
   final Set<int> _revealed = {};
   bool _hideAll = false;
   int _hints = 0;
   Map<String, dynamic>? _asr;
+  final _rc = ReciteController();
   double _font = 24;
   void _bumpFont() { setState(() => _font = _font >= 30 ? 20 : _font + 3); Prefs.I.setFontSize(_font); }
 
@@ -41,7 +46,11 @@ class _PracticeScreenState extends State<PracticeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: const SafeArea(child: AudioBar()),
+      floatingActionButton: RecordingPill(_rc),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: Fetch<Map<String, dynamic>>(
+        cacheKey: 'range:${widget.from}-${widget.to}',
         future: () async => (await Api.I.get('/quran/hafs_asim/range?from=${widget.from}&to=${widget.to}')) as Map<String, dynamic>,
         builder: (context, d, _) {
           final ayat = (d['ayat'] as List).cast<Map<String, dynamic>>();
@@ -67,7 +76,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
             ),
             Expanded(
               child: ListView(padding: const EdgeInsets.fromLTRB(16, 14, 16, 40), children: [
-                ReciteCheck(from: widget.from, to: widget.to, journeyId: widget.journeyId, onResult: (r) {
+                ReciteCheck(from: widget.from, to: widget.to, journeyId: widget.journeyId, controller: _rc, onResult: (r) {
                   setState(() => _asr = r);
                   if (r != null) {
                     final acc = (r['accuracy'] as num).toDouble();
@@ -76,6 +85,15 @@ class _PracticeScreenState extends State<PracticeScreen> {
                   }
                 }),
                 if (_asr != null) ...[const SizedBox(height: 10), AsrSummary(_asr!)],
+                const SizedBox(height: 10),
+                Row(children: [
+                  Expanded(child: OutlinedButton.icon(
+                    onPressed: () async { try { await AyahAudio.I.load(); await AyahAudio.I.playAll([for (final a in ayat) (a['surah'] as int, a['ayah'] as int)]); } catch (e) { if (context.mounted) toast(context, 'تعذّر تشغيل الصوت: ${friendlyError(e)}', error: true); } },
+                    icon: const Icon(Icons.play_circle_outline_rounded, size: 18), label: const Text('استمع للمقطع بصوت القارئ'),
+                  )),
+                  const SizedBox(width: 8),
+                  IconButton(tooltip: 'القارئ', onPressed: () => showReciterPicker(context), icon: const Icon(Icons.record_voice_over_rounded, color: T.lapis)),
+                ]),
                 const SizedBox(height: 10),
                 Row(children: [
                   Expanded(child: OutlinedButton.icon(
@@ -110,7 +128,8 @@ class _PracticeScreenState extends State<PracticeScreen> {
     final flagged = _flaggedAyat.contains(idx);
     final fw = _flaggedWords;
     return InkWell(
-      onTap: hidden ? () { HapticFeedback.selectionClick(); setState(() { _revealed.add(idx); _hints++; }); } : null,
+      onLongPress: () => showAyahSheet(context, surah: a['surah'], ayah: a['ayah'], key: a['key'], preview: a['text_uthmani']),
+      onTap: hidden ? () { HapticFeedback.selectionClick(); setState(() { _revealed.add(idx); _hints++; }); } : () => showAyahSheet(context, surah: a['surah'], ayah: a['ayah'], key: a['key'], preview: a['text_uthmani']),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),

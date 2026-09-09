@@ -31,6 +31,7 @@ class _TasmeeScreenState extends State<TasmeeScreen> {
   Map<int, String> _states = {};
   Map<String, dynamic>? _page;
   Map<String, dynamic>? _asr;
+  final _rc = ReciteController();
   bool _adopted = false;
   Object? _error;
   bool _saving = false;
@@ -77,9 +78,9 @@ class _TasmeeScreenState extends State<TasmeeScreen> {
       return;
     }
     final tp = await showModalBottomSheet<Map<String, dynamic>>(
-      context: context, backgroundColor: T.surface, showDragHandle: true,
+      context: context, backgroundColor: T.surface, showDragHandle: true, useSafeArea: true, isScrollControlled: true,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(18))),
-      builder: (_) => Padding(
+      builder: (_) => SingleChildScrollView(child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
         child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text('نوع الخطأ', style: T.display(size: 16)),
@@ -101,7 +102,7 @@ class _TasmeeScreenState extends State<TasmeeScreen> {
               ),
           ]),
         ]),
-      ),
+      )),
     );
     if (tp != null) setState(() => _mistakes.add({'ayah_index': ayahIndex, 'word_position': word, 'mistake_type': tp['key'], 'severity': tp['severity']}));
   }
@@ -156,9 +157,9 @@ class _TasmeeScreenState extends State<TasmeeScreen> {
       byType[m['mistake_type']] = (byType[m['mistake_type']] ?? 0) + 1;
     }
     return showModalBottomSheet(
-      context: context, backgroundColor: T.surface, isDismissible: true, showDragHandle: true,
+      context: context, backgroundColor: T.surface, isDismissible: true, showDragHandle: true, useSafeArea: true, isScrollControlled: true,
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (_) => Padding(
+      builder: (_) => SingleChildScrollView(child: Padding(
         padding: const EdgeInsets.fromLTRB(20, 0, 20, 28),
         child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
@@ -184,7 +185,7 @@ class _TasmeeScreenState extends State<TasmeeScreen> {
           const SizedBox(height: 18),
           FilledButton(onPressed: () => Navigator.pop(context), child: const Text('التالي')),
         ]),
-      ),
+      )),
     );
   }
 
@@ -228,7 +229,7 @@ class _TasmeeScreenState extends State<TasmeeScreen> {
                   : ListView(
                       padding: const EdgeInsets.fromLTRB(14, 14, 14, 130),
                       children: [
-                        ReciteCheck(from: widget.from, to: widget.to, journeyId: widget.journeyId, compact: true, onResult: (r) => setState(() { _asr = r; _adopted = false; })),
+                        ReciteCheck(from: widget.from, to: widget.to, journeyId: widget.journeyId, compact: true, controller: _rc, onResult: (r) => setState(() { _asr = r; _adopted = false; })),
                         if (_asr != null) ...[const SizedBox(height: 10), AsrSummary(_asr!, onAdopt: _adopt, adopted: _adopted)],
                         const SizedBox(height: 12),
                         MushafPage(page: _page!, surahNames: _surahs, inRange: _inRange, stateOf: (i) => _states[i], marks: marks, flags: flags, onWordTap: _tapWord, fontSize: _font),
@@ -256,6 +257,8 @@ class _TasmeeScreenState extends State<TasmeeScreen> {
                     ),
         ),
       ]),
+      floatingActionButton: RecordingPill(_rc),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       bottomSheet: _page == null ? null : Container(
         padding: EdgeInsets.fromLTRB(16, 12, 16, 12 + MediaQuery.paddingOf(context).bottom),
         decoration: BoxDecoration(color: T.surface, border: const Border(top: BorderSide(color: T.gold, width: 1.5)), boxShadow: [BoxShadow(color: T.ink.withValues(alpha: .12), blurRadius: 24, offset: const Offset(0, -8))]),

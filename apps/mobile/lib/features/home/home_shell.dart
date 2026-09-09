@@ -5,12 +5,16 @@ import '../../core/theme.dart';
 import '../../core/prefs.dart';
 import '../../widgets/common.dart';
 import '../../widgets/tips.dart';
+import '../../widgets/ayah_audio.dart';
 import '../auth/login_screen.dart';
 import '../parent/children_screen.dart';
 import '../student/student_home.dart';
 import '../teacher/halaqat_screen.dart';
 import '../teacher/student_detail_screen.dart';
 import '../teacher/students_screen.dart';
+import '../reading/wird_screen.dart';
+import '../../core/audio.dart';
+import '../../core/notify.dart';
 
 /// One codebase, role-based shells: teacher · student · parent (a person may hold several roles).
 class HomeShell extends StatefulWidget {
@@ -24,7 +28,7 @@ class _HomeShellState extends State<HomeShell> {
   @override
   Widget build(BuildContext context) {
     return Fetch<Map<String, dynamic>>(
-      future: () => Api.I.caps(),
+      future: () async { final c = await Api.I.caps(); AyahAudio.I.load(); return c; },
       builder: (context, caps, _) {
         final roles = List<String>.from(caps['roles'] ?? const []);
         final staff = roles.any((r) => ['teacher', 'assistant_teacher', 'quran_supervisor', 'owner', 'center_admin', 'branch_manager', 'listener'].contains(r));
@@ -37,16 +41,12 @@ class _HomeShellState extends State<HomeShell> {
           if (learner) (label: 'اليوم', icon: Icons.today_outlined, active: Icons.today_rounded, page: const StudentHome()),
           if (learner) (label: 'رحلتي', icon: Icons.map_outlined, active: Icons.map_rounded, page: const _MyJourney()),
           if (roles.contains('guardian')) (label: 'أبنائي', icon: Icons.family_restroom_outlined, active: Icons.family_restroom_rounded, page: const ChildrenScreen()),
+          (label: 'الورد', icon: Icons.menu_book_outlined, active: Icons.menu_book_rounded, page: const WirdScreen()),
           (label: 'حسابي', icon: Icons.person_outline_rounded, active: Icons.person_rounded, page: _AccountPage(caps: caps)),
         ];
         final i = _tab.clamp(0, tabs.length - 1);
         return Scaffold(
-          body: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 220),
-            switchInCurve: Curves.easeOutCubic,
-            transitionBuilder: (child, anim) => FadeTransition(opacity: anim, child: SlideTransition(position: Tween(begin: const Offset(0, .02), end: Offset.zero).animate(anim), child: child)),
-            child: KeyedSubtree(key: ValueKey(i), child: tabs[i].page),
-          ),
+          body: IndexedStack(index: i, children: [for (final t in tabs) t.page]),
           bottomNavigationBar: tabs.length > 1
               ? NavigationBar(selectedIndex: i, onDestinationSelected: (v) => setState(() => _tab = v),
                   destinations: [for (final t in tabs) NavigationDestination(icon: Icon(t.icon), selectedIcon: Icon(t.active, color: T.lapis), label: t.label)])
@@ -102,13 +102,55 @@ class _AccountPage extends StatelessWidget {
           Text('لا نص قرآني مولّد ولا صوت مولّد. المقترحات تُقارَن بالنص الموثّق ويعتمدها المعلم.', style: T.body(size: 12, color: T.ink3)),
         ]))),
         const SizedBox(height: 14),
+        Text('التذكيرات', style: T.display(size: 15)),
+        const SizedBox(height: 8),
+        const _Reminders(),
+        const SizedBox(height: 14),
+        Text('القارئ', style: T.display(size: 15)),
+        const SizedBox(height: 8),
+        ListenableBuilder(listenable: AyahAudio.I, builder: (context, _) => Container(
+          decoration: BoxDecoration(color: T.surface, borderRadius: BorderRadius.circular(14), border: Border.all(color: T.rule)),
+          child: ListTile(leading: const Icon(Icons.record_voice_over_rounded, color: T.lapis), title: Text(AyahAudio.I.reciter?['name_ar'] ?? 'اختر القارئ', style: T.body(size: 14.5, weight: FontWeight.w700)),
+            subtitle: Text('لسماع الآيات في الورد والتدريب', style: T.body(size: 12, color: T.ink3)), trailing: const Icon(Icons.chevron_left_rounded), onTap: () => showReciterPicker(context)),
+        )),
+        const SizedBox(height: 14),
         OutlinedButton.icon(onPressed: () async {
           await Api.I.logout();
           if (context.mounted) Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (_) => const LoginScreen()), (_) => false);
         }, icon: const Icon(Icons.logout_rounded, size: 18), label: const Text('تسجيل الخروج')),
         const SizedBox(height: 20),
-        Text('نص القرآن: مشروع تنزيل — tanzil.net · tallaqi.com · v0.2', style: T.body(size: 12, color: T.ink3), textAlign: TextAlign.center),
+        Text('نص القرآن: مشروع تنزيل — tanzil.net · tallaqi.com · v0.5', style: T.body(size: 12, color: T.ink3), textAlign: TextAlign.center),
       ])),
+    ]);
+  }
+}
+
+
+/// Reminder tiles on the account page: wird for everyone, plan for learners, Halaqah for teachers.
+class _Reminders extends StatefulWidget {
+  const _Reminders();
+  @override
+  State<_Reminders> createState() => _RemindersState();
+}
+
+class _RemindersState extends State<_Reminders> {
+  final Map<String, TimeOfDay?> _t = {};
+  @override
+  void initState() {
+    super.initState();
+    for (final k in Notify.kinds.keys) {
+      Notify.I.timeFor(k).then((v) { if (mounted) setState(() => _t[k] = v); });
+    }
+  }
+  @override
+  Widget build(BuildContext context) {
+    final roles = Api.I.roles;
+    final learner = roles.contains('student') || roles.contains('solo_learner');
+    final teacher = roles.any((r) => ['teacher', 'assistant_teacher', 'quran_supervisor'].contains(r));
+    return Column(children: [
+      ReminderTile(kind: 'wird', title: 'الورد اليومي', sub: 'تذكير بقراءة وردك', time: _t['wird'], onChanged: (v) => setState(() => _t['wird'] = v)),
+      if (learner) ...[const SizedBox(height: 8), ReminderTile(kind: 'plan', title: 'خطة اليوم', sub: 'تذكير بمقاطع الحفظ والمراجعة', time: _t['plan'], onChanged: (v) => setState(() => _t['plan'] = v))],
+      if (teacher) ...[const SizedBox(height: 8), ReminderTile(kind: 'halaqah', title: 'حلقة اليوم', sub: 'تذكير قبل موعد الحلقة', time: _t['halaqah'], onChanged: (v) => setState(() => _t['halaqah'] = v))],
     ]);
   }
 }

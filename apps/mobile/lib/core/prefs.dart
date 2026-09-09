@@ -13,6 +13,9 @@ class Prefs {
 
   Future<String?> getString(String key) async => (await _sp).getString(key);
   Future<void> setString(String key, String v) async => (await _sp).setString(key, v);
+  Future<void> remove(String key) async => (await _sp).remove(key);
+
+  Future<void> removeWhere(String prefix) async { final p = await _sp; for (final k in p.getKeys().where((k) => k.startsWith(prefix)).toList()) { await p.remove(k); } }
 
   Future<bool> seen(String key) async => (await _sp).getBool('seen.$key') ?? false;
   Future<void> markSeen(String key) async => (await _sp).setBool('seen.$key', true);

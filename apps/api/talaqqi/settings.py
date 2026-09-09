@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "services.hifz",
     "services.finance",
     "services.ai",
+    "services.reading",
 ]
 
 MIDDLEWARE = [
@@ -149,4 +150,16 @@ TALAQQI = {
     "DEFAULT_RIWAYAH": "hafs_asim",
     "DEFAULT_MUSHAF_TYPE": "madani_15_line",
     "QURAN_TEXT_ATTRIBUTION": "Quran text: Tanzil Project — https://tanzil.net",
+    # Reciter registry: per-ayah MP3 streamed from the host below (pattern {surah:03}{ayah:03}.mp3). Operators may replace it
+    # with their own licensed host via AUDIO_RECITERS_JSON; Talaqqi bundles and redistributes no audio.
+    "RECITERS": env.json("AUDIO_RECITERS_JSON", default=[
+        {"key": "alafasy", "name_ar": "مشاري راشد العفاسي", "name_en": "Mishary Alafasy", "base": "https://everyayah.com/data/Alafasy_128kbps/"},
+        {"key": "husary", "name_ar": "محمود خليل الحصري", "name_en": "Mahmoud Al-Husary", "base": "https://everyayah.com/data/Husary_128kbps/"},
+        {"key": "abdulbasit", "name_ar": "عبد الباسط عبد الصمد (مرتّل)", "name_en": "Abdul Basit (Murattal)", "base": "https://everyayah.com/data/Abdul_Basit_Murattal_192kbps/"},
+        {"key": "minshawi", "name_ar": "محمد صديق المنشاوي (مرتّل)", "name_en": "Al-Minshawi (Murattal)", "base": "https://everyayah.com/data/Minshawy_Murattal_128kbps/"},
+        {"key": "sudais", "name_ar": "عبد الرحمن السديس", "name_en": "Abdurrahman As-Sudais", "base": "https://everyayah.com/data/Abdurrahmaan_As-Sudais_192kbps/"},
+        {"key": "ajmi", "name_ar": "أحمد بن علي العجمي", "name_en": "Ahmed Al-Ajmi", "base": "https://everyayah.com/data/Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net/"},
+    ]),
+    "AUDIO_PATTERN": "{surah:03d}{ayah:03d}.mp3",
+    "AUDIO_SOURCE_NOTE": "Audio is streamed from everyayah.com (Verse-by-verse recitations). Talaqqi does not host or redistribute recordings.",
 }

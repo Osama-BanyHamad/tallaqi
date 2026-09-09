@@ -66,6 +66,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
     { href: "/staff", label: t("nav_staff"), Icon: IconTeacher, show: can("people.staff.read") && mod("people.staff") },
     { href: "/finance", label: tr("المالية", "Finance"), Icon: IconCoins, show: (can("finance.invoicing.read") || can("finance.fees.read")) && mod("finance.fees") },
     { href: "/reports", label: tr("التقارير", "Reports"), Icon: IconReport, show: can("intel.reports.read") && mod("intel.reports") },
+    { href: "/read", label: tr("الورد", "Reading"), Icon: IconBook, show: can("quran.reading.use") && mod("quran.reading") },
     { href: "/settings", label: tr("الإعدادات", "Settings"), Icon: IconSettings, show: (can("platform.tenancy.read") || can("platform.rbac.read")) && !roles.includes("solo_learner") },
   ].filter((i) => i.show);
 

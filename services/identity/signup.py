@@ -31,7 +31,7 @@ from services.tenants.models import Branch, Membership, Tenant, TenantModule
 
 from .views import memberships_for
 
-SOLO_MODULES = ("hifz.retention", "hifz.policy", "hifz.planner", "hifz.tasmee", "hifz.practice", "hifz.review_queue", "hifz.asr", "hifz.assessments")
+SOLO_MODULES = ("hifz.retention", "hifz.policy", "hifz.planner", "hifz.tasmee", "hifz.practice", "hifz.review_queue", "hifz.asr", "hifz.assessments", "quran.reading", "quran.audio")
 
 
 class SignupIn(serializers.Serializer):

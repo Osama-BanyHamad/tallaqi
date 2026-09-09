@@ -34,6 +34,14 @@ class Api {
   static final Api I = Api._();
   Session? session;
   Map<String, dynamic>? capabilities;
+  /// Set by the UI layer to drop in-memory screen caches.
+  Future<void> Function()? onLogout;
+  /// Called after every successful write so screen caches invalidate.
+  void Function()? onMutate;
+
+  /// One client for the whole app: connections are reused, so a request costs one round trip instead of a TLS handshake plus one.
+  final http.Client _client = http.Client();
+  static const _timeout = Duration(seconds: 25);
 
   Future<void> restore() async {
     final p = await SharedPreferences.getInstance();
@@ -53,11 +61,12 @@ class Api {
   Future<void> logout() async {
     session = null;
     capabilities = null;
+    await onLogout?.call();
     await _persist();
   }
 
   Future<Session> login(String email, String password) async {
-    final r = await http.post(Uri.parse('$apiUrl/api/v1/auth/login'),
+    final r = await _client.post(Uri.parse('$apiUrl/api/v1/auth/login'),
         headers: {'Content-Type': 'application/json', 'Accept-Language': 'ar'}, body: jsonEncode({'email': email, 'password': password}));
     final j = jsonDecode(utf8.decode(r.bodyBytes)) as Map<String, dynamic>;
     if (r.statusCode != 200) throw ApiException(r.statusCode, j['code'] ?? 'error', j['detail'] ?? 'تعذّر تسجيل الدخول');
@@ -72,7 +81,7 @@ class Api {
   Future<bool> _refresh() async {
     final s = session;
     if (s == null) return false;
-    final r = await http.post(Uri.parse('$apiUrl/api/v1/auth/refresh'), headers: {'Content-Type': 'application/json'}, body: jsonEncode({'refresh': s.refresh}));
+    final r = await _client.post(Uri.parse('$apiUrl/api/v1/auth/refresh'), headers: {'Content-Type': 'application/json'}, body: jsonEncode({'refresh': s.refresh}));
     if (r.statusCode != 200) return false;
     final j = jsonDecode(r.body);
     s.access = j['access'];
@@ -90,19 +99,22 @@ class Api {
       };
 
   Future<dynamic> _send(Future<http.Response> Function() call, {bool retry = true}) async {
-    final r = await call();
+    final r = await call().timeout(_timeout);
     if (r.statusCode == 401 && retry && await _refresh()) return _send(call, retry: false);
     final body = r.bodyBytes.isEmpty ? null : jsonDecode(utf8.decode(r.bodyBytes));
     if (r.statusCode >= 400) {
       final m = body is Map ? body : {};
       throw ApiException(r.statusCode, m['code']?.toString() ?? 'error', m['detail']?.toString() ?? 'خطأ ${r.statusCode}');
     }
+    if (r.request?.method != 'GET') onMutate?.call();
     return body;
   }
 
-  Future<dynamic> get(String path) => _send(() => http.get(Uri.parse('$apiUrl/api/v1$path'), headers: _headers()));
+  Future<dynamic> get(String path) => _send(() => _client.get(Uri.parse('$apiUrl/api/v1$path'), headers: _headers()));
+  Future<dynamic> patch(String path, Map<String, dynamic> body) =>
+      _send(() => _client.patch(Uri.parse('$apiUrl/api/v1$path'), headers: _headers(json: true), body: jsonEncode(body)));
   Future<dynamic> post(String path, Map<String, dynamic> body) =>
-      _send(() => http.post(Uri.parse('$apiUrl/api/v1$path'), headers: _headers(json: true), body: jsonEncode(body)));
+      _send(() => _client.post(Uri.parse('$apiUrl/api/v1$path'), headers: _headers(json: true), body: jsonEncode(body)));
 
   /// Multipart upload (audio for the recitation check). Same auth, refresh, and error handling as JSON calls.
   Future<dynamic> postMultipart(String path, {required Map<String, String> fields, required String fileField, required List<int> bytes, required String filename, required String mime}) {
@@ -111,7 +123,7 @@ class Api {
         ..headers.addAll(_headers())
         ..fields.addAll(fields)
         ..files.add(http.MultipartFile.fromBytes(fileField, bytes, filename: filename, contentType: MediaType.parse(mime)));
-      return http.Response.fromStream(await req.send());
+      return http.Response.fromStream(await _client.send(req));
     }
     return _send(send);
   }

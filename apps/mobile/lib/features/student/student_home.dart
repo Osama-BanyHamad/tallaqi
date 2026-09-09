@@ -22,13 +22,14 @@ class _StudentHomeState extends State<StudentHome> {
   Widget build(BuildContext context) {
     return Fetch<Map<String, dynamic>>(
       key: ValueKey(_v),
+      cacheKey: 'student-home',
       future: () async {
         // Students cannot list the roster; the journeys endpoint is scoped to self.
         final me = await Api.I.get('/journeys?page_size=1') as Map<String, dynamic>;
         final results = (me['results'] as List).cast<Map<String, dynamic>>();
         if (results.isEmpty) throw ApiException(404, 'no_student', 'لا يوجد ملف طالب مرتبط بهذا الحساب');
         final jid = results.first['id'];
-        final r = await Future.wait([Api.I.get('/journeys/$jid'), Api.I.get('/journeys/$jid/plan'), Api.I.get('/journeys/$jid/sessions').catchError((_) => <String, dynamic>{'results': []})]);
+        final r = await Future.wait([Api.I.get('/journeys/$jid'), Api.I.get('/journeys/$jid/plan'), Api.I.get('/journeys/$jid/sessions?limit=10').catchError((_) => <String, dynamic>{'results': []})]);
         final sess = r[2];
         return {'journey': r[0], 'plan': r[1], 'sessions': sess is Map ? sess['results'] : sess, 'progress': await Progress.I.all()};
       },
