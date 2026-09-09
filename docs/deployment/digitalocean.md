@@ -71,7 +71,7 @@ cd apps/mobile && flutter build apk --dart-define=API_URL=https://tallaqi.com
 
 ## Visit statistics
 
-Caddy writes a JSON access log to `/opt/talaqqi/logs/caddy/access.log` (rolled, kept 30 days). Every hour `infra/scripts/stats.sh` runs GoAccess (Docker image, no third-party trackers, IPs anonymized in the report) and writes `/opt/talaqqi/stats/index.html`, served at `https://tallaqi.com/stats/` behind HTTP basic auth.
+Caddy writes a JSON access log to `/opt/talaqqi/logs/caddy/access.log` (rolled, kept 30 days). Every hour `infra/scripts/stats.sh` runs GoAccess (Docker image, no third-party trackers, IPs anonymized in the report) and writes `/opt/talaqqi/stats/full.html`; `infra/scripts/stats_page.py` then builds the branded summary `index.html` (app downloads counted once per device per day, unique visitors, page views, top pages, referrers), both served at `https://tallaqi.com/stats/` behind HTTP basic auth.
 
 - Credentials: `STATS_USER` / `STATS_HASH` in `/opt/talaqqi/.env`. Generate a hash with `docker run --rm caddy:2 caddy hash-password --plaintext 'your-password'`.
 - Rebuild the report on demand: `bash /opt/talaqqi/infra/scripts/stats.sh`.

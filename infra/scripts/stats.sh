@@ -19,6 +19,8 @@ docker run --rm -i \
   --log-format=CADDY --date-format=CADDY --time-format=CADDY \
   --no-global-config --ignore-crawlers --real-os --anonymize-ip \
   --html-report-title="تَلَقِّي · Visit statistics" \
-  -o /out/index.html - < /tmp/talaqqi-access.json
+  -o /out/full.html - < /tmp/talaqqi-access.json
 rm -f /tmp/talaqqi-access.json
-echo "stats report written: $OUT/index.html ($(date -u +%FT%TZ))"
+# Branded summary (app downloads, visitors, pages, referrers) on top of the full GoAccess report
+python3 "$DIR/infra/scripts/stats_page.py" "$LOGS" "$OUT/index.html"
+echo "stats written: $OUT/index.html + full.html ($(date -u +%FT%TZ))"
