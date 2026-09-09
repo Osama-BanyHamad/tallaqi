@@ -43,14 +43,40 @@ EOF
   echo "    wrote $DIR/.env (secrets generated)"
 fi
 
-echo "==> Build & start (this takes a few minutes the first time)"
-docker compose --profile prod up -d --build --remove-orphans postgres valkey api web caddy
+# --- Safe deploy: build first (no downtime), keep the previous images, swap, health-gate, roll back on failure.
+echo "==> Building images (the running site keeps serving during the build)"
+docker compose --profile prod build api web
+for svc in api web; do
+  docker image inspect "talaqqi-$svc:previous" >/dev/null 2>&1 && docker rmi -f "talaqqi-$svc:previous" >/dev/null 2>&1 || true
+  # The image that is running right now becomes the rollback target.
+  RUNNING=$(docker inspect --format '{{.Image}}' "talaqqi-$svc-1" 2>/dev/null || true)
+  [ -n "$RUNNING" ] && docker tag "$RUNNING" "talaqqi-$svc:previous" || true
+done
 
-echo "==> Waiting for the API"
+echo "==> Swapping containers (API restarts once for migrations: ~20 seconds of API 502, the site itself stays up)"
+docker compose --profile prod up -d --remove-orphans postgres valkey api web caddy
+
+healthy() {
+  docker compose --profile prod exec -T api curl -fs http://localhost:8000/readyz >/dev/null 2>&1 \
+  && docker compose --profile prod exec -T caddy wget -qO- --timeout=5 http://web:3000/ 2>/dev/null | grep -q "<html"
+}
+echo "==> Health gate (API readyz + web home page)"
+OK=0
 for i in $(seq 1 60); do
-  if docker compose --profile prod exec -T api curl -fs http://localhost:8000/readyz >/dev/null 2>&1; then break; fi
+  if healthy; then OK=1; break; fi
   sleep 3
 done
+if [ "$OK" != "1" ]; then
+  echo "!!  New release is not healthy after 3 minutes — rolling back to the previous images"
+  docker compose --profile prod logs --tail=40 api web || true
+  for svc in api web; do
+    docker image inspect "talaqqi-$svc:previous" >/dev/null 2>&1 && docker tag "talaqqi-$svc:previous" "talaqqi-$svc:latest"
+  done
+  docker compose --profile prod up -d --no-build api web
+  for i in $(seq 1 40); do healthy && break; sleep 3; done
+  healthy && echo "    rollback complete: previous release is serving again" || echo "    rollback did NOT restore health — investigate: docker compose --profile prod logs api web"
+  exit 1
+fi
 docker compose --profile prod exec -T api curl -s http://localhost:8000/readyz; echo
 
 echo "==> Visit statistics: hourly GoAccess report from the Caddy access log (/stats/, basic auth from STATS_USER/STATS_HASH in .env)"
