@@ -68,3 +68,11 @@ cd apps/mobile && flutter build apk --dart-define=API_URL=https://tallaqi.com
 - The API role is a non-superuser (`talaqqi_app`) so PostgreSQL row-level security applies; passwords are generated into `.env` on first run. Keep `/opt/talaqqi/.env` private.
 - Recording, AI, and finance modules are off by default; enable per tenant from the app.
 - To reset the demo data: `docker compose --profile prod exec api python apps/api/manage.py seed_demo --reset`.
+
+## Visit statistics
+
+Caddy writes a JSON access log to `/opt/talaqqi/logs/caddy/access.log` (rolled, kept 30 days). Every hour `infra/scripts/stats.sh` runs GoAccess (Docker image, no third-party trackers, IPs anonymized in the report) and writes `/opt/talaqqi/stats/index.html`, served at `https://tallaqi.com/stats/` behind HTTP basic auth.
+
+- Credentials: `STATS_USER` / `STATS_HASH` in `/opt/talaqqi/.env`. Generate a hash with `docker run --rm caddy:2 caddy hash-password --plaintext 'your-password'`.
+- Rebuild the report on demand: `bash /opt/talaqqi/infra/scripts/stats.sh`.
+- The report excludes `/readyz`, `/healthz`, and requests from `Python-urllib` (our own verification scripts).
