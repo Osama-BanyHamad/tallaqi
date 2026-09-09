@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { useI18n, type Key } from "@/lib/i18n";
@@ -16,6 +16,10 @@ type Plan = { paused_new: boolean; rationale: string[]; segments: { id: string; 
 
 /** Student home on the web: today's plan and the journey. Calm, no streaks. */
 export default function MePage() {
+  return <Suspense><MeInner /></Suspense>;
+}
+
+function MeInner() {
   const { t, locale } = useI18n();
   const tr = useT2();
   const [page, setPage] = useState<number | null>(null);
